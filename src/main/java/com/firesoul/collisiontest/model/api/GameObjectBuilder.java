@@ -1,4 +1,4 @@
-package test.model.api;
+package com.firesoul.collisiontest.model.api;
 
 import java.awt.Image;
 

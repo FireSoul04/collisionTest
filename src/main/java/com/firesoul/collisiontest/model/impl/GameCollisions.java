@@ -1,4 +1,4 @@
-package test.model.impl;
+package com.firesoul.collisiontest.model.impl;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
@@ -9,13 +9,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import test.controller.Controller;
-import test.controller.InputController;
-import test.model.api.CollisionTest;
-import test.model.api.GameObject;
-import test.model.api.GameObjectBuilder;
-import test.model.util.Vector2;
-import test.view.Renderer;
+import com.firesoul.collisiontest.controller.impl.Controller;
+import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.CollisionTest;
+import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.api.GameObjectBuilder;
+import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.impl.Renderer;
 
 public class GameCollisions implements CollisionTest {
 
@@ -46,10 +46,10 @@ public class GameCollisions implements CollisionTest {
         this.input = w.getInput();
 
         try {
-            this.swordImage = ImageIO.read(new File("img/sword.png"));
-            this.enemyImage = ImageIO.read(new File("img/enemy.png"));
-            this.playerImage = ImageIO.read(new File("img/player.png"));
-            this.projectileImage = ImageIO.read(new File("img/projectile.png"));
+            this.swordImage = ImageIO.read(new File("src/main/resources/sword.png"));
+            this.enemyImage = ImageIO.read(new File("src/main/resources/enemy.png"));
+            this.playerImage = ImageIO.read(new File("src/main/resources/player.png"));
+            this.projectileImage = ImageIO.read(new File("src/main/resources/projectile.png"));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);

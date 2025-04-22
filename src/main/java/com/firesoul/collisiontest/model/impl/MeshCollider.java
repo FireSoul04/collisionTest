@@ -1,4 +1,5 @@
-package test.model.impl;
+package com.firesoul.collisiontest.model.impl;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -6,9 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import test.model.api.Collider;
-import test.model.api.GameObject;
-import test.model.util.Vector2;
+import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.util.Vector2;
 
 public class MeshCollider implements Collider {
 

@@ -1,9 +1,9 @@
-package test.model.api;
+package com.firesoul.collisiontest.model.api;
 
 import java.awt.Image;
 import java.util.Optional;
 
-import test.model.util.Vector2;
+import com.firesoul.collisiontest.model.util.Vector2;
 
 public interface GameObject {
 

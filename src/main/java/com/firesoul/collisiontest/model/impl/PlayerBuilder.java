@@ -1,10 +1,10 @@
-package test.model.impl;
+package com.firesoul.collisiontest.model.impl;
 
 import java.util.Objects;
 
-import test.controller.InputController;
-import test.model.api.GameObject;
-import test.model.util.Vector2;
+import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.util.Vector2;
 
 public class PlayerBuilder extends GameObjectBuilderImpl {
 

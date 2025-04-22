@@ -1,4 +1,5 @@
-package test.model.util;
+package com.firesoul.collisiontest.model.util;
+
 import java.util.function.BiFunction;
 
 public record Vector2(double x, double y) {

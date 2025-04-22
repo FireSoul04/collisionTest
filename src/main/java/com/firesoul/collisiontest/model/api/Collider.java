@@ -1,9 +1,9 @@
-package test.model.api;
+package com.firesoul.collisiontest.model.api;
 
 import java.util.List;
 import java.util.Set;
 
-import test.model.util.Vector2;
+import com.firesoul.collisiontest.model.util.Vector2;
 
 public interface Collider {
 

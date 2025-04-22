@@ -1,16 +1,16 @@
-package test.model.impl;
+package com.firesoul.collisiontest.model.impl;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import test.controller.Controller;
-import test.controller.InputController;
-import test.model.api.CollisionTest;
-import test.model.api.GameObject;
-import test.model.api.GameObjectBuilder;
-import test.model.util.Vector2;
-import test.view.Renderer;
+import com.firesoul.collisiontest.controller.impl.Controller;
+import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.CollisionTest;
+import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.api.GameObjectBuilder;
+import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.impl.Renderer;
 
 public class RegularPolygons implements CollisionTest {
 

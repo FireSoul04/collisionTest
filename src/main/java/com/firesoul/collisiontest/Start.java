@@ -1,6 +1,6 @@
-package test;
+package com.firesoul.collisiontest;
 
-import test.controller.Controller;
+import com.firesoul.collisiontest.controller.impl.Controller;
 
 public class Start {
 

@@ -1,4 +1,4 @@
-package test.model.impl;
+package com.firesoul.collisiontest.model.impl;
 
 import java.util.Timer;
 import java.util.TimerTask;

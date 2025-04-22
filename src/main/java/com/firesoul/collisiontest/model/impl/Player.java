@@ -1,15 +1,15 @@
-package test.model.impl;
+package com.firesoul.collisiontest.model.impl;
 
 import java.awt.Image;
 import java.util.Optional;
 
-import test.controller.InputController;
-import test.model.api.Collider;
-import test.model.api.GameObject;
-import test.model.impl.BlockBuilder.Block;
-import test.model.util.Vector2;
-import test.view.Animation;
-import test.view.SwordSwingAnimation;
+import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
+import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.impl.Animation;
+import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 
 public class Player extends GameObjectImpl {
 
