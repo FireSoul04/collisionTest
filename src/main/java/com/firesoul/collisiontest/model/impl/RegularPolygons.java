@@ -56,8 +56,9 @@ public class RegularPolygons implements CollisionTest {
 
     @Override
     public void update(final double deltaTime) {
-        final Vector2 v = this.readInput().normalize().multiply(this.speed).multiply(deltaTime);
-        this.player.move(v);
+        final Vector2 v = this.readInput().normalize().multiply(deltaTime);
+        this.player.setVelocity(v);
+        this.player.move(v.multiply(this.speed));
     }
 
     @Override

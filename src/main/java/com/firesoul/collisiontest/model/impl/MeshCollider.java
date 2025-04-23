@@ -96,4 +96,9 @@ public class MeshCollider implements Collider {
     public void setSolid(final boolean solid) {
         this.solid = solid;
     }
+
+    @Override
+    public void onCollide(final Collider collidedShape, final Vector2 collisionDirection) {
+        this.attachedGameObject.onCollide(collidedShape, collisionDirection);
+    }
 }

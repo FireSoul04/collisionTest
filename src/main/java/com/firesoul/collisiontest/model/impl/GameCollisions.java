@@ -11,9 +11,11 @@ import javax.imageio.ImageIO;
 
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
+import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.impl.Renderer;
 
@@ -88,15 +90,7 @@ public class GameCollisions implements CollisionTest {
         this.gameObjects.add(enemyBuilder.build());
 
         final Vector2 playerPosition = new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0);
-        GameObjectBuilder terrainDetectorBuilder = new GameObjectBuilderImpl(playerPosition);
-        terrainDetectorBuilder = terrainDetectorBuilder.collider(new MeshCollider(swordShape, 5.0, 0.0));
-        final GameObject terrainDetector = terrainDetectorBuilder.build();
-        terrainDetector.move(new Vector2(-5.0, 50.0));
-        terrainDetector.setSolid(false);
-        terrainDetector.rotate(Math.PI/2);
-        this.gameObjects.add(terrainDetector);
-        
-        GameObjectBuilder playerBuilder = new PlayerBuilder(playerPosition, sword, terrainDetector, this.input, this);
+        GameObjectBuilder playerBuilder = new PlayerBuilder(playerPosition, sword, this.input, this);
         playerBuilder = playerBuilder.collider(new MeshCollider(playerShape, 20.0, 0.0));
         playerBuilder = playerBuilder.image(this.playerImage);
         this.player = playerBuilder.build();
@@ -105,7 +99,7 @@ public class GameCollisions implements CollisionTest {
         final List<Vector2> blockPoints = Controller.regularPolygon(4);
         for (int x = 1; x < 25; x++) {
             GameObjectBuilder blockBuilder = new BlockBuilder(new Vector2(x*GameCollisions.TILE_SIZE*2, 600));
-            blockBuilder = blockBuilder.collider(new MeshCollider(blockPoints, 25.0, Math.PI/4));
+            blockBuilder = blockBuilder.collider(new MeshCollider(blockPoints, 28.0, Math.PI/4));
             // blockBuilder = blockBuilder.image(this.blockImage);
             this.gameObjects.add(blockBuilder.build());
         }
@@ -113,11 +107,8 @@ public class GameCollisions implements CollisionTest {
 
     private void addEvents() {
         this.input.addEvent("Jump", () -> this.input.isKeyPressed(KeyEvent.VK_SPACE));
-        this.input.addEvent("Gravity", () -> true);
         this.input.addEvent("MoveLeft", () -> this.input.isKeyPressed(KeyEvent.VK_A));
         this.input.addEvent("MoveRight", () -> this.input.isKeyPressed(KeyEvent.VK_D));
-        this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
-        this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
 
         this.input.addEvent("SwingSword", () -> this.input.isKeyPressedOnce(KeyEvent.VK_E));
         this.input.addEvent("Shoot", () -> this.input.isKeyPressedOnce(KeyEvent.VK_Q));

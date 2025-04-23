@@ -17,9 +17,15 @@ public interface GameObject {
 
     Vector2 getPosition();
 
+    Vector2 getVelocity();
+
+    void setVelocity(Vector2 velocity);
+
     double getOrientation();
 
     Optional<Image> getImage();
 
     Optional<Collider> getCollider();
+
+    default void onCollide(Collider collidedShape, Vector2 collisionDirection) {}
 }

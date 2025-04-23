@@ -1,7 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
 import java.awt.Image;
-import java.util.List;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
@@ -14,11 +13,10 @@ import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 
 public class Player extends GameObjectImpl {
 
-    private final double speed = 3.0;
+    private final double speed = 0.5;
     private final double rotSpeed = 0.02;
 
     private final GameObject sword;
-    private final GameObject terrainDetector;
     private final GameCollisions world;
     private final InputController input;
 
@@ -27,14 +25,19 @@ public class Player extends GameObjectImpl {
     private final Animation swordSwingStart;
     private boolean swinging = false;
 
-    // Jump logic
-    private final double jforce = 7.0;
-    private final double gforce = 0.2;
-    private Vector2 jumpAcceleration = new Vector2(0.0, -this.jforce);
+    // Gravity logic
+    private final double gforce = 0.025;
     private Vector2 gravityAcceleration = Vector2.zero();
-    private boolean onGround = true;
+
+    // Jump logic
+    private final double jforce = 0.05;
+    private Vector2 jumpAcceleration = new Vector2(0.0, -this.jforce);
+    public boolean onGround = false;
     private int currentJumpHeight = 0;
     private int maxJumpHeight = 50;
+    
+    // Movement logic
+    private double friction = 1.0;
 
     public Player(
         final Vector2 position,
@@ -42,14 +45,12 @@ public class Player extends GameObjectImpl {
         final Optional<Collider> collider,
         final Optional<Image> image,
         final GameObject sword,
-        final GameObject terrainDetector,
         final InputController input,
         final GameCollisions world
     ) {
         super(position, orientation, collider, image);
 
         this.sword = sword;
-        this.terrainDetector = terrainDetector;
         this.input = input;
         this.world = world;
         this.swordSwingReset = new SwordSwingAnimation(
@@ -77,24 +78,38 @@ public class Player extends GameObjectImpl {
 
     @Override
     public void update(final double deltaTime) {
-        Vector2 velocity = Vector2.zero();
-
-        velocity = velocity.add(this.readInput());
-        if (this.input.getEvent("Gravity") && velocity.y() >= 0.0) {
-            velocity = velocity.add(this.gravityAcceleration.multiply(deltaTime));
-            this.gravityAcceleration = this.gravityAcceleration.add(new Vector2(0.0, this.gforce));
+        Vector2 velocity = this.readInput();
+        this.setVelocity(this.getVelocity().add(velocity).multiply(new Vector2(this.friction, 1.0)));
+        if (this.getVelocity().norm() > 0.0 && this.readInput().norm() == 0.0) {
+            if (this.friction > 0.0) {
+                this.friction -= 0.03125;
+            }
+        } else {
+            this.friction = 1.0;
         }
-        if (this.terrainDetector.getCollider().get().getCollidedShapes().stream().anyMatch(t -> t.getAttachedGameObject() instanceof Block)) {
-            this.onGround = true;
+
+        if (!this.onGround) {
+            this.gravityAcceleration = this.gravityAcceleration.add(new Vector2(0.0, this.gforce));
+            this.setVelocity(this.getVelocity().add(this.gravityAcceleration));
+        } else {
+            this.gravityAcceleration = Vector2.zero();
+        }
+
+        this.move(this.getVelocity().multiply(deltaTime));
+        this.sword.move(this.getVelocity().multiply(deltaTime));
+    }
+
+    @Override
+    public void onCollide(final Collider collidedShape, final Vector2 collisionDirection) {
+        if (collidedShape.getAttachedGameObject() instanceof Block) {
+            this.setVelocity(this.getVelocity().add(collisionDirection.multiply(this.getVelocity())));
+
+            if (collisionDirection.equals(new Vector2(0.0, -1.0))) {
+                this.onGround = true;
+            }
         } else {
             this.onGround = false;
         }
-
-        velocity = velocity.multiply(deltaTime);
-
-        this.move(velocity);
-        this.sword.move(velocity);
-        this.terrainDetector.move(velocity);
     }
 
     public double getSpeed() {
@@ -113,18 +128,12 @@ public class Player extends GameObjectImpl {
         if (this.input.getEvent("MoveRight")) {
             velocity = velocity.add(new Vector2(1.0, 0.0));
         }
-        if (this.input.getEvent("MoveUp")) {
-            velocity = velocity.add(new Vector2(0.0, -1.0));
-        }
-        if (this.input.getEvent("MoveDown")) {
-            velocity = velocity.add(new Vector2(0.0, 1.0));
-        }
         velocity = velocity.multiply(this.speed);
 
         if ((this.onGround || (this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) && this.input.getEvent("Jump")) {
             this.currentJumpHeight++;
             velocity = velocity.add(this.jumpAcceleration);
-            this.jumpAcceleration = this.jumpAcceleration.add(new Vector2(0.0, this.gforce));
+            // this.jumpAcceleration = this.jumpAcceleration.add(new Vector2(0.0, this.gforce));
         } else {
             this.currentJumpHeight = 0;
             this.jumpAcceleration = new Vector2(0.0, -this.jforce);

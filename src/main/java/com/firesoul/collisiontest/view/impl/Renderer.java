@@ -2,6 +2,8 @@ package com.firesoul.collisiontest.view.impl;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.firesoul.collisiontest.controller.impl.Controller;
+import com.firesoul.collisiontest.controller.impl.Controller.Rectangle;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
@@ -67,7 +69,9 @@ public class Renderer extends JPanel {
                 red |= bothSolid && s.isCollided();
             }
             g2.setColor(red ? Color.RED : imageOpt.isPresent() ? Color.BLACK : Color.WHITE);
-            g2.drawPolygon(p);
+            final Rectangle sh = Controller.fitInRect(s);
+            g2.drawRect((int) sh.x(), (int) sh.y(), (int) sh.w(), (int) sh.h());
+            // g2.drawPolygon(p);
             
             if (imageOpt.isPresent()) {
                 final Image image = imageOpt.get();

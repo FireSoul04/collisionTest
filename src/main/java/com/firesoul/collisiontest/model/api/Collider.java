@@ -32,4 +32,6 @@ public interface Collider {
     boolean isSolid();
 
     void setSolid(boolean solid);
+
+    void onCollide(Collider collidedShape, Vector2 collisionDirection);
 }

@@ -5,11 +5,14 @@ import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.impl.GameCollisions;
+import com.firesoul.collisiontest.model.impl.RegularPolygons;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.impl.Renderer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class Controller implements Runnable {
@@ -17,7 +20,7 @@ public class Controller implements Runnable {
     private final Renderer w = new Renderer();
 
     private final CollisionTest test = new GameCollisions(w);
-    //private final CollisionTest test = new RegularPolygons(w);
+    // private final CollisionTest test = new RegularPolygons(w);
 
     @Override
     public void run() {
@@ -51,8 +54,8 @@ public class Controller implements Runnable {
     }
 
     private void update(final double deltaTime) {
-        this.test.update(deltaTime);
         this.checkCollisions(this.test.getGameObjects());
+        this.test.update(deltaTime);
     }
 
     private void render() {
@@ -64,17 +67,110 @@ public class Controller implements Runnable {
 
         for (final Collider s1 : shapes) {
             boolean collided = false;
+            final Map<Collider, Swept> shapesByCollisionTime = new HashMap<>();
             for (final Collider s2 : shapes) {
                 if (!s1.equals(s2)) {
-                    collided = Controller.SAT(s1, s2);
+                    Swept ret = Controller.sweptAABB(s1, s2);
+                    collided = ret != null;
+                    // collided = Controller.SAT(s1, s2);
                     if (collided) {
+                        shapesByCollisionTime.put(s2, ret);
                         s1.addCollided(s2);
                     } else {
                         s1.removeCollided(s2);
                     }
                 }
             }
+
+            for (final var e : shapesByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue().time(), b.getValue().time())).toList()) {
+                s1.onCollide(e.getKey(), e.getValue().normal());
+            }
         }
+    }
+
+    public record Rectangle(double x, double y, double w, double h) {}
+
+    public static Rectangle fitInRect(final Collider s) {
+        double minX = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        for (final Vector2 p : s.getPoints()) {
+            minX = Math.min(minX, p.x());
+            maxX = Math.max(maxX, p.x());
+            minY = Math.min(minY, p.y());
+            maxY = Math.max(maxY, p.y());
+        }
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    public static boolean simpleAABB(final Collider s1, final Collider s2) {
+        final Rectangle r1 = fitInRect(s1);
+        final Rectangle r2 = fitInRect(s2);
+        final boolean collided = r1.x() + r1.w() > r2.x()
+            && r1.x() < r2.x() + r2.w()
+            && r1.y() + r1.h() > r2.y()
+            && r1.y() < r2.y() + r2.h();
+        return collided;
+    }
+
+    public final record Swept(Vector2 normal, Vector2 point, double time) {
+    }
+
+    private static Swept rayAABB(final Rectangle target, final Vector2 ray, final Vector2 rayDirection) {
+        Vector2 normal = Vector2.zero();
+        Vector2 collisionPoint = Vector2.zero();
+        Vector2 inverseDirection = new Vector2(1.0/rayDirection.x(), 1.0/rayDirection.y());
+        double nearX = (target.x() - ray.x())*inverseDirection.x();
+        double nearY = (target.y() - ray.y())*inverseDirection.y();
+        double farX = (target.x() + target.w() - ray.x())*inverseDirection.x();
+        double farY = (target.y() + target.h() - ray.y())*inverseDirection.y();
+
+        if (nearX > farX) {
+            double temp = nearX;
+            nearX = farX;
+            farX = temp;
+        }
+        if (nearY > farY) {
+            double temp = nearY;
+            nearY = farY;
+            farY = temp;
+        }
+        if (nearX > farY || nearY > farX) {
+            return null;
+        }
+
+        double nearHit = Math.max(nearX, nearY);
+        double farHit = Math.min(farX, farY);
+
+        if (farHit < 0.0) {
+            return null;
+        }
+
+        collisionPoint = ray.add(rayDirection.multiply(nearHit));
+        if (nearX > nearY) {
+            normal = new Vector2(inverseDirection.x() < 0.0 ? 1.0 : -1.0, 0.0);
+        } else if (nearX < nearY) {
+            normal = new Vector2(0.0, inverseDirection.y() < 0.0 ? 1.0 : -1.0);
+        }
+        
+        return new Swept(normal, collisionPoint, nearHit);
+    }
+
+    public static Swept sweptAABB(final Collider s1, final Collider s2) {
+        final Rectangle r1 = fitInRect(s1);
+        final Rectangle rtemp = fitInRect(s2);
+        final Rectangle r2 = new Rectangle(rtemp.x() - r1.w()/2, rtemp.y() - r1.h()/2, rtemp.w() + r1.w(), rtemp.h() + r1.h());
+
+        if (s1.getAttachedGameObject().getVelocity().equals(Vector2.zero())) {
+            return null;
+        }
+
+        final Swept sw = rayAABB(r2, new Vector2(r1.x() + r1.w()/2, r1.y() + r1.h()/2), s1.getAttachedGameObject().getVelocity());
+        if (sw != null && sw.time() >= 0.0 && sw.time() < 1.0) {
+            return sw;
+        }
+        return null;
     }
 
     public static boolean SAT(final Collider s1, final Collider s2) {
@@ -116,7 +212,7 @@ public class Controller implements Runnable {
             }
         }
         
-        if (!(s1.getAttachedGameObject() instanceof Block)) {
+        if (c1.getAttachedGameObject() instanceof Block) {
             final Vector2 d = s1.getPosition().subtract(s2.getPosition());
             final double s = d.dot(d);
             s1.move(d.multiply(overlap).divide(s));

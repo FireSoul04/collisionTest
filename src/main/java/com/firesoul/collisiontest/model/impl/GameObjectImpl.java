@@ -13,6 +13,7 @@ public class GameObjectImpl implements GameObject {
     private final Optional<Collider> collider;
     
     private Vector2 position;
+    private Vector2 velocity;
     private double orientation;
 
     public GameObjectImpl(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Image> image) {
@@ -20,6 +21,7 @@ public class GameObjectImpl implements GameObject {
         this.orientation = orientation;
         this.image = image;
         this.collider = collider;
+        this.velocity = Vector2.zero();
     }
 
     @Override
@@ -46,6 +48,16 @@ public class GameObjectImpl implements GameObject {
     @Override
     public Vector2 getPosition() {
         return this.position;
+    }
+
+    @Override
+    public Vector2 getVelocity() {
+        return this.velocity;
+    }
+    
+    @Override
+    public void setVelocity(final Vector2 velocity) {
+        this.velocity = velocity;
     }
 
     @Override
