@@ -73,6 +73,22 @@ public record Vector2(double x, double y) {
         return this.add(v.invert());
     }
 
+    /**
+     * @param v
+     * @return the product of this vector and the vector v
+     */
+    public Vector2 multiply(final Vector2 v) {
+        return new Vector2(this.x*v.x, this.y*v.y);
+    }
+
+    /**
+     * @param v
+     * @return the division of this vector and the vector v
+     */
+    public Vector2 divide(final Vector2 v) {
+        return this.multiply(new Vector2(1/v.x, 1/v.y));
+    }
+
     public double dot(final Vector2 v) {
         return this.x*v.x + this.y*v.y;
     }

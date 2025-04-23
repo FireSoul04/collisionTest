@@ -3,6 +3,7 @@ package com.firesoul.collisiontest.controller.impl;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.impl.GameCollisions;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.impl.Renderer;
@@ -32,13 +33,13 @@ public class Controller implements Runnable {
             } catch (InterruptedException e) {}
             final long now = System.nanoTime();
             deltaTime = deltaTime + ((now - lastTime) / ns);
-            lastTime = now;
             while (deltaTime >= 1.0) {
                 this.update(deltaTime);
                 deltaTime--;
                 updates++;
             }
             this.render();
+            lastTime = now;
             frames++;
             if (System.currentTimeMillis() - frameRateStartTime >= 1000.0) {
                 System.out.println(updates + " ups, " + frames + " fps");
@@ -80,6 +81,7 @@ public class Controller implements Runnable {
         Collider c1 = s1;
         Collider c2 = s2;
 
+        double overlap = Double.POSITIVE_INFINITY;
         for (int shape = 0; shape < 2; shape++) {
             if (shape == 1) {
                 c1 = s2;
@@ -89,7 +91,8 @@ public class Controller implements Runnable {
             for (int i = 0; i < c1.getPoints().size(); i++) {
                 final Vector2 v1 = c1.getPoints().get(i);
                 final Vector2 v2 = c1.getPoints().get((i + 1)%c1.getPoints().size());
-                final Vector2 normal = new Vector2(-(v2.y() - v1.y()), v2.x() - v1.x());
+                final Vector2 segment = v1.subtract(v2);
+                final Vector2 normal = new Vector2(-segment.y(), segment.x());
     
                 double minC1 = Double.POSITIVE_INFINITY;
                 double maxC1 = Double.NEGATIVE_INFINITY;
@@ -106,10 +109,17 @@ public class Controller implements Runnable {
                     maxC2 = Math.max(maxC2, dot);
                 }
     
+				overlap = Math.min(Math.min(maxC1, maxC2) - Math.max(minC1, minC2), overlap);
                 if (!(maxC2 >= minC1 && maxC1 >= minC2)) {
                     return false;
                 }
             }
+        }
+        
+        if (!(s1.getAttachedGameObject() instanceof Block)) {
+            final Vector2 d = s1.getPosition().subtract(s2.getPosition());
+            final double s = d.dot(d);
+            s1.move(d.multiply(overlap).divide(s));
         }
 
         return true;
