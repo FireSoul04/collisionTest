@@ -33,5 +33,5 @@ public interface Collider {
 
     void setSolid(boolean solid);
 
-    void onCollide(Collider collidedShape, Vector2 collisionDirection);
+    void onCollide(Collider collidedShape, Vector2 collisionDirection, double collisionTime);
 }

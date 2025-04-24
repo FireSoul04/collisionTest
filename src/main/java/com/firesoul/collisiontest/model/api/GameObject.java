@@ -27,5 +27,5 @@ public interface GameObject {
 
     Optional<Collider> getCollider();
 
-    default void onCollide(Collider collidedShape, Vector2 collisionDirection) {}
+    default void onCollide(Collider collidedShape, Vector2 collisionDirection, double collisionTime) {}
 }

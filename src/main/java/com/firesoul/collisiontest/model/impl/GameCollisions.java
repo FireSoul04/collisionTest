@@ -75,7 +75,8 @@ public class GameCollisions implements CollisionTest {
             new Vector2(-0.5, -3.0)
         );
 
-        GameObjectBuilder swordBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0));
+        final Vector2 playerPosition = new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0);
+        GameObjectBuilder swordBuilder = new GameObjectBuilderImpl(playerPosition);
         swordBuilder.collider(new MeshCollider(swordShape, 16.0, 0.0));
         swordBuilder = swordBuilder.image(this.swordImage);
         final GameObject sword = swordBuilder.build();
@@ -89,7 +90,6 @@ public class GameCollisions implements CollisionTest {
         enemyBuilder = enemyBuilder.image(this.enemyImage);
         this.gameObjects.add(enemyBuilder.build());
 
-        final Vector2 playerPosition = new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0);
         GameObjectBuilder playerBuilder = new PlayerBuilder(playerPosition, sword, this.input, this);
         playerBuilder = playerBuilder.collider(new MeshCollider(playerShape, 20.0, 0.0));
         playerBuilder = playerBuilder.image(this.playerImage);
@@ -109,6 +109,8 @@ public class GameCollisions implements CollisionTest {
         this.input.addEvent("Jump", () -> this.input.isKeyPressed(KeyEvent.VK_SPACE));
         this.input.addEvent("MoveLeft", () -> this.input.isKeyPressed(KeyEvent.VK_A));
         this.input.addEvent("MoveRight", () -> this.input.isKeyPressed(KeyEvent.VK_D));
+        this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
+        this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
 
         this.input.addEvent("SwingSword", () -> this.input.isKeyPressedOnce(KeyEvent.VK_E));
         this.input.addEvent("Shoot", () -> this.input.isKeyPressedOnce(KeyEvent.VK_Q));

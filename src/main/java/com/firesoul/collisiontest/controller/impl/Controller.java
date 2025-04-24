@@ -5,6 +5,7 @@ import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.impl.GameCollisions;
+import com.firesoul.collisiontest.model.impl.Player;
 import com.firesoul.collisiontest.model.impl.RegularPolygons;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.impl.Renderer;
@@ -80,7 +81,7 @@ public class Controller implements Runnable {
             }
 
             for (final var e : shapesByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue().time(), b.getValue().time())).toList()) {
-                s1.onCollide(e.getKey(), e.getValue().normal());
+                s1.onCollide(e.getKey(), e.getValue().normal(), e.getValue().time());
             }
         }
     }
@@ -101,56 +102,72 @@ public class Controller implements Runnable {
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
 
-    public static boolean simpleAABB(final Collider s1, final Collider s2) {
-        final Rectangle r1 = fitInRect(s1);
-        final Rectangle r2 = fitInRect(s2);
-        final boolean collided = r1.x() + r1.w() > r2.x()
-            && r1.x() < r2.x() + r2.w()
-            && r1.y() + r1.h() > r2.y()
-            && r1.y() < r2.y() + r2.h();
-        return collided;
-    }
-
     public final record Swept(Vector2 normal, Vector2 point, double time) {
     }
 
+    public static Swept simpleAABB(final Rectangle r1, final Rectangle r2) {
+        final boolean collided =
+            r1.x() + r1.w() > r2.x() &&
+            r1.x() < r2.x() + r2.w() &&
+            r1.y() + r1.h() > r2.y() &&
+            r1.y() < r2.y() + r2.h();
+
+        if (collided) {
+            Vector2 normal = Vector2.zero();
+            if (Math.abs(r1.x() + r1.w() - r2.x()) < 1.0) {
+                normal = new Vector2(1.0, 0.0);
+            } else if (Math.abs(r1.x() - (r2.x() + r2.w())) < 1.0) {
+                normal = new Vector2(-1.0, 0.0);
+            } else if (Math.abs(r1.y() + r1.h() - r2.y()) < 1.0) {
+                normal = new Vector2(0.0, 1.0);
+            } else if (Math.abs(r1.y() - (r2.y() + r2.h())) < 1.0) {
+                normal = new Vector2(0.0, -1.0);
+            }
+            return new Swept(normal, Vector2.zero(), 1.0);
+        }
+        return null;
+    }
+
     private static Swept rayAABB(final Rectangle target, final Vector2 ray, final Vector2 rayDirection) {
-        Vector2 normal = Vector2.zero();
-        Vector2 collisionPoint = Vector2.zero();
-        Vector2 inverseDirection = new Vector2(1.0/rayDirection.x(), 1.0/rayDirection.y());
+        final Vector2 inverseDirection = new Vector2(1.0/rayDirection.x(), 1.0/rayDirection.y());
         double nearX = (target.x() - ray.x())*inverseDirection.x();
         double nearY = (target.y() - ray.y())*inverseDirection.y();
         double farX = (target.x() + target.w() - ray.x())*inverseDirection.x();
         double farY = (target.y() + target.h() - ray.y())*inverseDirection.y();
+        Vector2 normal = Vector2.zero();
+        Vector2 collisionPoint = Vector2.zero();
+        
+        if (Double.isNaN(farY) || Double.isNaN(farX)) {
+            return null;
+        }
+        if (Double.isNaN(nearY) || Double.isNaN(nearX)) {
+            return null;
+        }
 
         if (nearX > farX) {
-            double temp = nearX;
+            final double temp = nearX;
             nearX = farX;
             farX = temp;
         }
         if (nearY > farY) {
-            double temp = nearY;
+            final double temp = nearY;
             nearY = farY;
             farY = temp;
         }
         if (nearX > farY || nearY > farX) {
             return null;
         }
-
-        double nearHit = Math.max(nearX, nearY);
-        double farHit = Math.min(farX, farY);
-
+        final double nearHit = Math.max(nearX, nearY);
+        final double farHit = Math.min(farX, farY);
         if (farHit < 0.0) {
             return null;
         }
-
         collisionPoint = ray.add(rayDirection.multiply(nearHit));
         if (nearX > nearY) {
             normal = new Vector2(inverseDirection.x() < 0.0 ? 1.0 : -1.0, 0.0);
         } else if (nearX < nearY) {
             normal = new Vector2(0.0, inverseDirection.y() < 0.0 ? 1.0 : -1.0);
         }
-        
         return new Swept(normal, collisionPoint, nearHit);
     }
 
@@ -160,7 +177,7 @@ public class Controller implements Runnable {
         final Rectangle r2 = new Rectangle(rtemp.x() - r1.w()/2, rtemp.y() - r1.h()/2, rtemp.w() + r1.w(), rtemp.h() + r1.h());
 
         if (s1.getAttachedGameObject().getVelocity().equals(Vector2.zero())) {
-            return null;
+            return simpleAABB(r1, r2);
         }
 
         final Swept sw = rayAABB(r2, new Vector2(r1.x() + r1.w()/2, r1.y() + r1.h()/2), s1.getAttachedGameObject().getVelocity());
