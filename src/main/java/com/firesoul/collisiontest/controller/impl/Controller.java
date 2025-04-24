@@ -24,29 +24,26 @@ public class Controller implements Runnable {
 
     @Override
     public void run() {
-        final double ns = 1.0E9 / 60.0;
+        final double period = (1.0/60.0)*1000;
         double deltaTime = 0.0;
-        int updates = 0;
-        int frames = 0;
-        long lastTime = System.nanoTime();
-        long frameRateStartTime = System.currentTimeMillis();
+        double frames = 0.0;
+        long lastTime = System.currentTimeMillis();
+        long frameRateStartTime = lastTime;
         while (true) {
-            try {
-                Thread.sleep(frames - (long)(frames - 100 / 60));
-            } catch (InterruptedException e) {}
-            final long now = System.nanoTime();
-            deltaTime = deltaTime + ((now - lastTime) / ns);
-            while (deltaTime >= 1.0) {
-                this.update(deltaTime);
-                deltaTime--;
-                updates++;
-            }
+            final long now = System.currentTimeMillis();
+            deltaTime = (now - lastTime)/period;
+            this.update(deltaTime);
             this.render();
+            long waitTime = System.currentTimeMillis() - now;
+            if (waitTime < period) {
+                try {
+                    Thread.sleep((long) (period - waitTime));
+                } catch (Exception e) {}
+            }
             lastTime = now;
             frames++;
             if (System.currentTimeMillis() - frameRateStartTime >= 1000.0) {
-                System.out.println(updates + " ups, " + frames + " fps");
-                updates = 0;
+                System.out.println(frames + " fps");
                 frames = 0;
                 frameRateStartTime = System.currentTimeMillis();
             }

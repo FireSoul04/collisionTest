@@ -130,10 +130,9 @@ public class Player extends GameObjectImpl {
         }
         velocity = velocity.multiply(this.speed);
 
-        if ((this.onGround || (this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) && this.input.getEvent("Jump")) {
+        if ((this.onGround || (this.currentJumpHeight > 0 && this.currentJumpHeight <= this.maxJumpHeight)) && this.input.getEvent("Jump")) {
             this.currentJumpHeight++;
             velocity = velocity.add(this.jumpAcceleration);
-            // this.jumpAcceleration = this.jumpAcceleration.add(new Vector2(0.0, this.gforce));
         } else {
             this.currentJumpHeight = 0;
             this.jumpAcceleration = new Vector2(0.0, -this.jforce);
