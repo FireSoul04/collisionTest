@@ -13,7 +13,7 @@ import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 
 public class Player extends GameObjectImpl {
 
-    private final double speed = 0.5;
+    private final double speed = 0.05;
     private final double rotSpeed = 0.015;
 
     private final GameObject sword;
@@ -25,19 +25,17 @@ public class Player extends GameObjectImpl {
     private final Animation swordSwingStart;
     private boolean swinging = false;
 
-    // Gravity logic
-    private final double gforce = 0.25;
-    private Vector2 gravityAcceleration = new Vector2(0.0, this.gforce);
-
-    // Jump logic
-    private final double jforce = 0.06;
-    private Vector2 jumpAcceleration = new Vector2(0.0, -this.jforce);
-    public boolean onGround = false;
-    private int currentJumpHeight = 0;
-    private int maxJumpHeight = 20;
-    
     // Movement logic
     private double friction = 1.0;
+    private int currentVelocity = 1;
+    private int maxVelocity = 10;
+    // Gravity logic
+    private Vector2 gravityAcceleration = new Vector2(0.0, 0.25);
+    // Jump logic
+    private Vector2 jumpAcceleration = new Vector2(0.0, -0.06);
+    private boolean onGround = false;
+    private int currentJumpHeight = 0;
+    private int maxJumpHeight = 20;
 
     public Player(
         final Vector2 position,
@@ -99,10 +97,11 @@ public class Player extends GameObjectImpl {
     }
 
     public void readInput() {
-        Vector2 velocity = this.move();
+        Vector2 velocity = this.inputMove();
         velocity = this.jump(velocity);
         velocity = this.applyFriction(velocity);
         velocity = this.applyGravity(velocity);
+        this.onGround = false;
 
         this.swingSword();
         this.shoot();
@@ -110,19 +109,18 @@ public class Player extends GameObjectImpl {
         this.setVelocity(velocity);
     }
 
-    private Vector2 move() {
+    private Vector2 inputMove() {
         Vector2 velocity = Vector2.zero();
         if (this.input.getEvent("MoveLeft")) {
-            velocity = velocity.add(new Vector2(-1.0, 0.0));
+            velocity = velocity.add(Vector2.left().multiply(this.currentVelocity));
         }
         if (this.input.getEvent("MoveRight")) {
-            velocity = velocity.add(new Vector2(1.0, 0.0));
+            velocity = velocity.add(Vector2.right().multiply(this.currentVelocity));
         }
-        if (this.input.getEvent("MoveUp")) {
-            velocity = velocity.add(new Vector2(0.0, -1.0));
-        }
-        if (this.input.getEvent("MoveDown")) {
-            velocity = velocity.add(new Vector2(0.0, 1.0));
+        if (velocity.x() != 0.0 && this.currentVelocity < this.maxVelocity) {
+            this.currentVelocity++;
+        } else if (velocity.x() == 0.0) {
+            this.currentVelocity = 1;
         }
         velocity = velocity.multiply(this.speed);
         return velocity;
@@ -133,7 +131,6 @@ public class Player extends GameObjectImpl {
         if (this.input.getEvent("Jump") && (this.onGround || this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) {
             this.currentJumpHeight++;
             newVelocity = velocity.add(this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight));
-            this.onGround = false;
         }
         return newVelocity;
     }
