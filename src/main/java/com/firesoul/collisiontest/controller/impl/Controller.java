@@ -82,7 +82,7 @@ public class Controller implements Runnable {
                 }
             }
 
-            for (var x : shapesByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(b.getValue(), a.getValue())).toList()) {
+            for (var x : shapesByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue(), b.getValue())).toList()) {
                 CollisionAlgorithms.resolveSweptAABB(s1, x.getKey(), deltaTime);
             }
         }
