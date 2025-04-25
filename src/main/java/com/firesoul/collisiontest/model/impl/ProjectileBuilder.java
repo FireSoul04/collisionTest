@@ -8,7 +8,7 @@ public class ProjectileBuilder extends GameObjectBuilderImpl {
     private final double speed;
 
     public ProjectileBuilder(final Vector2 position, final double speed) {
-        super(position);
+        super(position, true);
         if (!Double.isFinite(speed)) {
             throw new IllegalStateException("Projectile speed must be a number");
         }

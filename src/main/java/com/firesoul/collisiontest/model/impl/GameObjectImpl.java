@@ -9,6 +9,8 @@ import com.firesoul.collisiontest.model.util.Vector2;
 
 public class GameObjectImpl implements GameObject {
 
+    private final boolean dynamic;
+
     private final Optional<Image> image;
     private final Optional<Collider> collider;
     
@@ -16,9 +18,10 @@ public class GameObjectImpl implements GameObject {
     private Vector2 velocity;
     private double orientation;
 
-    public GameObjectImpl(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Image> image) {
+    public GameObjectImpl(final Vector2 position, final double orientation, final boolean dynamic, final Optional<Collider> collider, final Optional<Image> image) {
         this.position = position;
         this.orientation = orientation;
+        this.dynamic = dynamic;
         this.image = image;
         this.collider = collider;
         this.velocity = Vector2.zero();
@@ -73,6 +76,16 @@ public class GameObjectImpl implements GameObject {
     @Override
     public Optional<Collider> getCollider() {
         return this.collider;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return !this.dynamic;
+    }
+
+    @Override
+    public boolean isDynamic() {
+        return this.dynamic;
     }
 
     @Override

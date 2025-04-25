@@ -61,28 +61,33 @@ public class Controller implements Runnable {
     }
 
     private void checkCollisions(final List<GameObject> gameObjects, final double deltaTime) {
-        final List<Collider> shapes = gameObjects.stream().map(GameObject::getCollider).filter(Optional::isPresent).map(Optional::get).toList();
+        final List<Collider> colliders = gameObjects.stream()
+            .map(GameObject::getCollider)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .toList();
+        final List<Collider> dynamicColliders = colliders.stream()
+            .filter(t -> t.getAttachedGameObject().isDynamic())
+            .toList();
         CollisionAlgorithms.debugRect.clear();
         CollisionAlgorithms.debugPoint.clear();
         CollisionAlgorithms.debugNormal.clear();
-        for (final Collider s1 : shapes) {
+        for (final Collider s1 : dynamicColliders) {
             boolean collided = false;
-            final Map<Collider, Double> shapesByCollisionTime = new HashMap<>();
-            for (final Collider s2 : shapes) {
-                if (!s1.equals(s2)) {
-                    Swept ret = CollisionAlgorithms.sweptAABB(s1, s2, deltaTime);
-                    collided = ret != null;
-                    // collided = Controller.SAT(s1, s2);
-                    if (collided) {
-                        shapesByCollisionTime.put(s2, ret.time());
-                        s1.addCollided(s2);
-                    } else {
-                        s1.removeCollided(s2);
-                    }
+            final Map<Collider, Double> collidersByCollisionTime = new HashMap<>();
+            for (final Collider s2 : colliders.stream().filter(t -> !t.equals(s1)).toList()) {
+                Swept ret = CollisionAlgorithms.sweptAABB(s1, s2, deltaTime);
+                collided = ret != null;
+                // collided = Controller.SAT(s1, s2);
+                if (collided) {
+                    collidersByCollisionTime.put(s2, ret.time());
+                    s1.addCollided(s2);
+                } else {
+                    s1.removeCollided(s2);
                 }
             }
 
-            for (var x : shapesByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue(), b.getValue())).toList()) {
+            for (var x : collidersByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue(), b.getValue())).toList()) {
                 CollisionAlgorithms.resolveSweptAABB(s1, x.getKey(), deltaTime);
             }
         }

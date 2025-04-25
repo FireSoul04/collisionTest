@@ -12,12 +12,12 @@ public class BlockBuilder extends GameObjectBuilderImpl {
     public class Block extends GameObjectImpl {
 
         public Block(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Image> image) {
-            super(position, orientation, collider, image);
+            super(position, orientation, false, collider, image);
         }
     }
     
     public BlockBuilder(final Vector2 position) {
-        super(position);
+        super(position, false);
     }
 
     @Override

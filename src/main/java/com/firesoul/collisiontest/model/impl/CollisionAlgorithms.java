@@ -5,7 +5,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 public final class CollisionAlgorithms {
@@ -119,46 +118,47 @@ public final class CollisionAlgorithms {
         return new Swept(normal, collisionPoint, nearHit);
     }
 
-    public static Swept sweptAABB(final Collider s1, final Collider s2, final double deltaTime) {
-        final Rectangle r1 = fitInRect(s1);
-        final Rectangle r2 = fitInRect(s2);
-        if (s1.getAttachedGameObject().getVelocity().equals(Vector2.zero())) {
+    public static Swept sweptAABB(final Collider c1, final Collider c2, final double deltaTime) {
+        final Rectangle r1 = fitInRect(c1);
+        final Rectangle r2 = fitInRect(c2);
+        if (c1.getAttachedGameObject().getVelocity().equals(Vector2.zero())) {
             return simpleAABB(r1, r2);
         }
 
         final Rectangle extendedRect = new Rectangle(r2.x() - r1.w()/2, r2.y() - r1.h()/2, r2.w() + r1.w(), r2.h() + r1.h());
         final Vector2 ray = new Vector2(r1.x() + r1.w()/2, r1.y() + r1.h()/2);
-        final Swept sw = rayAABB(extendedRect, ray, s1.getAttachedGameObject().getVelocity().multiply(deltaTime));
+        final Swept sw = rayAABB(extendedRect, ray, c1.getAttachedGameObject().getVelocity().multiply(deltaTime));
         if (sw != null && sw.time() >= 0.0 && sw.time() < 1.0) {
             return sw;
         }
         return null;
     }
 
-    public static boolean resolveSweptAABB(final Collider s1, final Collider s2, final double deltaTime) {
-        final Swept sw = sweptAABB(s1, s2, deltaTime);
+    public static void resolveSweptAABB(final Collider c1, final Collider c2, final double deltaTime) {
+        final Swept sw = sweptAABB(c1, c2, deltaTime);
         if (sw != null) {
-            GameObject g = s1.getAttachedGameObject();
-            s1.onCollide(s2, sw.normal(), sw.time());
-            g.setVelocity(g.getVelocity()
-                .add(sw.normal()
-                    .multiply(new Vector2(Math.abs(g.getVelocity().x()), Math.abs(g.getVelocity().y()))
-                    .multiply(1.0 - sw.time())))
-            );
+            GameObject g1 = c1.getAttachedGameObject();
+            GameObject g2 = c2.getAttachedGameObject();
+            c1.onCollide(c2, sw.normal(), sw.time());
+            if (g2.isStatic()) {
+                g1.setVelocity(g1.getVelocity()
+                    .add(sw.normal()
+                        .multiply(new Vector2(Math.abs(g1.getVelocity().x()), Math.abs(g1.getVelocity().y()))
+                        .multiply(1.0 - sw.time())))
+                );
+            }
         }
-
-        return false;
     }
 
-    public static boolean SAT(final Collider s1, final Collider s2) {
-        Collider c1 = s1;
-        Collider c2 = s2;
+    public static boolean SAT(final Collider collider1, final Collider collider2) {
+        Collider c1 = collider1;
+        Collider c2 = collider2;
 
         double overlap = Double.POSITIVE_INFINITY;
         for (int shape = 0; shape < 2; shape++) {
             if (shape == 1) {
-                c1 = s2;
-                c2 = s1;
+                c1 = collider2;
+                c2 = collider1;
             }
 
             for (int i = 0; i < c1.getPoints().size(); i++) {
@@ -189,10 +189,10 @@ public final class CollisionAlgorithms {
             }
         }
         
-        if (c1.getAttachedGameObject() instanceof Block) {
-            final Vector2 d = s1.getPosition().subtract(s2.getPosition());
+        if (c2.getAttachedGameObject().isStatic()) {
+            final Vector2 d = c1.getPosition().subtract(c2.getPosition());
             final double s = d.dot(d);
-            s1.move(d.multiply(overlap).divide(s));
+            c1.move(d.multiply(overlap).divide(s));
         }
 
         return true;

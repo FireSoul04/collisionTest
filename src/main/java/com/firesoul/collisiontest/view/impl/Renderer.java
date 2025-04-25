@@ -86,18 +86,18 @@ public class Renderer extends JPanel {
             }
 
             // DEBUG
-            g2.setColor(Color.MAGENTA);
-            for (var x : CollisionAlgorithms.debugRect) {
-                g2.drawRect((int) x.x(), (int) x.y(), (int) x.w(), (int) x.h());
-            }
-            g2.setColor(Color.CYAN);
-            for (var x : CollisionAlgorithms.debugPoint) {
-                g2.fillOval((int) x.x()-5, (int) x.y()-5, 10, 10);
-            }
-            g2.setColor(Color.ORANGE);
-            for (var x : CollisionAlgorithms.debugNormal) {
-                g2.drawRect((int) x.x(), (int) x.y(), (int) x.w()*100, (int) x.h()*100);
-            }
+            // g2.setColor(Color.MAGENTA);
+            // for (var x : CollisionAlgorithms.debugRect) {
+            //     g2.drawRect((int) x.x(), (int) x.y(), (int) x.w(), (int) x.h());
+            // }
+            // g2.setColor(Color.CYAN);
+            // for (var x : CollisionAlgorithms.debugPoint) {
+            //     g2.fillOval((int) x.x()-5, (int) x.y()-5, 10, 10);
+            // }
+            // g2.setColor(Color.ORANGE);
+            // for (var x : CollisionAlgorithms.debugNormal) {
+            //     g2.drawRect((int) x.x(), (int) x.y(), (int) x.w()*100, (int) x.h()*100);
+            // }
             // DEBUG
         }
         g2.dispose();

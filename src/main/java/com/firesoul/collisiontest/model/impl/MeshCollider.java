@@ -16,7 +16,7 @@ public class MeshCollider implements Collider {
     private final Set<Collider> collidedShapes = new HashSet<>();
     private final List<Vector2> points = new CopyOnWriteArrayList<>();
     private Vector2 position = Vector2.zero();
-    private GameObject attachedGameObject = new GameObjectImpl(this.position, 0.0, Optional.empty(), Optional.empty());
+    private GameObject attachedGameObject = new GameObjectImpl(this.position, 0.0, false, Optional.empty(), Optional.empty());
     private double orientation = 0.0;
     private boolean collided = false;
     private boolean solid = true;

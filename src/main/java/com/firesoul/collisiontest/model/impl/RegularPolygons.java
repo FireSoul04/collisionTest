@@ -26,16 +26,16 @@ public class RegularPolygons implements CollisionTest {
         this.w = w;
         this.input = w.getInput();
 
-        GameObjectBuilder playerBuilder = new GameObjectBuilderImpl(new Vector2(w.getWidth(), w.getHeight()).divide(4.0));
+        GameObjectBuilder playerBuilder = new GameObjectBuilderImpl(new Vector2(w.getWidth(), w.getHeight()).divide(4.0), true);
         playerBuilder = playerBuilder.collider(new MeshCollider(Controller.regularPolygon(5), 50.0, 0.0));
         this.player = playerBuilder.build();
         this.gameObjects.add(this.player);
 
-        GameObjectBuilder triBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0));
+        GameObjectBuilder triBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0), false);
         triBuilder = triBuilder.collider(new MeshCollider(Controller.regularPolygon(3), 50.0, 0.0));
         this.gameObjects.add(triBuilder.build());
         
-        GameObjectBuilder circleBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(1.2));
+        GameObjectBuilder circleBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(1.2), false);
         circleBuilder = circleBuilder.collider(new MeshCollider(Controller.regularPolygon(50), 50.0, 0.0));
         this.gameObjects.add(circleBuilder.build());
         

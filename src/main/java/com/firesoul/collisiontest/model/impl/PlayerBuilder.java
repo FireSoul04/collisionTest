@@ -13,7 +13,7 @@ public class PlayerBuilder extends GameObjectBuilderImpl {
     private final GameCollisions world;
 
     public PlayerBuilder(final Vector2 position, final GameObject sword, final InputController input, final GameCollisions world) {
-        super(position);
+        super(position, true);
         Objects.requireNonNull(sword);
         Objects.requireNonNull(input);
         Objects.requireNonNull(world);

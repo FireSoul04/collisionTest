@@ -12,13 +12,15 @@ import com.firesoul.collisiontest.model.util.Vector2;
 public class GameObjectBuilderImpl implements GameObjectBuilder {
 
     private final Vector2 position;
+    private final boolean dynamic;
     private double orientation;
     private Optional<Collider> collider;
     private Optional<Image> image;
 
-    public GameObjectBuilderImpl(final Vector2 position) {
+    public GameObjectBuilderImpl(final Vector2 position, final boolean dynamic) {
         Objects.requireNonNull(position);
         this.position = position;
+        this.dynamic = dynamic;
         this.orientation = 0.0;
         this.image = Optional.empty();
     }
@@ -48,7 +50,7 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
 
     @Override
     public GameObject build() {
-        final GameObject builded = new GameObjectImpl(this.position, this.orientation, this.collider, this.image);
+        final GameObject builded = new GameObjectImpl(this.position, this.orientation, this.dynamic, this.collider, this.image);
         if (this.getCollider().isPresent()) {
             this.collider.get().attachGameObject(builded);
         }

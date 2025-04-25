@@ -11,7 +11,7 @@ public class Projectile extends GameObjectImpl {
     private final double speed;
 
     public Projectile(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Image> image, final double speed) {
-        super(position, orientation, collider, image);
+        super(position, orientation, true, collider, image);
         this.speed = speed;
     }
     

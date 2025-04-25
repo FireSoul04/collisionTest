@@ -75,7 +75,7 @@ public class GameCollisions implements CollisionTest {
         );
 
         final Vector2 playerPosition = new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0);
-        GameObjectBuilder swordBuilder = new GameObjectBuilderImpl(playerPosition);
+        GameObjectBuilder swordBuilder = new GameObjectBuilderImpl(playerPosition, true);
         swordBuilder.collider(new MeshCollider(swordShape, 16.0, 0.0));
         swordBuilder = swordBuilder.image(this.swordImage);
         final GameObject sword = swordBuilder.build();
@@ -84,7 +84,7 @@ public class GameCollisions implements CollisionTest {
         sword.rotate(Math.PI/3);
         this.gameObjects.add(sword);
 
-        GameObjectBuilder enemyBuilder = new GameObjectBuilderImpl(playerPosition.add(Vector2.one().multiply(200)));
+        GameObjectBuilder enemyBuilder = new GameObjectBuilderImpl(playerPosition.add(Vector2.one().multiply(200)), true);
         enemyBuilder = enemyBuilder.collider(new MeshCollider(Controller.regularPolygon(50), 32.0, 0.0));
         enemyBuilder = enemyBuilder.image(this.enemyImage);
         this.gameObjects.add(enemyBuilder.build());

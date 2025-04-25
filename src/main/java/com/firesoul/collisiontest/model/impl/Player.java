@@ -14,7 +14,7 @@ import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 public class Player extends GameObjectImpl {
 
     private final double speed = 0.5;
-    private final double rotSpeed = 0.02;
+    private final double rotSpeed = 0.015;
 
     private final GameObject sword;
     private final GameCollisions world;
@@ -48,7 +48,7 @@ public class Player extends GameObjectImpl {
         final InputController input,
         final GameCollisions world
     ) {
-        super(position, orientation, collider, image);
+        super(position, orientation, true, collider, image);
 
         this.sword = sword;
         this.input = input;

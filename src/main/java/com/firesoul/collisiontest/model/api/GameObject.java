@@ -13,8 +13,6 @@ public interface GameObject {
 
     void move(Vector2 position);
 
-    void setSolid(boolean solid);
-
     Vector2 getPosition();
 
     Vector2 getVelocity();
@@ -26,6 +24,12 @@ public interface GameObject {
     Optional<Image> getImage();
 
     Optional<Collider> getCollider();
+
+    boolean isStatic();
+
+    boolean isDynamic();
+
+    void setSolid(boolean solid);
 
     default void onCollide(Collider collidedShape, Vector2 collisionDirection, double collisionTime) {}
 }
