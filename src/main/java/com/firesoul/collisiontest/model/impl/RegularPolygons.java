@@ -16,7 +16,7 @@ public class RegularPolygons implements CollisionTest {
 
     private final Renderer w;
     private final InputController input;
-    private final double speed = 3.0;
+    private final double speed = 1.0;
     private final double rotSpeed = 0.1;
 
     private final List<GameObject> gameObjects = new ArrayList<>();
@@ -26,7 +26,7 @@ public class RegularPolygons implements CollisionTest {
         this.w = w;
         this.input = w.getInput();
 
-        GameObjectBuilder playerBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(4.0));
+        GameObjectBuilder playerBuilder = new GameObjectBuilderImpl(new Vector2(w.getWidth(), w.getHeight()).divide(4.0));
         playerBuilder = playerBuilder.collider(new MeshCollider(Controller.regularPolygon(5), 50.0, 0.0));
         this.player = playerBuilder.build();
         this.gameObjects.add(this.player);
@@ -56,29 +56,23 @@ public class RegularPolygons implements CollisionTest {
 
     @Override
     public void update(final double deltaTime) {
-        final Vector2 v = this.readInput().normalize().multiply(deltaTime);
-        this.player.setVelocity(v);
-        this.player.move(v.multiply(this.speed));
+        this.player.move(this.player.getVelocity().multiply(deltaTime));
     }
 
     @Override
-    public List<GameObject> getGameObjects() {
-        return this.gameObjects;
-    }
-
-    private Vector2 readInput() {
-        Vector2 velocity = Vector2.zero();
+    public void readInput() {
+        Vector2 velocity = this.player.getVelocity();
         if (this.input.getEvent("MoveUp")) {
-            velocity = velocity.add(new Vector2(0.0, -1.0));
+            velocity = velocity.add(Vector2.up());
         }
         if (this.input.getEvent("MoveDown")) {
-            velocity = velocity.add(new Vector2(0.0, 1.0));
+            velocity = velocity.add(Vector2.down());
         }
         if (this.input.getEvent("MoveLeft")) {
-            velocity = velocity.add(new Vector2(-1.0, 0.0));
+            velocity = velocity.add(Vector2.left());
         }
         if (this.input.getEvent("MoveRight")) {
-            velocity = velocity.add(new Vector2(1.0, 0.0));
+            velocity = velocity.add(Vector2.right());
         }
         if (this.input.getEvent("RotateLeft")) {
             this.player.rotate(this.rotSpeed);
@@ -86,6 +80,11 @@ public class RegularPolygons implements CollisionTest {
         if (this.input.getEvent("RotateRight")) {
             this.player.rotate(-this.rotSpeed);
         }
-        return velocity;
+        this.player.setVelocity(velocity.normalize().multiply(this.speed));
+    }
+
+    @Override
+    public List<GameObject> getGameObjects() {
+        return this.gameObjects;
     }
 }

@@ -12,10 +12,38 @@ public record Vector2(double x, double y) {
     }
     
     /**
-     * @return a vector with all zeros as coordinates
+     * @return a vector with all ones as coordinates
      */
     public static Vector2 one() {
         return new Vector2(1.0, 1.0);
+    }
+    
+    /**
+     * @return a vector directed up
+     */
+    public static Vector2 up() {
+        return new Vector2(0.0, -1.0);
+    }
+    
+    /**
+     * @return a vector directed down
+     */
+    public static Vector2 down() {
+        return new Vector2(0.0, 1.0);
+    }
+    
+    /**
+     * @return a vector directed left
+     */
+    public static Vector2 left() {
+        return new Vector2(-1.0, 0.0);
+    }
+    
+    /**
+     * @return a vector directed right
+     */
+    public static Vector2 right() {
+        return new Vector2(1.0, 0.0);
     }
 
     /**

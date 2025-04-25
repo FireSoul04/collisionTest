@@ -11,11 +11,9 @@ import javax.imageio.ImageIO;
 
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
-import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
-import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.impl.Renderer;
 
@@ -83,12 +81,12 @@ public class GameCollisions implements CollisionTest {
         sword.move(new Vector2(35.0, 0.0));
         sword.setSolid(false);
         sword.rotate(Math.PI/3);
-        this.gameObjects.add(sword);
+        // this.gameObjects.add(sword);
 
         GameObjectBuilder enemyBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(1.2));
         enemyBuilder = enemyBuilder.collider(new MeshCollider(Controller.regularPolygon(50), 32.0, 0.0));
         enemyBuilder = enemyBuilder.image(this.enemyImage);
-        this.gameObjects.add(enemyBuilder.build());
+        // this.gameObjects.add(enemyBuilder.build());
 
         GameObjectBuilder playerBuilder = new PlayerBuilder(playerPosition, sword, this.input, this);
         playerBuilder = playerBuilder.collider(new MeshCollider(playerShape, 20.0, 0.0));
@@ -139,5 +137,10 @@ public class GameCollisions implements CollisionTest {
         projectileBuilder = projectileBuilder.collider(new MeshCollider(this.projectileShape, 4.0, 0.0));
         projectileBuilder = projectileBuilder.image(this.projectileImage);
         this.projectiles.add(projectileBuilder.build());
+    }
+
+    @Override
+    public void readInput() {
+        ((Player) this.player).readInput();
     }
 }

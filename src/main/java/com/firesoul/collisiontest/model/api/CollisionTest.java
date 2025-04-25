@@ -8,5 +8,7 @@ public interface CollisionTest {
 
     void update(double deltaTime);
 
+    void readInput();
+
     List<GameObject> getGameObjects();
 }
