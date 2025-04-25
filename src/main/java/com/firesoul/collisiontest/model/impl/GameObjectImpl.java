@@ -17,6 +17,7 @@ public class GameObjectImpl implements GameObject {
     private Vector2 position;
     private Vector2 velocity;
     private double orientation;
+    private boolean active;
 
     public GameObjectImpl(final Vector2 position, final double orientation, final boolean dynamic, final Optional<Collider> collider, final Optional<Image> image) {
         this.position = position;
@@ -25,6 +26,7 @@ public class GameObjectImpl implements GameObject {
         this.image = image;
         this.collider = collider;
         this.velocity = Vector2.zero();
+        this.active = true;
     }
 
     @Override
@@ -94,5 +96,15 @@ public class GameObjectImpl implements GameObject {
             throw new IllegalStateException("Game object doesn't have a collider attached");
         }
         this.collider.get().setSolid(solid);
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
+
+    @Override
+    public void destroy() {
+        this.active = false;
     }
 }

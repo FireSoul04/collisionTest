@@ -20,4 +20,11 @@ public class Projectile extends GameObjectImpl {
         this.setVelocity(Vector2.right().multiply(this.speed));
         this.move(this.getVelocity().multiply(deltaTime));
     }
+
+    @Override
+    public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
+        if (collidedShape.getAttachedGameObject() instanceof Enemy) {
+            this.destroy();
+        }
+    }
 }

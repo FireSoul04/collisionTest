@@ -30,6 +30,10 @@ public interface GameObject {
     boolean isDynamic();
 
     void setSolid(boolean solid);
+    
+    boolean isActive();
+
+    void destroy();
 
     default void onCollide(Collider collidedShape, Vector2 collisionDirection, double collisionTime) {}
 }
