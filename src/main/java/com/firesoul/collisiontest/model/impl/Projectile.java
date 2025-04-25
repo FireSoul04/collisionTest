@@ -17,6 +17,7 @@ public class Projectile extends GameObjectImpl {
     
     @Override
     public void update(final double deltaTime) {
-        this.move(new Vector2(this.speed, 0.0));
+        this.setVelocity(Vector2.right().multiply(this.speed));
+        this.move(this.getVelocity().multiply(deltaTime));
     }
 }

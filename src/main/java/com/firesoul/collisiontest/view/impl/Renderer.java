@@ -2,11 +2,11 @@ package com.firesoul.collisiontest.view.impl;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.firesoul.collisiontest.controller.impl.Controller;
-import com.firesoul.collisiontest.controller.impl.Controller.Rectangle;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
+import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class Renderer extends JPanel {
                 red |= bothSolid && s.isCollided();
             }
             g2.setColor(red ? Color.RED : imageOpt.isPresent() ? Color.BLACK : Color.WHITE);
-            final Rectangle sh = Controller.fitInRect(s);
+            final Rectangle sh = CollisionAlgorithms.fitInRect(s);
             g2.drawRect((int) sh.x(), (int) sh.y(), (int) sh.w(), (int) sh.h());
             // g2.drawPolygon(p);
             
@@ -87,15 +87,15 @@ public class Renderer extends JPanel {
 
             // DEBUG
             g2.setColor(Color.MAGENTA);
-            for (var x : Controller.debugRect) {
+            for (var x : CollisionAlgorithms.debugRect) {
                 g2.drawRect((int) x.x(), (int) x.y(), (int) x.w(), (int) x.h());
             }
             g2.setColor(Color.CYAN);
-            for (var x : Controller.debugPoint) {
+            for (var x : CollisionAlgorithms.debugPoint) {
                 g2.fillOval((int) x.x()-5, (int) x.y()-5, 10, 10);
             }
             g2.setColor(Color.ORANGE);
-            for (var x : Controller.debugNormal) {
+            for (var x : CollisionAlgorithms.debugNormal) {
                 g2.drawRect((int) x.x(), (int) x.y(), (int) x.w()*100, (int) x.h()*100);
             }
             // DEBUG

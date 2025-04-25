@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -81,12 +82,12 @@ public class GameCollisions implements CollisionTest {
         sword.move(new Vector2(35.0, 0.0));
         sword.setSolid(false);
         sword.rotate(Math.PI/3);
-        // this.gameObjects.add(sword);
+        this.gameObjects.add(sword);
 
-        GameObjectBuilder enemyBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(1.2));
+        GameObjectBuilder enemyBuilder = new GameObjectBuilderImpl(playerPosition.add(Vector2.one().multiply(200)));
         enemyBuilder = enemyBuilder.collider(new MeshCollider(Controller.regularPolygon(50), 32.0, 0.0));
         enemyBuilder = enemyBuilder.image(this.enemyImage);
-        // this.gameObjects.add(enemyBuilder.build());
+        this.gameObjects.add(enemyBuilder.build());
 
         GameObjectBuilder playerBuilder = new PlayerBuilder(playerPosition, sword, this.input, this);
         playerBuilder = playerBuilder.collider(new MeshCollider(playerShape, 20.0, 0.0));
@@ -125,6 +126,15 @@ public class GameCollisions implements CollisionTest {
         this.gameObjects.forEach(t -> t.update(deltaTime));
         this.gameObjects.addAll(this.projectiles);
         this.projectiles.clear();
+
+        final Iterator<GameObject> it = this.gameObjects.iterator();
+        while (it.hasNext()) {
+            final GameObject g = it.next();
+            final Vector2 pos = g.getPosition();
+            if (pos.x() < -w.getWidth() || pos.x() > w.getWidth()*2 || pos.y() < -w.getHeight() || pos.y() > w.getHeight()*2) {
+                it.remove();
+            }
+        }
     }
 
     @Override

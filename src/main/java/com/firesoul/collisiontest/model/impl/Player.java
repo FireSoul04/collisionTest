@@ -34,7 +34,7 @@ public class Player extends GameObjectImpl {
     private Vector2 jumpAcceleration = new Vector2(0.0, -this.jforce);
     public boolean onGround = false;
     private int currentJumpHeight = 0;
-    private int maxJumpHeight = 30;
+    private int maxJumpHeight = 20;
     
     // Movement logic
     private double friction = 1.0;
@@ -78,23 +78,15 @@ public class Player extends GameObjectImpl {
 
     @Override
     public void update(final double deltaTime) {
-        Vector2 movementVelocity = this.getVelocity();
-        this.onGround = false;
         this.move(this.getVelocity().multiply(deltaTime));
         this.sword.move(this.getVelocity().multiply(deltaTime));
-
-        // this.setVelocity(this.getVelocity().add(this.gravityAcceleration));
-        // System.out.println(this.onGround);
-        // System.out.println(this.gravityAcceleration);
     }
 
     @Override
     public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        if (collidedShape.getAttachedGameObject() instanceof Block) {
-            if (collisionDirection.equals(new Vector2(0.0, -1.0))) {
-                this.onGround = true;
-                this.currentJumpHeight = 0;
-            }
+        if (collidedShape.getAttachedGameObject() instanceof Block && collisionDirection.equals(new Vector2(0.0, -1.0))) {
+            this.currentJumpHeight = 0;
+            this.onGround = true;
         }
     }
 
@@ -107,6 +99,18 @@ public class Player extends GameObjectImpl {
     }
 
     public void readInput() {
+        Vector2 velocity = this.move();
+        velocity = this.jump(velocity);
+        velocity = this.applyFriction(velocity);
+        velocity = this.applyGravity(velocity);
+
+        this.swingSword();
+        this.shoot();
+
+        this.setVelocity(velocity);
+    }
+
+    private Vector2 move() {
         Vector2 velocity = Vector2.zero();
         if (this.input.getEvent("MoveLeft")) {
             velocity = velocity.add(new Vector2(-1.0, 0.0));
@@ -121,25 +125,20 @@ public class Player extends GameObjectImpl {
             velocity = velocity.add(new Vector2(0.0, 1.0));
         }
         velocity = velocity.multiply(this.speed);
+        return velocity;
+    }
 
-        if (this.input.getEvent("Jump") && (this.onGround || (this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight))) {
+    private Vector2 jump(final Vector2 velocity) {
+        Vector2 newVelocity = velocity;
+        if (this.input.getEvent("Jump") && (this.onGround || this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) {
             this.currentJumpHeight++;
+            newVelocity = velocity.add(this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight));
+            this.onGround = false;
         }
-        if (this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight*3) {
-            this.currentJumpHeight++;
-            velocity = velocity.add(this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight));
-        }
+        return newVelocity;
+    }
 
-        if (this.input.getEvent("SwingSword") && !this.swinging) {
-            this.swingSword();
-            this.swinging = true;
-        } else {
-            this.swinging = false;
-        }
-        if (this.input.getEvent("Shoot")) {
-            this.world.spawnProjectile();
-        }
-
+    private Vector2 applyFriction(final Vector2 velocity) {
         if (this.getVelocity().x() != 0.0 && velocity.norm() == 0.0) {
             if (this.friction > 0.0) {
                 this.friction -= 0.03125;
@@ -147,12 +146,27 @@ public class Player extends GameObjectImpl {
         } else {
             this.friction = 1.0;
         }
-        this.setVelocity(velocity.add(this.getVelocity().multiply(new Vector2(this.friction, 1.0))));
+        return velocity.add(this.getVelocity().multiply(new Vector2(this.friction, 1.0)));
+    }
+
+    private Vector2 applyGravity(final Vector2 velocity) {
+        return velocity.add(this.gravityAcceleration);
     }
 
     private void swingSword() {
-        if (!this.swordSwingReset.isRunning()) {
-            this.swordSwingStart.start();
+        if (this.input.getEvent("SwingSword") && !this.swinging) {
+            if (!this.swordSwingReset.isRunning()) {
+                this.swordSwingStart.start();
+            }
+            this.swinging = true;
+        } else {
+            this.swinging = false;
+        }
+    }
+
+    private void shoot() {
+        if (this.input.getEvent("Shoot")) {
+            this.world.spawnProjectile();
         }
     }
 }
