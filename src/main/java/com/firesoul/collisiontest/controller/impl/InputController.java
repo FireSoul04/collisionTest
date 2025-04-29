@@ -89,4 +89,8 @@ public class InputController {
     public KeyListener getKeyListener() {
         return this.keyListener;
     }
+
+    public void resetEvents() {
+        this.events.keySet().forEach(k -> this.events.put(k, () -> false));
+    }
 }

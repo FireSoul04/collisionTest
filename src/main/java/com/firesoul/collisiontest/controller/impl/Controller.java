@@ -72,23 +72,23 @@ public class Controller implements Runnable {
         CollisionAlgorithms.debugRect.clear();
         CollisionAlgorithms.debugPoint.clear();
         CollisionAlgorithms.debugNormal.clear();
-        for (final Collider s1 : dynamicColliders) {
+        for (final Collider c1 : dynamicColliders) {
             boolean collided = false;
             final Map<Collider, Double> collidersByCollisionTime = new HashMap<>();
-            for (final Collider s2 : colliders.stream().filter(t -> !t.equals(s1)).toList()) {
-                Swept ret = CollisionAlgorithms.sweptAABB(s1, s2, deltaTime);
-                collided = ret != null;
+            for (final Collider c2 : colliders.stream().filter(t -> !t.equals(c1)).toList()) {
+                final Swept sw = CollisionAlgorithms.sweptAABB(c1, c2, deltaTime);
+                collided = sw != null;
                 // collided = Controller.SAT(s1, s2);
                 if (collided) {
-                    collidersByCollisionTime.put(s2, ret.time());
-                    s1.addCollided(s2);
+                    collidersByCollisionTime.put(c2, sw.time());
+                    c1.addCollided(c2);
                 } else {
-                    s1.removeCollided(s2);
+                    c1.removeCollided(c2);
                 }
             }
 
             for (var x : collidersByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue(), b.getValue())).toList()) {
-                CollisionAlgorithms.resolveSweptAABB(s1, x.getKey(), deltaTime);
+                CollisionAlgorithms.resolveSweptAABB(c1, x.getKey(), deltaTime);
             }
         }
     }

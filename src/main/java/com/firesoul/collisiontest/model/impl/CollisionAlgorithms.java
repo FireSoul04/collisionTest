@@ -76,13 +76,6 @@ public final class CollisionAlgorithms {
         double farY = (target.y() + target.h() - ray.y())*inverseDirection.y();
         Vector2 normal = Vector2.zero();
         Vector2 collisionPoint = Vector2.zero();
-        
-        if (Double.isNaN(farY) || Double.isNaN(farX)) {
-            return null;
-        }
-        if (Double.isNaN(nearY) || Double.isNaN(nearX)) {
-            return null;
-        }
 
         if (nearX > farX) {
             final double temp = nearX;
@@ -103,6 +96,10 @@ public final class CollisionAlgorithms {
             return null;
         }
         collisionPoint = ray.add(rayDirection.multiply(nearHit));
+        
+        if (Double.isNaN(collisionPoint.x()) || Double.isNaN(collisionPoint.y())) {
+            return null;
+        }
         if (nearX > nearY) {
             normal = new Vector2(inverseDirection.x() < 0.0 ? 1.0 : -1.0, 0.0);
         } else if (nearX < nearY) {
@@ -121,6 +118,7 @@ public final class CollisionAlgorithms {
     public static Swept sweptAABB(final Collider c1, final Collider c2, final double deltaTime) {
         final Rectangle r1 = fitInRect(c1);
         final Rectangle r2 = fitInRect(c2);
+
         if (c1.getAttachedGameObject().getVelocity().equals(Vector2.zero())) {
             return simpleAABB(r1, r2);
         }
@@ -130,8 +128,9 @@ public final class CollisionAlgorithms {
         final Swept sw = rayAABB(extendedRect, ray, c1.getAttachedGameObject().getVelocity().multiply(deltaTime));
         if (sw != null && sw.time() >= 0.0 && sw.time() < 1.0) {
             return sw;
+        } else {
+            return simpleAABB(r1, r2);
         }
-        return null;
     }
 
     public static void resolveSweptAABB(final Collider c1, final Collider c2, final double deltaTime) {

@@ -1,17 +1,19 @@
 package com.firesoul.collisiontest.model.impl;
 
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.impl.Animation;
 import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 
-public class Player extends GameObjectImpl {
+public class Player extends EntityImpl {
 
     private final double speed = 0.05;
     private final double rotSpeed = 0.015;
@@ -23,8 +25,9 @@ public class Player extends GameObjectImpl {
     private final Animation swordSwingReset;
     private final Animation swordSwingEnd;
     private final Animation swordSwingStart;
-    private boolean swinging = false;
 
+    // Attack logic
+    private boolean swinging = false;
     // Movement logic
     private double friction = 1.0;
     private int currentVelocity = 1;
@@ -46,7 +49,7 @@ public class Player extends GameObjectImpl {
         final InputController input,
         final GameCollisions world
     ) {
-        super(position, orientation, true, collider, image);
+        super(position, orientation, true, collider, image, 700, 12);
 
         this.sword = sword;
         this.input = input;
@@ -72,6 +75,14 @@ public class Player extends GameObjectImpl {
             },
             () -> sword.getOrientation() < Math.PI/12
         );
+        this.input.addEvent("Jump", () -> this.input.isKeyPressed(KeyEvent.VK_SPACE));
+        this.input.addEvent("MoveLeft", () -> this.input.isKeyPressed(KeyEvent.VK_A));
+        this.input.addEvent("MoveRight", () -> this.input.isKeyPressed(KeyEvent.VK_D));
+        this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
+        this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
+
+        this.input.addEvent("SwingSword", () -> this.input.isKeyPressedOnce(KeyEvent.VK_E));
+        this.input.addEvent("Shoot", () -> this.input.isKeyPressedOnce(KeyEvent.VK_Q));
     }
 
     @Override
@@ -82,10 +93,20 @@ public class Player extends GameObjectImpl {
 
     @Override
     public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        if (collidedShape.getAttachedGameObject() instanceof Block && collisionDirection.equals(new Vector2(0.0, -1.0))) {
+        final GameObject g = collidedShape.getAttachedGameObject();
+        if (g instanceof Block && collisionDirection.equals(new Vector2(0.0, -1.0))) {
             this.currentJumpHeight = 0;
             this.onGround = true;
+        } else if (g instanceof Enemy) {
+            this.takeDamage(3);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        System.out.println("Game over");
+        this.sword.destroy();
+        this.input.resetEvents();
     }
 
     public double getSpeed() {

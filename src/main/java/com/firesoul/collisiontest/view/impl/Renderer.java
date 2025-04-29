@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.Entity;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
@@ -74,12 +75,16 @@ public class Renderer extends JPanel {
             // g2.drawPolygon(p);
             
             if (imageOpt.isPresent()) {
-                final Image image = imageOpt.get();
+                Image image = imageOpt.get();
                 final AffineTransform at = new AffineTransform();
                 at.translate(center.x(), center.y());
                 at.rotate(s.getOrientation());
                 at.translate(-image.getWidth(this), -image.getHeight(this));
                 at.scale(2.0, 2.0);
+
+                if (go instanceof Entity en && en.isInvincible()) {
+                    
+                }
                 g2.drawImage(image, at, this);
             } else {
                 g2.drawLine((int) center.x(), (int) center.y(), p.xpoints[0], p.ypoints[0]);

@@ -4,6 +4,8 @@ import java.awt.Image;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.Enemy;
+import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 public class Projectile extends GameObjectImpl {
@@ -23,8 +25,10 @@ public class Projectile extends GameObjectImpl {
 
     @Override
     public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        if (collidedShape.getAttachedGameObject() instanceof Enemy) {
+        final GameObject g = collidedShape.getAttachedGameObject();
+        if (g instanceof Enemy e) {
             this.destroy();
+            e.takeDamage(3);
         }
     }
 }
