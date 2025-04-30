@@ -4,53 +4,47 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.api.GameObjectFactory;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.impl.Renderer;
+import com.firesoul.collisiontest.view.api.Renderer;
 
 public class GameCollisions implements CollisionTest {
 
     private static final int TILE_SIZE = 20;
 
-    private final Renderer w;
+    private final Renderer renderer;
     private final InputController input;
 
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final List<GameObject> projectiles = new ArrayList<>();
 
-    private final GameObjectFactory gf = new GameObjectFactoryImpl();
+    private final GameObjectFactory gf;
     private GameObject player;
 
-    public GameCollisions(final Renderer w) {
-        this.w = w;
-        this.input = w.getInput();
+    public GameCollisions(final Renderer renderer) {
+        this.renderer = renderer;
+        this.input = renderer.getInput();
+        this.gf = new GameObjectFactoryImpl(this.renderer);
         this.addGameObjects();
     }
 
     private void addGameObjects() {
-        final Vector2 playerPosition = new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0);
+        final Vector2 playerPosition = new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(2.0);
         this.player = this.gf.player(playerPosition, this.input, this);
         this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
         this.gameObjects.add(this.player);
 
-        final List<Vector2> blockPoints = Controller.regularPolygon(4);
         for (int x = 1; x < 25; x++) {
-            GameObjectBuilder blockBuilder = new BlockBuilder(new Vector2(x*GameCollisions.TILE_SIZE*2, 600));
-            blockBuilder = blockBuilder.collider(new MeshCollider(blockPoints, 28.0, Math.PI/4));
-            // blockBuilder = blockBuilder.image(this.blockImage);
-            this.gameObjects.add(blockBuilder.build());
+            this.gameObjects.add(this.gf.block(new Vector2(x*GameCollisions.TILE_SIZE*2, 600)));
         }
     }
 
     @Override
     public void render() {
-        this.w.update(this.gameObjects);
-        this.w.repaint();
+        this.renderer.update(this.gameObjects);
     }
 
     @Override
@@ -61,7 +55,7 @@ public class GameCollisions implements CollisionTest {
 
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();
-            if (pos.x() < -w.getWidth() || pos.x() > w.getWidth()*2 || pos.y() < -w.getHeight() || pos.y() > w.getHeight()*2) {
+            if (pos.x() < -renderer.getWidth() || pos.x() > renderer.getWidth()*2 || pos.y() < -renderer.getHeight() || pos.y() > renderer.getHeight()*2) {
                 g.destroy();
             }
         }

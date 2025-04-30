@@ -1,17 +1,17 @@
 package com.firesoul.collisiontest.model.impl;
 
-import java.awt.Image;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
 
 public class GameObjectImpl implements GameObject {
 
     private final boolean dynamic;
 
-    private final Optional<Image> image;
+    private final Optional<Drawable> sprite;
     private final Optional<Collider> collider;
     
     private Vector2 position;
@@ -19,11 +19,11 @@ public class GameObjectImpl implements GameObject {
     private double orientation;
     private boolean active;
 
-    public GameObjectImpl(final Vector2 position, final double orientation, final boolean dynamic, final Optional<Collider> collider, final Optional<Image> image) {
+    public GameObjectImpl(final Vector2 position, final double orientation, final boolean dynamic, final Optional<Collider> collider, final Optional<Drawable> sprite) {
         this.position = position;
         this.orientation = orientation;
         this.dynamic = dynamic;
-        this.image = image;
+        this.sprite = sprite;
         this.collider = collider;
         this.velocity = Vector2.zero();
         this.active = true;
@@ -40,6 +40,9 @@ public class GameObjectImpl implements GameObject {
         if (this.collider.isPresent()) {
             this.collider.get().rotate(angle);
         }
+        if (this.sprite.isPresent()) {
+            this.sprite.get().rotate(angle);
+        }
     }
 
     @Override
@@ -47,6 +50,9 @@ public class GameObjectImpl implements GameObject {
         this.position = this.position.add(position);
         if (this.collider.isPresent()) {
             this.collider.get().move(position);
+        }
+        if (this.sprite.isPresent()) {
+            this.sprite.get().translate(this.position);
         }
     }
 
@@ -71,8 +77,8 @@ public class GameObjectImpl implements GameObject {
     }
 
     @Override
-    public Optional<Image> getImage() {
-        return this.image;
+    public Optional<Drawable> getSprite() {
+        return this.sprite;
     }
 
     @Override

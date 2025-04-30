@@ -7,7 +7,7 @@ import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Swept;
 import com.firesoul.collisiontest.model.impl.GameCollisions;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.impl.Renderer;
+import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class Controller implements Runnable {
 
-    private final Renderer w = new Renderer();
+    private final SwingRenderer w = new SwingRenderer();
 
     private final CollisionTest test = new GameCollisions(w);
     // private final CollisionTest test = new RegularPolygons(w);

@@ -1,12 +1,7 @@
 package com.firesoul.collisiontest.model.impl;
 
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
-import javax.imageio.ImageIO;
 
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
@@ -15,13 +10,22 @@ import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Enemy;
 import com.firesoul.collisiontest.model.api.GameObjectFactory;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.view.api.Renderer;
+import com.firesoul.collisiontest.view.impl.SwingSprite;
 
 public class GameObjectFactoryImpl implements GameObjectFactory {
+
+    private final Renderer renderer;
+
+    public GameObjectFactoryImpl(final Renderer renderer) {
+        this.renderer = renderer;
+    }
     
     private class Sword extends GameObjectImpl {
 
-        public Sword(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Image> image) {
-            super(position, orientation, true, collider, image);
+        public Sword(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Drawable> sprite) {
+            super(position, orientation, true, collider, sprite);
             this.getCollider().get().setSolid(false);
         }
 
@@ -50,22 +54,10 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
         );
         final Collider collider = new MeshCollider(colliderPoints, 20.0, 0);
         final Collider swordCollider = new MeshCollider(swordColliderPoints, 16.0, 0);
-        Image swordImage = null;
-        try {
-            swordImage = ImageIO.read(new File("src/main/resources/sword.png"));
-        } catch (Exception e) {
-            System.out.println("Could not load sword sprite");
-            System.exit(1);
-        }
-        final GameObject sword = new Sword(position.add(new Vector2(35.0, 0.0)), Math.PI/3, Optional.of(swordCollider), Optional.of(swordImage));
-        Image image = null;
-        try {
-            image = ImageIO.read(new File("src/main/resources/player.png"));
-        } catch (Exception e) {
-            System.out.println("Could not load player sprite");
-            System.exit(1);
-        }
-        final GameObject player = new Player(position, 0.0, Optional.of(collider), Optional.of(image), sword, input, world);
+        final Drawable sprite = new SwingSprite("player", position, 0.0, this.renderer);
+        final Drawable swordSprite = new SwingSprite("sword", position.add(new Vector2(35.0, 0.0)), Math.PI/3, this.renderer);
+        final GameObject sword = new Sword(position.add(new Vector2(35.0, 0.0)), Math.PI/3, Optional.of(swordCollider), Optional.of(swordSprite));
+        final GameObject player = new Player(position, 0.0, Optional.of(collider), Optional.of(sprite), sword, input, world);
         collider.attachGameObject(player);
         swordCollider.attachGameObject(sword);
         return player;
@@ -73,13 +65,6 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
 
     @Override
     public GameObject projectile(final Vector2 position, final double speed) {
-        Image image = null;
-        try {
-            image = ImageIO.read(new File("src/main/resources/projectile.png"));
-        } catch (IOException e) {
-            System.out.println("Could not load projectile sprite");
-            System.exit(1);
-        }
         final List<Vector2> colliderPoints = List.of(
             new Vector2(-2.0, 1.0),
             new Vector2(2.0, 1.0),
@@ -87,7 +72,8 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             new Vector2(-2.0, -1.0)
         );
         final Collider collider = new MeshCollider(colliderPoints, 4.0, 0.0);
-        final GameObject projectile = new Projectile(position, speed, Optional.of(collider), Optional.of(image), speed);
+        final Drawable sprite = new SwingSprite("projectile", position, 0.0, this.renderer);
+        final GameObject projectile = new Projectile(position, speed, Optional.of(collider), Optional.of(sprite), speed);
         collider.attachGameObject(projectile);
         return projectile;
     }
@@ -95,15 +81,18 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     @Override
     public GameObject ballEnemy(final Vector2 position) {
         final Collider collider = new MeshCollider(Controller.regularPolygon(50), 20.0, 0);
-        Image image = null;
-        try {
-            image = ImageIO.read(new File("src/main/resources/enemy.png"));
-        } catch (IOException e) {
-            System.out.println("Could not load enemy sprite");
-            System.exit(1);
-        }
-        final Enemy enemy = new EnemyImpl(position, 0.0, true, Optional.of(collider), Optional.of(image), 250, 10, () -> {});
+        final Drawable sprite = new SwingSprite("enemy", position, 0.0, this.renderer);
+        final Enemy enemy = new EnemyImpl(position, 0.0, true, Optional.of(collider), Optional.of(sprite), 250, 10, () -> {});
         collider.attachGameObject(enemy);
         return enemy;
+    }
+
+    @Override
+    public GameObject block(final Vector2 position) {
+        final Collider collider = new MeshCollider(Controller.regularPolygon(4), 28.0, Math.PI/4);
+        // final Drawable sprite = null;
+        final GameObject block = new GameObjectImpl(position, 0.0, false, Optional.of(collider), Optional.empty());
+        collider.attachGameObject(block);
+        return block;
     }
 }

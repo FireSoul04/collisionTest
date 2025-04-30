@@ -1,9 +1,9 @@
 package com.firesoul.collisiontest.model.api;
 
-import java.awt.Image;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
 
 public interface GameObject {
 
@@ -21,7 +21,7 @@ public interface GameObject {
 
     double getOrientation();
 
-    Optional<Image> getImage();
+    Optional<Drawable> getSprite();
 
     Optional<Collider> getCollider();
 

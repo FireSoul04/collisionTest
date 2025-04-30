@@ -1,6 +1,5 @@
 package com.firesoul.collisiontest.model.impl;
 
-import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.util.Optional;
 
@@ -8,8 +7,8 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.impl.BlockBuilder.Block;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.impl.Animation;
 import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 
@@ -44,12 +43,12 @@ public class Player extends EntityImpl {
         final Vector2 position,
         final double orientation,
         final Optional<Collider> collider,
-        final Optional<Image> image,
+        final Optional<Drawable> sprite,
         final GameObject sword,
         final InputController input,
         final GameCollisions world
     ) {
-        super(position, orientation, true, collider, image, 700, 12);
+        super(position, orientation, true, collider, sprite, 700, 12);
 
         this.sword = sword;
         this.input = input;
@@ -94,7 +93,7 @@ public class Player extends EntityImpl {
     @Override
     public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
         final GameObject g = collidedShape.getAttachedGameObject();
-        if (g instanceof Block && collisionDirection.equals(new Vector2(0.0, -1.0))) {
+        if (g.isStatic() && collisionDirection.equals(new Vector2(0.0, -1.0))) {
             this.currentJumpHeight = 0;
             this.onGround = true;
         } else if (g instanceof Enemy) {

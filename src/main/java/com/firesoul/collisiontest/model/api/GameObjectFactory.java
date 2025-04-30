@@ -11,4 +11,6 @@ public interface GameObjectFactory {
     GameObject projectile(Vector2 position, double speed);
 
     GameObject ballEnemy(Vector2 position);
+
+    GameObject block(Vector2 position);
 }

@@ -1,14 +1,16 @@
 package com.firesoul.collisiontest.view.impl;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
-import com.firesoul.collisiontest.model.api.Entity;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.List;
 import java.util.Map;
@@ -18,25 +20,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Polygon;
-import java.awt.geom.AffineTransform;
 
-public class Renderer extends JPanel {
+public class SwingRenderer extends JPanel implements Renderer {
 
     private final JFrame window = new JFrame("Collision test");
     private final InputController input = new InputController();
     private final Map<GameObject, Polygon> polygons = new ConcurrentHashMap<>();
 
-    public Renderer() {
+    public SwingRenderer() {
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.window.setSize(1280, 720);
-        this.window.addKeyListener(input.getKeyListener());
+        this.window.addKeyListener(this.input.getKeyListener());
         this.window.add(this);
 
         this.window.setVisible(true);
     }
 
+    @Override
+    public void add(Drawable drawable) {
+        if (drawable instanceof SwingSprite swingSprite) {
+            super.add(swingSprite);
+        }
+    }
+
+    @Override
     public void update(final List<GameObject> gameObjects) {
         this.polygons.clear();
 
@@ -47,9 +55,16 @@ public class Renderer extends JPanel {
             }
             this.polygons.put(g, poly);
         }
+        this.repaint();
     }
 
-    public void paintComponent(final Graphics g) {
+    @Override
+    public InputController getInput() {
+        return this.input;
+    }
+
+    @Override
+    protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
         final Graphics2D g2 = (Graphics2D) g;
@@ -61,7 +76,7 @@ public class Renderer extends JPanel {
             final GameObject go = e.getKey();
             final Collider s = go.getCollider().get();
             final Vector2 center = s.getPosition();
-            final Optional<Image> imageOpt = go.getImage();
+            final Optional<Drawable> spriteOpt = go.getSprite();
             final Set<Collider> collidedShapes = s.getCollidedShapes();
 
             boolean red = false;
@@ -69,24 +84,14 @@ public class Renderer extends JPanel {
                 final boolean bothSolid = s.isSolid() && sh.isSolid();
                 red |= bothSolid && s.isCollided();
             }
-            g2.setColor(red ? Color.RED : imageOpt.isPresent() ? Color.BLACK : Color.WHITE);
+            g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
             final Rectangle sh = CollisionAlgorithms.fitInRect(s);
             g2.drawRect((int) sh.x(), (int) sh.y(), (int) sh.w(), (int) sh.h());
-            // g2.drawPolygon(p);
             
-            if (imageOpt.isPresent()) {
-                Image image = imageOpt.get();
-                final AffineTransform at = new AffineTransform();
-                at.translate(center.x(), center.y());
-                at.rotate(s.getOrientation());
-                at.translate(-image.getWidth(this), -image.getHeight(this));
-                at.scale(2.0, 2.0);
-
-                if (go instanceof Entity en && en.isInvincible()) {
-                    
-                }
-                g2.drawImage(image, at, this);
+            if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
+                swingSprite.drawSprite(g);
             } else {
+                g2.drawPolygon(p);
                 g2.drawLine((int) center.x(), (int) center.y(), p.xpoints[0], p.ypoints[0]);
             }
 
@@ -106,9 +111,5 @@ public class Renderer extends JPanel {
             // DEBUG
         }
         g2.dispose();
-    }
-
-    public InputController getInput() {
-        return this.input;
     }
 }

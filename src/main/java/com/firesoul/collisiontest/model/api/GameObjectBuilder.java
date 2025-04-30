@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.model.api;
 
-import java.awt.Image;
+import com.firesoul.collisiontest.view.api.Drawable;
 
 public interface GameObjectBuilder {
 
@@ -8,7 +8,7 @@ public interface GameObjectBuilder {
 
     GameObjectBuilder collider(Collider collider);
 
-    GameObjectBuilder image(Image image);
+    GameObjectBuilder sprite(Drawable sprite);
 
     GameObject build();
 }

@@ -10,11 +10,11 @@ import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.impl.Renderer;
+import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 public class RegularPolygons implements CollisionTest {
 
-    private final Renderer w;
+    private final SwingRenderer w;
     private final InputController input;
     private final double speed = 1.0;
     private final double rotSpeed = 0.1;
@@ -22,7 +22,7 @@ public class RegularPolygons implements CollisionTest {
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final GameObject player;
 
-    public RegularPolygons(final Renderer w) {
+    public RegularPolygons(final SwingRenderer w) {
         this.w = w;
         this.input = w.getInput();
 

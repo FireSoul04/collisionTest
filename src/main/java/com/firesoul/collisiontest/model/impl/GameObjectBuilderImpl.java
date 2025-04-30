@@ -1,6 +1,5 @@
 package com.firesoul.collisiontest.model.impl;
 
-import java.awt.Image;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -8,6 +7,7 @@ import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
 
 public class GameObjectBuilderImpl implements GameObjectBuilder {
 
@@ -15,14 +15,14 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
     private final boolean dynamic;
     private double orientation;
     private Optional<Collider> collider;
-    private Optional<Image> image;
+    private Optional<Drawable> sprite;
 
     public GameObjectBuilderImpl(final Vector2 position, final boolean dynamic) {
         Objects.requireNonNull(position);
         this.position = position;
         this.dynamic = dynamic;
         this.orientation = 0.0;
-        this.image = Optional.empty();
+        this.sprite = Optional.empty();
     }
 
     @Override
@@ -42,15 +42,15 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
     }
 
     @Override
-    public GameObjectBuilder image(final Image image) {
-        Objects.requireNonNull(image);
-        this.image = Optional.of(image);
+    public GameObjectBuilder sprite(final Drawable sprite) {
+        Objects.requireNonNull(sprite);
+        this.sprite = Optional.of(sprite);
         return this;
     }
 
     @Override
     public GameObject build() {
-        final GameObject builded = new GameObjectImpl(this.position, this.orientation, this.dynamic, this.collider, this.image);
+        final GameObject builded = new GameObjectImpl(this.position, this.orientation, this.dynamic, this.collider, this.sprite);
         if (this.getCollider().isPresent()) {
             this.collider.get().attachGameObject(builded);
         }
@@ -61,15 +61,15 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
         return this.position;
     }
 
-    protected Optional<Collider> getCollider() {
-        return this.collider;
-    }
-
     protected double getOrientation() {
         return this.orientation;
     }
 
-    protected Optional<Image> getImage() {
-        return this.image;
+    protected Optional<Collider> getCollider() {
+        return this.collider;
+    }
+
+    protected Optional<Drawable> getSprite() {
+        return this.sprite;
     }
 }
