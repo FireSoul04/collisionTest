@@ -108,6 +108,10 @@ public class Player extends EntityImpl {
         this.input.resetEvents();
     }
 
+    public GameObject getSword() {
+        return this.sword;
+    }
+
     public double getSpeed() {
         return this.speed;
     }

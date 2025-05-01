@@ -8,25 +8,22 @@ import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
-import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 
 public class SwingRenderer extends JPanel implements Renderer {
 
     private final JFrame window = new JFrame("Collision test");
     private final InputController input = new InputController();
-    private final Map<GameObject, Polygon> polygons = new ConcurrentHashMap<>();
+    private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
     public SwingRenderer() {
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,14 +43,10 @@ public class SwingRenderer extends JPanel implements Renderer {
 
     @Override
     public void update(final List<GameObject> gameObjects) {
-        this.polygons.clear();
+        this.gameObjects.clear();
 
         for (final GameObject g : gameObjects) {
-            final Polygon poly = new Polygon();
-            for (final Vector2 p : g.getCollider().get().getPoints()) {
-                poly.addPoint((int) p.x(), (int) p.y());
-            }
-            this.polygons.put(g, poly);
+            this.gameObjects.add(g);
         }
         this.repaint();
     }
@@ -71,11 +64,8 @@ public class SwingRenderer extends JPanel implements Renderer {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        for (final Map.Entry<GameObject, Polygon> e : this.polygons.entrySet()) {
-            final Polygon p = e.getValue();
-            final GameObject go = e.getKey();
+        for (final GameObject go : this.gameObjects) {
             final Collider s = go.getCollider().get();
-            final Vector2 center = s.getPosition();
             final Optional<Drawable> spriteOpt = go.getSprite();
             final Set<Collider> collidedShapes = s.getCollidedShapes();
 
@@ -90,9 +80,6 @@ public class SwingRenderer extends JPanel implements Renderer {
             
             if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
                 swingSprite.drawSprite(g);
-            } else {
-                g2.drawPolygon(p);
-                g2.drawLine((int) center.x(), (int) center.y(), p.xpoints[0], p.ypoints[0]);
             }
 
             // DEBUG

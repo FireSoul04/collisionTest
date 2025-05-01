@@ -80,7 +80,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
 
     @Override
     public GameObject ballEnemy(final Vector2 position) {
-        final Collider collider = new MeshCollider(Controller.regularPolygon(50), 20.0, 0);
+        final Collider collider = new MeshCollider(Controller.regularPolygon(50), 35.0, 0);
         final Drawable sprite = new SwingSprite("enemy", position, 0.0, this.renderer);
         final Enemy enemy = new EnemyImpl(position, 0.0, true, Optional.of(collider), Optional.of(sprite), 250, 10, () -> {});
         collider.attachGameObject(enemy);
