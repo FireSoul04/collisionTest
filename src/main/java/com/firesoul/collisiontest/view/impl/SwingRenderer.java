@@ -35,7 +35,7 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
-    public void add(Drawable drawable) {
+    public void add(final Drawable drawable) {
         if (drawable instanceof SwingSprite swingSprite) {
             super.add(swingSprite);
         }
