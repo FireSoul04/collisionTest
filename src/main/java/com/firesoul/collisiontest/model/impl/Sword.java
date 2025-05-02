@@ -43,6 +43,11 @@ public class Sword extends GameObjectImpl implements Weapon {
         final GameObject g = collidedShape.getAttachedGameObject();
         if (g instanceof Enemy e && this.getCollider().isPresent() && this.getCollider().get().isSolid()) {
             e.takeDamage(3);
+
+            final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().get());
+            final var r2 = CollisionAlgorithms.fitInRect(collidedShape);
+            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (g.getPosition().x() + r2.w()/2.0));
+            this.holder.setVelocity(new Vector2(distX*5, this.getVelocity().y()));
         }
     }
 

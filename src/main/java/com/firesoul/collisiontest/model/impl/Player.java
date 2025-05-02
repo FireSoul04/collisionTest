@@ -88,7 +88,6 @@ public class Player extends EntityImpl {
             final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().get());
             final var r2 = CollisionAlgorithms.fitInRect(collidedShape);
             final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (g.getPosition().x() + r2.w()/2.0));
-            System.out.println(distX);
             this.setVelocity(new Vector2(distX*10, this.getVelocity().y()));
         }
     }
