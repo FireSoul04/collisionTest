@@ -1,79 +1,58 @@
 package com.firesoul.collisiontest.model.impl;
 
 import java.awt.event.KeyEvent;
+import java.util.Map;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.api.Weapon;
+import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
-import com.firesoul.collisiontest.view.impl.Animation;
-import com.firesoul.collisiontest.view.impl.SwordSwingAnimation;
 
 public class Player extends EntityImpl {
 
     private final double speed = 0.05;
     private final double rotSpeed = 0.015;
 
-    private final GameObject sword;
+    private Weapon weapon;
     private final GameCollisions world;
     private final InputController input;
 
-    private final Animation swordSwingReset;
-    private final Animation swordSwingEnd;
-    private final Animation swordSwingStart;
+    private final Map<String, Drawable> sprites;
 
     // Attack logic
-    private boolean swinging = false;
+    private final GameTimer swingCoolDown = new GameTimer(() -> {}, 0, 300);
+    private final GameTimer shootCooldown = new GameTimer(() -> {}, 0, 500);
     // Movement logic
     private double friction = 1.0;
     private int currentVelocity = 1;
-    private int maxVelocity = 10;
+    private final int maxVelocity = 10;
     // Gravity logic
-    private Vector2 gravityAcceleration = new Vector2(0.0, 0.25);
+    private final Vector2 gravityAcceleration = new Vector2(0.0, 0.25);
     // Jump logic
-    private Vector2 jumpAcceleration = new Vector2(0.0, -0.06);
+    private final Vector2 jumpAcceleration = new Vector2(0.0, -0.06);
     private boolean onGround = false;
+    private final int maxJumpHeight = 20;
     private int currentJumpHeight = 0;
-    private int maxJumpHeight = 20;
 
     public Player(
         final Vector2 position,
         final double orientation,
         final Optional<Collider> collider,
-        final Optional<Drawable> sprite,
-        final GameObject sword,
+        final Map<String, Drawable> sprites,
         final InputController input,
         final GameCollisions world
     ) {
-        super(position, orientation, true, collider, sprite, 700, 12);
+        super(position, orientation, true, collider, Optional.of(sprites.get("idle")), 250, 12);
 
-        this.sword = sword;
+        this.sprites = sprites;
         this.input = input;
         this.world = world;
-        this.swordSwingReset = new SwordSwingAnimation(
-            2,
-            () -> sword.rotate(-((Player) this).getRotationSpeed()*10),
-            () -> sword.setSolid(false),
-            () -> sword.getOrientation() < Math.PI/3
-        );
-        this.swordSwingEnd = new SwordSwingAnimation(
-            10,
-            () -> sword.rotate(((Player) this).getRotationSpeed()*10),
-            () -> swordSwingReset.start(),
-            () -> sword.getOrientation() > Math.PI*3/4
-        );
-        this.swordSwingStart = new SwordSwingAnimation(
-            5,
-            () -> sword.rotate(-((Player) this).getRotationSpeed()*2),
-            () -> {
-                swordSwingEnd.start();
-                sword.setSolid(true); 
-            },
-            () -> sword.getOrientation() < Math.PI/12
-        );
+
         this.input.addEvent("Jump", () -> this.input.isKeyPressed(KeyEvent.VK_SPACE));
         this.input.addEvent("MoveLeft", () -> this.input.isKeyPressed(KeyEvent.VK_A));
         this.input.addEvent("MoveRight", () -> this.input.isKeyPressed(KeyEvent.VK_D));
@@ -87,29 +66,46 @@ public class Player extends EntityImpl {
     @Override
     public void update(final double deltaTime) {
         this.move(this.getVelocity().multiply(deltaTime));
-        this.sword.move(this.getVelocity().multiply(deltaTime));
+
+        this.sprites.forEach((k, v) -> v.translate(this.getPosition()));
+
+        if (this.isInvincible()) {
+            this.setSprite(this.sprites.get("damage"));
+        } else {
+            this.setSprite(this.sprites.get("idle"));
+        }
     }
 
     @Override
     public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
         final GameObject g = collidedShape.getAttachedGameObject();
-        if (g.isStatic() && collisionDirection.equals(new Vector2(0.0, -1.0))) {
+        if (g.isStatic() && collisionDirection.equals(Vector2.up())) {
             this.currentJumpHeight = 0;
             this.onGround = true;
         } else if (g instanceof Enemy) {
             this.takeDamage(3);
+
+            final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().get());
+            final var r2 = CollisionAlgorithms.fitInRect(collidedShape);
+            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (g.getPosition().x() + r2.w()/2.0));
+            System.out.println(distX);
+            this.setVelocity(new Vector2(distX*10, this.getVelocity().y()));
         }
     }
 
     @Override
     public void onDestroy() {
         System.out.println("Game over");
-        this.sword.destroy();
+        this.weapon.destroy();
         this.input.resetEvents();
     }
 
-    public GameObject getSword() {
-        return this.sword;
+    public void equip(final Weapon weapon) {
+        this.weapon = weapon;
+    }
+
+    public Weapon getWeapon() {
+        return this.weapon;
     }
 
     public double getSpeed() {
@@ -123,6 +119,11 @@ public class Player extends EntityImpl {
     public void readInput() {
         Vector2 velocity = this.inputMove();
         velocity = this.jump(velocity);
+
+        if (this.isInvincible()) {
+            velocity = Vector2.zero();
+        }
+
         velocity = this.applyFriction(velocity);
         velocity = this.applyGravity(velocity);
         this.onGround = false;
@@ -175,18 +176,15 @@ public class Player extends EntityImpl {
     }
 
     private void swingSword() {
-        if (this.input.getEvent("SwingSword") && !this.swinging) {
-            if (!this.swordSwingReset.isRunning()) {
-                this.swordSwingStart.start();
-            }
-            this.swinging = true;
-        } else {
-            this.swinging = false;
+        if (this.input.getEvent("SwingSword") && !this.swingCoolDown.isRunning()) {
+            this.swingCoolDown.start();
+            this.weapon.attack();
         }
     }
 
     private void shoot() {
-        if (this.input.getEvent("Shoot")) {
+        if (this.input.getEvent("Shoot") && !this.shootCooldown.isRunning()) {
+            this.shootCooldown.start();
             this.world.spawnProjectile();
         }
     }

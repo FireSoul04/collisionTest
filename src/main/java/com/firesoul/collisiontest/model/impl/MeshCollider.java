@@ -64,6 +64,11 @@ public class MeshCollider implements Collider {
     }
 
     @Override
+    public void setPosition(final Vector2 position) {
+        this.position = position;
+    }
+
+    @Override
     public double getOrientation() {
         return this.orientation;
     }

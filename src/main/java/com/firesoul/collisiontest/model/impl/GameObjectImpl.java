@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.model.api.Collider;
@@ -11,8 +12,8 @@ public class GameObjectImpl implements GameObject {
 
     private final boolean dynamic;
 
-    private final Optional<Drawable> sprite;
     private final Optional<Collider> collider;
+    private Optional<Drawable> sprite;
     
     private Vector2 position;
     private Vector2 velocity;
@@ -37,28 +38,27 @@ public class GameObjectImpl implements GameObject {
     @Override
     public void rotate(final double angle) {
         this.orientation = this.orientation + angle;
-        if (this.collider.isPresent()) {
-            this.collider.get().rotate(angle);
-        }
-        if (this.sprite.isPresent()) {
-            this.sprite.get().rotate(angle);
-        }
+        this.collider.ifPresent(value -> value.rotate(angle));
+        this.sprite.ifPresent(drawable -> drawable.rotate(angle));
     }
 
     @Override
     public void move(final Vector2 position) {
         this.position = this.position.add(position);
-        if (this.collider.isPresent()) {
-            this.collider.get().move(position);
-        }
-        if (this.sprite.isPresent()) {
-            this.sprite.get().translate(this.position);
-        }
+        this.collider.ifPresent(value -> value.move(position));
+        this.sprite.ifPresent(drawable -> drawable.translate(this.position));
     }
 
     @Override
     public Vector2 getPosition() {
         return this.position;
+    }
+
+    @Override
+    public void setPosition(final Vector2 position) {
+        this.position = position;
+        this.collider.ifPresent(value -> value.setPosition(position));
+        this.sprite.ifPresent(drawable -> drawable.translate(this.position));
     }
 
     @Override
@@ -79,6 +79,11 @@ public class GameObjectImpl implements GameObject {
     @Override
     public Optional<Drawable> getSprite() {
         return this.sprite;
+    }
+
+    protected void setSprite(final Drawable sprite) {
+        Objects.requireNonNull(sprite);
+        this.sprite = Optional.of(sprite);
     }
 
     @Override

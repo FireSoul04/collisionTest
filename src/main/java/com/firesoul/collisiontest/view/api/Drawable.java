@@ -11,4 +11,8 @@ public interface Drawable {
     void rotate(double angle);
 
     void draw();
+
+    boolean isVisible();
+
+    void setVisible(boolean visible);
 }

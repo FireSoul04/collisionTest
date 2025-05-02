@@ -23,6 +23,8 @@ public interface Collider {
 
     Vector2 getPosition();
 
+    void setPosition(Vector2 position);
+
     boolean isCollided();
 
     void addCollided(Collider collidedShape);

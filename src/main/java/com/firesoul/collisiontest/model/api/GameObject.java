@@ -15,6 +15,8 @@ public interface GameObject {
 
     Vector2 getPosition();
 
+    void setPosition(Vector2 position);
+
     Vector2 getVelocity();
 
     void setVelocity(Vector2 velocity);

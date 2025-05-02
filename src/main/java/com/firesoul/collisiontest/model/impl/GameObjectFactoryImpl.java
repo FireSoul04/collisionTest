@@ -1,14 +1,12 @@
 package com.firesoul.collisiontest.model.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
-import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.api.Collider;
-import com.firesoul.collisiontest.model.api.Enemy;
-import com.firesoul.collisiontest.model.api.GameObjectFactory;
+import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -21,43 +19,28 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     public GameObjectFactoryImpl(final Renderer renderer) {
         this.renderer = renderer;
     }
-    
-    private class Sword extends GameObjectImpl {
-
-        public Sword(final Vector2 position, final double orientation, final Optional<Collider> collider, final Optional<Drawable> sprite) {
-            super(position, orientation, true, collider, sprite);
-            this.getCollider().get().setSolid(false);
-        }
-
-        @Override
-        public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-            final GameObject g = collidedShape.getAttachedGameObject();
-            if (g instanceof Enemy e && this.getCollider().get().isSolid()) {
-                e.takeDamage(3);
-            }
-        }
-    }
 
     @Override
-    public GameObject player(final Vector2 position, final InputController input, final GameCollisions world) {
+    public Player player(final Vector2 position, final InputController input, final GameCollisions world) {
         final List<Vector2> colliderPoints = List.of(
             new Vector2(-1.0, 2.5),
             new Vector2(-1.0, -2.5),
             new Vector2(1.0, -2.5),
             new Vector2(1.0, 2.5)
         );
-        final List<Vector2> swordColliderPoints = List.of(
-            new Vector2(-0.5, 2.0),
-            new Vector2(0.5, 2.0),
-            new Vector2(0.5, -3.0),
-            new Vector2(-0.5, -3.0)
-        );
         final Collider collider = new MeshCollider(colliderPoints, 20.0, 0);
-        final Collider swordCollider = new MeshCollider(swordColliderPoints, 16.0, 0);
-        final Drawable sprite = new SwingSprite("player", position, 0.0, this.renderer);
-        final Drawable swordSprite = new SwingSprite("sword", position.add(new Vector2(35.0, 0.0)), Math.PI/3, this.renderer);
-        final GameObject sword = new Sword(position.add(new Vector2(35.0, 0.0)), Math.PI/3, Optional.of(swordCollider), Optional.of(swordSprite));
-        final GameObject player = new Player(position, 0.0, Optional.of(collider), Optional.of(sprite), sword, input, world);
+        final Collider swordCollider = new MeshCollider(Controller.regularPolygon(4), 16.0, Math.PI/2);
+        final Map<String, Drawable> sprites = Map.of(
+            "idle", new SwingSprite("player", position, 0.0, this.renderer),
+            "damage", new SwingSprite("player_damage", position, 0.0, this.renderer)
+        );
+        final Map<String, Drawable> swordSprites = Map.of(
+            "idle", new SwingSprite("sword1", Vector2.zero(), 0.0, this.renderer),
+            "swing", new SwingSprite("sword_swing", Vector2.zero(), 0.0, this.renderer)
+        );
+        final Player player = new Player(position, 0.0, Optional.of(collider), sprites, input, world);
+        final Weapon sword = new Sword(player, new Vector2(35.0, -20.0), new Vector2(45.0, -10.0), 0.0, swordCollider, swordSprites);
+        player.equip(sword);
         collider.attachGameObject(player);
         swordCollider.attachGameObject(sword);
         return player;
@@ -81,8 +64,11 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     @Override
     public GameObject ballEnemy(final Vector2 position) {
         final Collider collider = new MeshCollider(Controller.regularPolygon(50), 35.0, 0);
-        final Drawable sprite = new SwingSprite("enemy", position, 0.0, this.renderer);
-        final Enemy enemy = new EnemyImpl(position, 0.0, true, Optional.of(collider), Optional.of(sprite), 250, 10, () -> {});
+        final Map<String, Drawable> sprites = Map.of(
+                "idle", new SwingSprite("enemy", position, 0.0, this.renderer),
+                "damage", new SwingSprite("enemy_damage", position, 0.0, this.renderer)
+        );
+        final Enemy enemy = new EnemyImpl(position, 0.0, true, Optional.of(collider), sprites, 200, 10, () -> null);
         collider.attachGameObject(enemy);
         return enemy;
     }

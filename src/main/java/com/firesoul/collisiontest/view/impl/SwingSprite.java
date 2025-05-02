@@ -20,11 +20,13 @@ public class SwingSprite extends JComponent implements Drawable {
     private double orientation;
 
     private Image sprite;
+    private boolean visible;
 
-    public SwingSprite(final String name, final Vector2 position, final double orientation, final Renderer renderer) {
+    public SwingSprite(final String name, final Vector2 position, final double orientation, final boolean visible, final Renderer renderer) {
         super();
         this.position = position;
         this.orientation = orientation;
+        this.visible = visible;
         try {
             this.sprite = ImageIO.read(new File(Drawable.RESOURCES_PATH + name + ".png"));
         } catch (IOException e) {
@@ -33,6 +35,10 @@ public class SwingSprite extends JComponent implements Drawable {
         }
         this.setSize(this.sprite.getWidth(null), this.sprite.getHeight(null));
         renderer.add(this);
+    }
+
+    public SwingSprite(final String name, final Vector2 position, final double orientation, final Renderer renderer) {
+        this(name, position, orientation, true, renderer);
     }
 
     @Override
@@ -50,13 +56,25 @@ public class SwingSprite extends JComponent implements Drawable {
         this.orientation = this.orientation + angle;
     }
 
+    @Override
+    public boolean isVisible() {
+        return this.visible;
+    }
+
+    @Override
+    public void setVisible(final boolean visible) {
+        this.visible = visible;
+    }
+
     public void drawSprite(final Graphics g) {
-        final Graphics2D g2 = (Graphics2D) g;
-        final AffineTransform at = new AffineTransform();
-        at.translate(this.position.x(), this.position.y());
-        at.rotate(this.orientation);
-        at.translate(-this.sprite.getWidth(this), -this.sprite.getHeight(this));
-        at.scale(2.0, 2.0);
-        g2.drawImage(this.sprite, at, this);
+        if (this.isVisible()) {
+            final Graphics2D g2 = (Graphics2D) g;
+            final AffineTransform at = new AffineTransform();
+            at.translate(this.position.x(), this.position.y());
+            at.rotate(this.orientation);
+            at.translate(-this.sprite.getWidth(this), -this.sprite.getHeight(this));
+            at.scale(2.0, 2.0);
+            g2.drawImage(this.sprite, at, this);
+        }
     }
 }

@@ -1,11 +1,21 @@
 package com.firesoul.collisiontest.model.util;
 
+import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.Event;
+
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Supplier;
 
 public class GameTimer {
 
-    private final Runnable onStop;
+    @FunctionalInterface
+    public interface TimerAction {
+
+        void get();
+    }
+
+    private final TimerAction onStop;
     private final int delay;
     private final int duration;
 
@@ -13,7 +23,7 @@ public class GameTimer {
     private int currentTime;
     private boolean running;
 
-    public GameTimer(final Runnable onStop, final int delay, final int duration) {
+    public GameTimer(final TimerAction onStop, final int delay, final int duration) {
         this.onStop = onStop;
         this.delay = delay;
         this.duration = duration;
@@ -27,11 +37,11 @@ public class GameTimer {
             this.timer.schedule(
                 new TimerTask() {
                     public void run() {
-                        currentTime--;
-                        if (currentTime < 0) {
-                            onStop.run();
-                            stop();
-                        }
+                    currentTime--;
+                    if (currentTime < 0) {
+                        onStop.get();
+                        stop();
+                    }
                     }
                 },
                 this.delay,

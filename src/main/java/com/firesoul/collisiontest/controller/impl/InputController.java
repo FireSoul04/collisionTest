@@ -1,5 +1,7 @@
 package com.firesoul.collisiontest.controller.impl;
 
+import com.firesoul.collisiontest.model.api.Event;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -8,10 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class InputController {
-
-    public interface Event {
-        boolean check();
-    }
 
     private static class Key {
         private final int keyCode;

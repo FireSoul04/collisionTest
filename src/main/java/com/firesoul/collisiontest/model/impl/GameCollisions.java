@@ -22,7 +22,7 @@ public class GameCollisions implements CollisionTest {
     private final List<GameObject> projectiles = new ArrayList<>();
 
     private final GameObjectFactory gf;
-    private GameObject player;
+    private Player player;
 
     public GameCollisions(final Renderer renderer) {
         this.renderer = renderer;
@@ -35,7 +35,7 @@ public class GameCollisions implements CollisionTest {
         final Vector2 playerPosition = new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(2.0);
         this.player = this.gf.player(playerPosition, this.input, this);
         this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
-        this.gameObjects.add(((Player) this.player).getSword());
+        this.gameObjects.add(this.player.getWeapon());
         this.gameObjects.add(this.player);
 
         for (int x = 1; x < 25; x++) {
