@@ -1,6 +1,7 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.gameobjects;
 
-import com.firesoul.collisiontest.model.api.Camera;
+import com.firesoul.collisiontest.model.api.gameobjects.Camera;
+import com.firesoul.collisiontest.model.impl.GameObjectImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.Optional;

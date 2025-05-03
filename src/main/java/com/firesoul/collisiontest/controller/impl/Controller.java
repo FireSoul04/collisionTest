@@ -1,10 +1,10 @@
 package com.firesoul.collisiontest.controller.impl;
 
-import com.firesoul.collisiontest.model.api.Camera;
+import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.impl.CameraImpl;
+import com.firesoul.collisiontest.model.impl.gameobjects.CameraImpl;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Swept;
 import com.firesoul.collisiontest.model.impl.GameCollisions;
@@ -42,8 +42,6 @@ public class Controller implements Runnable {
         );
         this.renderer = new SwingRenderer(camera, startPosition, width, height, scale);
         this.test = new GameCollisions(this.renderer);
-        camera.setBoundsX(this.test.getWidth());
-        camera.setBoundsX(this.test.getHeight());
     }
 
     @Override
@@ -75,46 +73,11 @@ public class Controller implements Runnable {
     }
 
     private void update(final double deltaTime) {
-        this.test.readInput();
-        this.checkCollisions(this.test.getGameObjects(), deltaTime);
         this.test.update(deltaTime);
     }
 
     private void render() {
         this.test.render();
-    }
-
-    private void checkCollisions(final List<GameObject> gameObjects, final double deltaTime) {
-        final List<Collider> colliders = gameObjects.stream()
-            .map(GameObject::getCollider)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .toList();
-        final List<Collider> dynamicColliders = colliders.stream()
-            .filter(t -> t.getAttachedGameObject().isDynamic())
-            .toList();
-        CollisionAlgorithms.debugRect.clear();
-        CollisionAlgorithms.debugPoint.clear();
-        CollisionAlgorithms.debugNormal.clear();
-        for (final Collider c1 : dynamicColliders) {
-            boolean collided = false;
-            final Map<Collider, Double> collidersByCollisionTime = new HashMap<>();
-            for (final Collider c2 : colliders.stream().filter(t -> !t.equals(c1)).toList()) {
-                final Swept sw = CollisionAlgorithms.sweptAABB(c1, c2, deltaTime);
-                collided = sw != null;
-                // collided = Controller.SAT(s1, s2);
-                if (collided) {
-                    collidersByCollisionTime.put(c2, sw.time());
-                    c1.addCollided(c2);
-                } else {
-                    c1.removeCollided(c2);
-                }
-            }
-
-            for (var x : collidersByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue(), b.getValue())).toList()) {
-                CollisionAlgorithms.resolveSweptAABB(c1, x.getKey(), deltaTime);
-            }
-        }
     }
 
     public static List<Vector2> regularPolygon(final int points) {

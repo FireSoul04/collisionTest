@@ -1,8 +1,9 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 
 import com.firesoul.collisiontest.model.api.Collider;
-import com.firesoul.collisiontest.model.api.Enemy;
+import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
@@ -55,12 +56,21 @@ public class Sword extends WeaponImpl {
 
     @Override
     public void update(final double deltaTime) {
-        super.update(deltaTime);
+        final Vector2 position = new Vector2(
+                this.getSpriteOffset().x() * this.getDirectionX(),
+                this.getSpriteOffset().y()
+        );
+        this.setPosition(this.getHolder().getPosition().add(this.getOffset()));
         this.getCollider().ifPresent(t -> t.setPosition(
             this.getHolder().getPosition()
                 .add(new Vector2(this.getOffset().x() * this.getDirectionX(), this.getOffset().y()))
                 .add(new Vector2(this.update.x() * this.getDirectionX(), this.update.y())))
         );
+        this.sprites.forEach((k, v) -> {
+            v.translate(this.getHolder().getPosition().add(position));
+            v.mirrorX(this.getDirectionX());
+        });
+
         if (this.swingTimer.isRunning()) {
             this.update = this.update.add(new Vector2(Math.cos(this.angle), Math.sin(this.angle)).multiply(this.range));
             this.angle += this.step;

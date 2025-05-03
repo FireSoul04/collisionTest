@@ -1,11 +1,11 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.gameobjects;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.firesoul.collisiontest.model.api.Collider;
-import com.firesoul.collisiontest.model.api.Enemy;
+import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 

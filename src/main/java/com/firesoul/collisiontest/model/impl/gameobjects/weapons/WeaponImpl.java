@@ -1,12 +1,12 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.api.Weapon;
+import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
+import com.firesoul.collisiontest.model.impl.GameObjectImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 
-import java.util.Map;
 import java.util.Optional;
 
 public class WeaponImpl extends GameObjectImpl implements Weapon {

@@ -2,9 +2,12 @@ package com.firesoul.collisiontest.model.impl;
 
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.model.api.Collider;
-import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.api.Weapon;
+import com.firesoul.collisiontest.model.api.Level;
+import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.WeaponFactory;
+import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
+import com.firesoul.collisiontest.model.impl.gameobjects.Player;
+import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Sword;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -36,7 +39,7 @@ public class WeaponFactoryImpl implements WeaponFactory {
     }
 
     @Override
-    public Weapon gun(final Player holder, final GameCollisions world) {
+    public Weapon gun(final Player holder, final Level world) {
         final SwingSprite sprite = new SwingSprite("gun", Vector2.zero(), 0.0, this.renderer);
         final Vector2 offset = new Vector2(12.0, 0.0);
         final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 1.2, -2.5);

@@ -59,7 +59,6 @@ public class RegularPolygons implements CollisionTest {
         this.player.move(this.player.getVelocity().multiply(deltaTime));
     }
 
-    @Override
     public void readInput() {
         Vector2 velocity = this.player.getVelocity();
         if (this.input.getEvent("MoveUp")) {
@@ -81,20 +80,5 @@ public class RegularPolygons implements CollisionTest {
             this.player.rotate(-this.rotSpeed);
         }
         this.player.setVelocity(velocity.normalize().multiply(this.speed));
-    }
-
-    @Override
-    public List<GameObject> getGameObjects() {
-        return this.gameObjects;
-    }
-
-    @Override
-    public double getWidth() {
-        return this.renderer.getWidth();
-    }
-
-    @Override
-    public double getHeight() {
-        return this.renderer.getHeight();
     }
 }

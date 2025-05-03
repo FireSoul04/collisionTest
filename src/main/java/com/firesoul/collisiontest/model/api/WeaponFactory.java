@@ -1,11 +1,11 @@
 package com.firesoul.collisiontest.model.api;
 
-import com.firesoul.collisiontest.model.impl.GameCollisions;
-import com.firesoul.collisiontest.model.impl.Player;
+import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
+import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 
 public interface WeaponFactory {
 
     Weapon sword(Player holder);
 
-    Weapon gun(Player holder, GameCollisions world);
+    Weapon gun(Player holder, Level world);
 }

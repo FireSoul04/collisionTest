@@ -1,6 +1,6 @@
-package com.firesoul.collisiontest.model.api;
+package com.firesoul.collisiontest.model.api.gameobjects;
 
-import com.firesoul.collisiontest.model.impl.GameCollisions;
+import com.firesoul.collisiontest.model.api.GameObject;
 
 public interface Camera extends GameObject {
 

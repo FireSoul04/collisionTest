@@ -7,6 +7,10 @@ import java.util.Optional;
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
+import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
+import com.firesoul.collisiontest.model.impl.gameobjects.EnemyImpl;
+import com.firesoul.collisiontest.model.impl.gameobjects.Player;
+import com.firesoul.collisiontest.model.impl.gameobjects.Projectile;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -21,7 +25,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     }
 
     @Override
-    public Player player(final Vector2 position, final InputController input, final GameCollisions world) {
+    public Player player(final Vector2 position, final InputController input, final Level world) {
         final List<Vector2> colliderPoints = List.of(
             new Vector2(-1.0, 2.5),
             new Vector2(-1.0, -2.5),
