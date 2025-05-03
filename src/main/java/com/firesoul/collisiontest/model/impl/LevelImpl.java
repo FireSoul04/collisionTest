@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
+import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
@@ -18,17 +19,12 @@ public class LevelImpl implements Level {
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final List<GameObject> projectiles = new ArrayList<>();
 
-    private final Renderer renderer;
     private final GameObjectFactory gf;
     private Player player;
 
-    public LevelImpl(final Renderer renderer) {
-        this.gf = new GameObjectFactoryImpl(renderer);
-        this.renderer = renderer;
-        this.addGameObjects();
-
-        this.renderer.getCamera().setBoundsX(this.width);
-        this.renderer.getCamera().setBoundsY(this.height);
+    public LevelImpl(final InputController input) {
+        this.gf = new GameObjectFactoryImpl();
+        this.addGameObjects(input);
     }
 
     @Override
@@ -37,10 +33,6 @@ public class LevelImpl implements Level {
         this.gameObjects.forEach(t -> t.update(deltaTime));
         this.gameObjects.addAll(this.projectiles);
         this.projectiles.clear();
-        this.renderer.getCamera().setPosition(this.player.getPosition().subtract(
-                new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight())
-                        .divide(2.0)
-        ));
 
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();
@@ -72,6 +64,10 @@ public class LevelImpl implements Level {
         return this.height;
     }
 
+    public Vector2 getPlayerPosition() {
+        return this.player.getPosition();
+    }
+
     @Override
     public void spawnProjectile(final Vector2 position, final Vector2 velocity) {
         this.projectiles.add(this.gf.projectile(position, velocity.x()));
@@ -91,7 +87,6 @@ public class LevelImpl implements Level {
                 final Collider c2 = g2.getCollider().orElseThrow();
                 final CollisionAlgorithms.Swept sw = CollisionAlgorithms.sweptAABB(g1, g2, deltaTime);
                 boolean collided = sw != null;
-                // collided = Controller.SAT(s1, s2);
                 if (collided) {
                     collidersByCollisionTime.put(g2, sw.time());
                     c1.addCollided(c2);
@@ -110,13 +105,14 @@ public class LevelImpl implements Level {
         }
     }
 
-    private void addGameObjects() {
-        final Vector2 playerPosition = new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight()).divide(2.0);
-        this.player = this.gf.player(playerPosition, this.renderer.getInput(), this);
-        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(390))));
+    private void addGameObjects(final InputController input) {
+        final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
+        this.player = this.gf.player(playerPosition, input, this);
+        Objects.requireNonNull(this.player);
+        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
         this.gameObjects.add(this.player);
 
-        final WeaponFactory wf = new WeaponFactoryImpl(this.renderer);
+        final WeaponFactory wf = new WeaponFactoryImpl();
         final Weapon sword = wf.sword(this.player);
         final Weapon gun = wf.gun(this.player, this);
         this.gameObjects.add(sword);

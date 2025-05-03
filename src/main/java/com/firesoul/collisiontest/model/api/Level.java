@@ -14,5 +14,7 @@ public interface Level {
 
     double getHeight();
 
+    Vector2 getPlayerPosition();
+
     void spawnProjectile(Vector2 position, Vector2 velocity);
 }

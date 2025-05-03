@@ -12,7 +12,6 @@ import javax.swing.JComponent;
 
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
-import com.firesoul.collisiontest.view.api.Renderer;
 
 public class SwingSprite extends JComponent implements Drawable {
 
@@ -24,7 +23,7 @@ public class SwingSprite extends JComponent implements Drawable {
     private Image sprite;
     private boolean visible;
 
-    public SwingSprite(final String name, final Vector2 position, final double orientation, final boolean visible, final Renderer renderer) {
+    public SwingSprite(final String name, final Vector2 position, final double orientation, final boolean visible) {
         super();
         this.position = position;
         this.orientation = orientation;
@@ -37,11 +36,10 @@ public class SwingSprite extends JComponent implements Drawable {
             System.exit(1);
         }
         this.setSize(this.sprite.getWidth(null), this.sprite.getHeight(null));
-        renderer.add(this);
     }
 
-    public SwingSprite(final String name, final Vector2 position, final double orientation, final Renderer renderer) {
-        this(name, position, orientation, true, renderer);
+    public SwingSprite(final String name, final Vector2 position, final double orientation) {
+        this(name, position, orientation, true);
     }
 
     @Override

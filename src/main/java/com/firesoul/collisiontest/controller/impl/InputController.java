@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.controller.impl;
 
+import com.firesoul.collisiontest.controller.api.EventController;
 import com.firesoul.collisiontest.model.api.Event;
 
 import java.awt.event.KeyEvent;
@@ -9,7 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class InputController {
+public class InputController implements EventController {
 
     private static class Key {
         private final int keyCode;
@@ -18,16 +19,12 @@ public class InputController {
         private Key(final int keyCode) {
             this.keyCode = keyCode;
         }
-
         public void setAlreadyPressed(final boolean alreadyPressed) {
             this.alreadyPressed = alreadyPressed;
         }
-
         public boolean isAlreadyPressed() {
             return this.alreadyPressed;
         }
-
-        @Override
         public int hashCode() {
             return this.keyCode;
         }
@@ -37,16 +34,10 @@ public class InputController {
     private final Set<Key> keysPressed = new HashSet<>();
     private final Map<String, Event> events = new HashMap<>();
     private final KeyListener keyListener = new KeyListener() {
-        @Override
-        public void keyTyped(final KeyEvent e) {
-        }
-    
-        @Override
+        public void keyTyped(final KeyEvent e) {}
         public void keyPressed(final KeyEvent e) {
             keysPressed.add(keys.get(e.getKeyCode()));
         }
-    
-        @Override
         public void keyReleased(final KeyEvent e) {
             keysPressed.remove(keys.get(e.getKeyCode()));
         }
@@ -69,6 +60,10 @@ public class InputController {
         return this.events.get(name).check();
     }
 
+    public void resetEvents() {
+        this.events.keySet().forEach(k -> this.events.put(k, () -> false));
+    }
+
     public boolean isKeyPressed(final int keyCode) {
         return this.keysPressed.contains(this.keys.get(keyCode));
     }
@@ -83,12 +78,8 @@ public class InputController {
         }
         return false;
     }
-    
+
     public KeyListener getKeyListener() {
         return this.keyListener;
-    }
-
-    public void resetEvents() {
-        this.events.keySet().forEach(k -> this.events.put(k, () -> false));
     }
 }
