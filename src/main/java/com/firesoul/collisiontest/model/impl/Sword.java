@@ -19,6 +19,7 @@ public class Sword extends WeaponImpl {
     private final double step = 0.25;
     private final double range = 4.0;
 
+    private final GameTimer swingTimer;
     private final GameTimer swingCooldown;
 
     public Sword(
@@ -31,10 +32,11 @@ public class Sword extends WeaponImpl {
     ) {
         super(holder, offset, spriteOffset, orientation, Optional.of(collider), Optional.of(sprites.get("idle")));
         this.sprites = sprites;
-        this.swingCooldown = new GameTimer(() -> {
+        this.swingTimer = new GameTimer(() -> {
             this.setSolid(false);
             this.setSprite(this.sprites.get("idle"));
-        }, 0, 200);
+        }, 0, 150);
+        this.swingCooldown = new GameTimer(() -> {}, 0, 400);
         this.getCollider().ifPresent(t -> t.setSolid(false));
     }
 
@@ -59,7 +61,7 @@ public class Sword extends WeaponImpl {
                 .add(new Vector2(this.getOffset().x() * this.getDirectionX(), this.getOffset().y()))
                 .add(new Vector2(this.update.x() * this.getDirectionX(), this.update.y())))
         );
-        if (this.swingCooldown.isRunning()) {
+        if (this.swingTimer.isRunning()) {
             this.update = this.update.add(new Vector2(Math.cos(this.angle), Math.sin(this.angle)).multiply(this.range));
             this.angle += this.step;
         } else {
@@ -70,7 +72,8 @@ public class Sword extends WeaponImpl {
 
     @Override
     public void attack() {
-        if (!this.swingCooldown.isRunning()) {
+        if (!this.swingTimer.isRunning() && !this.swingCooldown.isRunning()) {
+            this.swingTimer.start();
             this.swingCooldown.start();
             this.setSolid(true);
             this.setSprite(this.sprites.get("swing"));

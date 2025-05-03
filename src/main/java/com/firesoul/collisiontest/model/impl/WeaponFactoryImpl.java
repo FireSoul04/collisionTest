@@ -24,11 +24,11 @@ public class WeaponFactoryImpl implements WeaponFactory {
     @Override
     public Weapon sword(final Player holder) {
         final Map<String, Drawable> sprites = Map.of(
-                "idle", new SwingSprite("sword1", Vector2.zero(), 0.0, this.renderer),
-                "swing", new SwingSprite("sword_swing", Vector2.zero(), 0.0, this.renderer)
+            "idle", new SwingSprite("sword", Vector2.zero(), 0.0, this.renderer),
+            "swing", new SwingSprite("sword_swing", Vector2.zero(), 0.0, this.renderer)
         );
         final Vector2 offset = new Vector2(17.0, -10.0);
-        final Vector2 spriteOffset = new Vector2(22.0, -5.0);
+        final Vector2 spriteOffset = new Vector2(27.0, -5.0);
         final Collider collider = new MeshCollider(Controller.regularPolygon(4), 8.0, Math.PI/2);
         final Weapon sword = new Sword(holder, offset, spriteOffset, 0.0, collider, sprites);
         collider.attachGameObject(sword);

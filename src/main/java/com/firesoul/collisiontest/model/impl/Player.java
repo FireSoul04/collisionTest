@@ -26,6 +26,7 @@ public class Player extends EntityImpl {
     private Optional<Weapon> equippedWeapon = Optional.empty();
     private final GameTimer weaponCooldown = new GameTimer(() -> {}, 0, 1000);
     // Movement logic
+    private double facingDirectionX = 1.0;
     private double friction = 1.0;
     private int currentVelocity = 1;
     private final int maxVelocity = 5;
@@ -54,12 +55,18 @@ public class Player extends EntityImpl {
     public void update(final double deltaTime) {
         this.move(this.getVelocity().multiply(deltaTime));
 
-        this.sprites.forEach((k, v) -> v.translate(this.getPosition()));
+        this.sprites.forEach((k, v) -> {
+            v.translate(this.getPosition());
+            v.mirrorX(this.facingDirectionX);
+        });
+        this.weapons.forEach(t -> t.setDirectionX(this.facingDirectionX));
 
         if (this.isInvincible()) {
             this.setSprite(this.sprites.get("damage"));
+            this.equippedWeapon.flatMap(GameObject::getSprite).ifPresent(s -> s.setVisible(false));
         } else {
             this.setSprite(this.sprites.get("idle"));
+            this.equippedWeapon.flatMap(GameObject::getSprite).ifPresent(s -> s.setVisible(true));
         }
     }
 
@@ -76,6 +83,7 @@ public class Player extends EntityImpl {
             final var r2 = CollisionAlgorithms.fitInRect(collidedShape);
             final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (g.getPosition().x() + r2.w()/2.0));
             this.setVelocity(new Vector2(distX*10, this.getVelocity().y()));
+            this.facingDirectionX = -distX;
         }
     }
 
@@ -130,13 +138,11 @@ public class Player extends EntityImpl {
         Vector2 velocity = Vector2.zero();
         if (this.input.getEvent("MoveLeft")) {
             velocity = velocity.add(Vector2.left().multiply(this.currentVelocity));
-            this.getSprite().ifPresent(s -> s.mirrorX(-1.0));
-            this.weapons.forEach(t -> t.setDirectionX(-1.0));
+            this.facingDirectionX = -1.0;
         }
         if (this.input.getEvent("MoveRight")) {
             velocity = velocity.add(Vector2.right().multiply(this.currentVelocity));
-            this.getSprite().ifPresent(s -> s.mirrorX(1.0));
-            this.weapons.forEach(t -> t.setDirectionX(1.0));
+            this.facingDirectionX = 1.0;
         }
         if (velocity.x() != 0.0 && this.currentVelocity < this.maxVelocity) {
             this.currentVelocity++;
