@@ -9,6 +9,7 @@ import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -80,9 +81,11 @@ public class Player extends EntityImpl {
         } else if (gameObject instanceof Enemy) {
             this.takeDamage(3);
 
-            final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().orElseThrow());
-            final var r2 = CollisionAlgorithms.fitInRect(gameObject.getCollider().orElseThrow());
-            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (gameObject.getPosition().x() + r2.w()/2.0));
+            final BoxCollider r1 = CollisionAlgorithms.getBoxCollider(this.getCollider().orElseThrow());
+            final BoxCollider r2 = CollisionAlgorithms.getBoxCollider(gameObject.getCollider().orElseThrow());
+            final double distX = Math.signum(
+                    (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
+            );
             this.setVelocity(new Vector2(distX*10, this.getVelocity().y()));
             this.facingDirectionX = -distX;
         }

@@ -5,6 +5,7 @@ import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.WeaponFactory;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
@@ -30,9 +31,10 @@ public class WeaponFactoryImpl implements WeaponFactory {
             "idle", new SwingSprite("sword", Vector2.zero()),
             "swing", new SwingSprite("sword_swing", Vector2.zero())
         );
-        final Vector2 offset = new Vector2(17.0, -10.0);
+        final Vector2 offset = new Vector2(22.0, -12.0);
         final Vector2 spriteOffset = new Vector2(27.0, -5.0);
-        final Collider collider = new MeshCollider(GameCore.regularPolygon(4), 8.0, Math.PI/2);
+        final Vector2 size = new Vector2(15.0, 15.0);
+        final Collider collider = new BoxCollider(Vector2.zero(), size.x(), size.y());
         final Weapon sword = new Sword(holder, offset, spriteOffset, this.world, collider, sprites);
         collider.setPosition(sword.getPosition());
         return sword;

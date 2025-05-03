@@ -5,6 +5,7 @@ import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
@@ -47,9 +48,11 @@ public class Sword extends WeaponImpl {
         if (gameObject instanceof Enemy e && this.getCollider().isPresent() && this.getCollider().get().isSolid()) {
             e.takeDamage(3);
 
-            final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().get());
-            final var r2 = CollisionAlgorithms.fitInRect(gameObject.getCollider().orElseThrow());
-            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (gameObject.getPosition().x() + r2.w()/2.0));
+            final BoxCollider r1 = CollisionAlgorithms.getBoxCollider(this.getCollider().orElseThrow());
+            final BoxCollider r2 = CollisionAlgorithms.getBoxCollider(gameObject.getCollider().orElseThrow());
+            final double distX = Math.signum(
+                    (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
+            );
             this.getHolder().setVelocity(new Vector2(distX*5, this.getVelocity().y()));
         }
     }

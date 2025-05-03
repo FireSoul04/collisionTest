@@ -2,12 +2,15 @@ package com.firesoul.collisiontest.model.impl;
 
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 
+import java.util.List;
+
 public final class CollisionAlgorithms {
-    
-    public record Rectangle(double x, double y, double w, double h) {}
-    public record Swept(Vector2 normal, Vector2 point, double time) {}
+
+    public record Collision(Vector2 normal, Vector2 point, double time) {}
 
     // DEBUG VISUALS
 //    public static List<Rectangle> debugRect = new CopyOnWriteArrayList<>();
@@ -15,33 +18,21 @@ public final class CollisionAlgorithms {
 //    public static List<Rectangle> debugNormal = new CopyOnWriteArrayList<>();
     // DEBUG VISUALS
 
-    public static Rectangle fitInRect(final Collider s) {
-        double minX = Double.POSITIVE_INFINITY;
-        double maxX = Double.NEGATIVE_INFINITY;
-        double minY = Double.POSITIVE_INFINITY;
-        double maxY = Double.NEGATIVE_INFINITY;
-        for (final Vector2 p : s.getPoints()) {
-            minX = Math.min(minX, p.x());
-            maxX = Math.max(maxX, p.x());
-            minY = Math.min(minY, p.y());
-            maxY = Math.max(maxY, p.y());
-        }
-        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-    }
-
-    public static Swept simpleAABB(final Rectangle r1, final Rectangle r2) {
+    public static Collision simpleAABB(final BoxCollider c1, final BoxCollider c2) {
+        final Vector2 p1 = c1.getPosition();
+        final Vector2 p2 = c2.getPosition();
         final boolean collided =
-            r1.x() + r1.w() > r2.x() &&
-            r1.x() < r2.x() + r2.w() &&
-            r1.y() + r1.h() > r2.y() &&
-            r1.y() < r2.y() + r2.h();
+            p1.x() + c1.getWidth() > p2.x() &&
+            p1.x() < p2.x() + c2.getWidth() &&
+            p1.y() + c1.getHeight() > p2.y() &&
+            p1.y() < p2.y() + c2.getHeight();
 
         if (collided) {
             Vector2 normal = Vector2.zero();
             Vector2 collisionPoint = Vector2.zero();
-            Vector2 mediumPoint = new Vector2(r1.x() + r2.x(), r1.y() + r2.y()).divide(2.0);
-            double collisionOnRight = r1.x() + r1.w() - r2.x();
-            double collisionOnLeft = r1.x() - (r2.x() + r2.w());
+            Vector2 mediumPoint = new Vector2(p1.x() + p2.x(), p1.y() + p2.y()).divide(2.0);
+            double collisionOnRight = p1.x() + c1.getWidth() - p2.x();
+            double collisionOnLeft = p1.x() - (p2.x() + c2.getWidth());
             if (Math.abs(collisionOnRight) < 1.0) {
                 normal = Vector2.right();
                 collisionPoint = new Vector2(collisionOnRight, mediumPoint.y());
@@ -49,8 +40,8 @@ public final class CollisionAlgorithms {
                 normal = Vector2.left();
                 collisionPoint = new Vector2(collisionOnLeft, mediumPoint.y());
             }
-            double collisionOnBottom = r1.y() + r1.h() - r2.y();
-            double collisionOnTop = r2.y() + r2.h() - r1.y();
+            double collisionOnBottom = p1.y() + c1.getHeight() - p2.y();
+            double collisionOnTop = p2.y() + c2.getHeight() - p1.y();
             if (Math.abs(collisionOnBottom) < 1.0) {
                 normal = Vector2.down();
                 collisionPoint = new Vector2(mediumPoint.x(), collisionOnTop);
@@ -65,17 +56,17 @@ public final class CollisionAlgorithms {
 //            debugNormal.add(new Rectangle(collisionPoint.x(), collisionPoint.y(), normal.x(), normal.y()));
             // DEBUG VISUALS
 
-            return new Swept(normal, collisionPoint, 1.0);
+            return new Collision(normal, collisionPoint, 1.0);
         }
         return null;
     }
 
-    private static Swept rayAABB(final Rectangle target, final Vector2 ray, final Vector2 rayDirection) {
+    private static Collision rayAABB(final BoxCollider target, final Vector2 ray, final Vector2 rayDirection) {
         final Vector2 inverseDirection = new Vector2(1.0/rayDirection.x(), 1.0/rayDirection.y());
-        double nearX = (target.x() - ray.x())*inverseDirection.x();
-        double nearY = (target.y() - ray.y())*inverseDirection.y();
-        double farX = (target.x() + target.w() - ray.x())*inverseDirection.x();
-        double farY = (target.y() + target.h() - ray.y())*inverseDirection.y();
+        double nearX = (target.getPosition().x() - ray.x())*inverseDirection.x();
+        double nearY = (target.getPosition().y() - ray.y())*inverseDirection.y();
+        double farX = (target.getPosition().x() + target.getWidth() - ray.x())*inverseDirection.x();
+        double farY = (target.getPosition().y() + target.getHeight() - ray.y())*inverseDirection.y();
         Vector2 normal = Vector2.zero();
         Vector2 collisionPoint;
 
@@ -114,36 +105,32 @@ public final class CollisionAlgorithms {
 //        debugNormal.add(new Rectangle(collisionPoint.x(), collisionPoint.y(), normal.x(), normal.y()));
         // DEBUG VISUALS
         
-        return new Swept(normal, collisionPoint, nearHit);
+        return new Collision(normal, collisionPoint, nearHit);
     }
 
-    public static Swept sweptAABB(final GameObject g1, final GameObject g2, final double deltaTime) {
+    public static Collision sweptAABB(final GameObject g1, final GameObject g2, final double deltaTime) {
         if (g1.getCollider().isEmpty() || g2.getCollider().isEmpty()) {
             return null;
         }
-
-        final Collider c1 = g1.getCollider().get();
-        final Collider c2 = g2.getCollider().get();
-
-        final Rectangle r1 = fitInRect(c1);
-        final Rectangle r2 = fitInRect(c2);
-
-        if (g1.getVelocity().equals(Vector2.zero())) {
-            return simpleAABB(r1, r2);
-        }
-
-        final Rectangle extendedRect = new Rectangle(r2.x() - r1.w()/2, r2.y() - r1.h()/2, r2.w() + r1.w(), r2.h() + r1.h());
-        final Vector2 ray = new Vector2(r1.x() + r1.w()/2, r1.y() + r1.h()/2);
-        final Swept sw = rayAABB(extendedRect, ray, g1.getVelocity().multiply(deltaTime));
+        final BoxCollider c1 = CollisionAlgorithms.getBoxCollider(g1.getCollider().orElseThrow());
+        final BoxCollider c2 = CollisionAlgorithms.getBoxCollider(g2.getCollider().orElseThrow());
+        final Vector2 p1 = c1.getPosition();
+        final Vector2 p2 = c2.getPosition();
+        final BoxCollider extendedRect = new BoxCollider(
+                new Vector2(p2.x() - c1.getWidth()/2, p2.y() - c1.getHeight()/2),
+                c2.getWidth() + c1.getWidth(), c2.getHeight() + c1.getHeight()
+        );
+        final Vector2 ray = new Vector2(p1.x() + c1.getWidth()/2, p1.y() + c1.getHeight()/2);
+        final Collision sw = rayAABB(extendedRect, ray, g1.getVelocity().multiply(deltaTime));
         if (sw != null && sw.time() >= 0.0 && sw.time() < 1.0) {
             return sw;
         } else {
-            return simpleAABB(r1, r2);
+            return simpleAABB(c1, c2);
         }
     }
 
     public static void resolveSweptAABB(final GameObject g1, final GameObject g2, final double deltaTime) {
-        final Swept sw = sweptAABB(g1, g2, deltaTime);
+        final Collision sw = sweptAABB(g1, g2, deltaTime);
         if (sw != null) {
             g1.onCollision(g2, sw.normal(), sw.time());
             if (g2.isStatic()) {
@@ -156,20 +143,23 @@ public final class CollisionAlgorithms {
         }
     }
 
-    public static boolean SAT(final Collider collider1, final Collider collider2) {
-        Collider c1 = collider1;
-        Collider c2 = collider2;
-
+    public static boolean SAT(final GameObject g1, final GameObject g2) {
+        if (g1.getCollider().isEmpty() || g2.getCollider().isEmpty()) {
+            return false;
+        }
+        MeshCollider c1 = CollisionAlgorithms.getMeshCollider(g1.getCollider().orElseThrow());
+        MeshCollider c2 = CollisionAlgorithms.getMeshCollider(g2.getCollider().orElseThrow());
         double overlap = Double.POSITIVE_INFINITY;
         for (int shape = 0; shape < 2; shape++) {
             if (shape == 1) {
-                c1 = collider2;
-                c2 = collider1;
+                final MeshCollider temp = c1;
+                c1 = c2;
+                c2 = temp;
             }
 
             for (int i = 0; i < c1.getPoints().size(); i++) {
                 final Vector2 v1 = c1.getPoints().get(i);
-                final Vector2 v2 = c1.getPoints().get((i + 1)%c1.getPoints().size());
+                final Vector2 v2 = c1.getPoints().get((i + 1) % c1.getPoints().size());
                 final Vector2 segment = v1.subtract(v2);
                 final Vector2 normal = new Vector2(-segment.y(), segment.x());
     
@@ -195,12 +185,55 @@ public final class CollisionAlgorithms {
             }
         }
         
-//        if (c2.getAttachedGameObject().isStatic()) {
-//            final Vector2 d = c1.getPosition().subtract(c2.getPosition());
-//            final double s = d.dot(d);
-//            c1.move(d.multiply(overlap).divide(s));
-//        }
+        if (g2.isStatic()) {
+            final Vector2 d = g1.getPosition().subtract(g2.getPosition());
+            final double s = d.dot(d);
+            g1.move(d.multiply(overlap).divide(s));
+        }
 
         return true;
+    }
+
+    public static BoxCollider getBoxCollider(final Collider collider) {;
+        if (collider instanceof BoxCollider bc) {
+            return bc;
+        } else if (collider instanceof MeshCollider mc) {
+            return CollisionAlgorithms.convertMeshToBox(mc);
+        } else {
+            throw new UnsupportedOperationException("Collider must be MeshCollider or BoxCollider");
+        }
+    }
+
+    public static MeshCollider getMeshCollider(final Collider collider) {;
+        if (collider instanceof BoxCollider bc) {
+            return CollisionAlgorithms.convertBoxToMesh(bc);
+        } else if (collider instanceof MeshCollider mc) {
+            return mc;
+        } else {
+            throw new UnsupportedOperationException("Collider must be MeshCollider or BoxCollider");
+        }
+    }
+
+    public static BoxCollider convertMeshToBox(final MeshCollider collider) {
+        double minX = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        for (final Vector2 p : collider.getPoints()) {
+            minX = Math.min(minX, p.x());
+            maxX = Math.max(maxX, p.x());
+            minY = Math.min(minY, p.y());
+            maxY = Math.max(maxY, p.y());
+        }
+        return new BoxCollider(new Vector2(minX, minY), maxX - minX, maxY - minY);
+    }
+
+    public static MeshCollider convertBoxToMesh(final BoxCollider collider) {
+        return new MeshCollider(collider.getPosition(), List.of(
+                collider.getPosition(),
+                collider.getPosition().add(new Vector2(collider.getWidth(), 0.0)),
+                collider.getPosition().add(new Vector2(collider.getWidth(), collider.getHeight())),
+                collider.getPosition().add(new Vector2(0.0, collider.getHeight()))
+        ), 1.0, 0.0);
     }
 }

@@ -84,15 +84,14 @@ public class LevelImpl implements Level {
         for (final GameObject g1 : dynamicGameObjects) {
             final Map<GameObject, Double> collidersByCollisionTime = new HashMap<>();
             for (final GameObject g2 : gameObjects.stream().filter(t -> !t.equals(g1)).toList()) {
-                final Collider c1 = g1.getCollider().orElseThrow();
-                final Collider c2 = g2.getCollider().orElseThrow();
-                final CollisionAlgorithms.Swept sw = CollisionAlgorithms.sweptAABB(g1, g2, deltaTime);
+                final Collider c = g1.getCollider().orElseThrow();
+                final CollisionAlgorithms.Collision sw = CollisionAlgorithms.sweptAABB(g1, g2, deltaTime);
                 boolean collided = sw != null;
                 if (collided) {
                     collidersByCollisionTime.put(g2, sw.time());
-                    c1.addCollided(c2);
+                    c.addCollided(g2);
                 } else {
-                    c1.removeCollided(c2);
+                    c.removeCollided(g2);
                 }
             }
             for (var x : collidersByCollisionTime

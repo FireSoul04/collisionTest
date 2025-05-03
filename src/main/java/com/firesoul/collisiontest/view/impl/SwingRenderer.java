@@ -8,7 +8,8 @@ import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
-import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -108,13 +109,24 @@ public class SwingRenderer extends JPanel implements Renderer {
             if (colliderOpt.isPresent()) {
                 final Collider collider = colliderOpt.get();
                 boolean red = false;
-                for (final Collider sh : collider.getCollidedShapes()) {
-                    final boolean bothSolid = collider.isSolid() && sh.isSolid();
+                for (final Collider c : collider.getCollidedGameObjects().stream()
+                        .map(GameObject::getCollider).map(Optional::orElseThrow).toList()
+                ) {
+                    final boolean bothSolid = collider.isSolid() && c.isSolid();
                     red |= bothSolid && collider.isCollided();
                 }
                 g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
-                final Rectangle hitbox = CollisionAlgorithms.fitInRect(collider);
-                g2.drawRect((int) hitbox.x(), (int) hitbox.y(), (int) hitbox.w(), (int) hitbox.h());
+
+                if (collider instanceof BoxCollider bc) {
+                    g2.drawRect(
+                            (int) bc.getPosition().x(), (int) bc.getPosition().y(),
+                            (int) bc.getWidth(), (int) bc.getHeight()
+                    );
+                } else if (collider instanceof MeshCollider mc) {
+                    final Polygon polygon = new Polygon();
+                    mc.getPoints().forEach(p -> polygon.addPoint((int) p.x(), (int) p.y()));
+                    g2.drawPolygon(polygon);
+                }
             }
 
             if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
@@ -145,8 +157,8 @@ public class SwingRenderer extends JPanel implements Renderer {
         if (g.getSprite().isPresent() && g.getSprite().get() instanceof SwingSprite swingSprite) {
             offset = new Vector2(swingSprite.getWidth(), swingSprite.getHeight());
         } else if (g.getCollider().isPresent()) {
-            final var rect = CollisionAlgorithms.fitInRect(g.getCollider().get());
-            offset = new Vector2(rect.w(), rect.h());
+            final BoxCollider box = CollisionAlgorithms.getBoxCollider(g.getCollider().get());
+            offset = new Vector2(box.getWidth(), box.getHeight());
         }
 
         return g.getPosition().x() - offset.x() < this.camera.getPosition().x() + (this.camera.getWidth())

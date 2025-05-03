@@ -11,11 +11,9 @@ public interface Collider {
 
     void rotate(double angle);
 
-    List<Vector2> getPoints();
-
-    Set<Collider> getCollidedShapes();
-
     double getOrientation();
+
+    Set<GameObject> getCollidedGameObjects();
 
     Vector2 getPosition();
 
@@ -23,9 +21,9 @@ public interface Collider {
 
     boolean isCollided();
 
-    void addCollided(Collider collidedShape);
+    void addCollided(GameObject collidedGameObject);
 
-    void removeCollided(Collider collidedShape);
+    void removeCollided(GameObject collidedGameObject);
 
     boolean isSolid();
 
