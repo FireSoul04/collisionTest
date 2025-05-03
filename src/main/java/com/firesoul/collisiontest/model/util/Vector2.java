@@ -47,7 +47,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param a
+     * @param a scalar
      * @return the sum of this vector and a scalar a
      */
     public Vector2 add(final double a) {
@@ -55,7 +55,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param a
+     * @param a scalar
      * @return the difference of this vector and a scalar a
      */
     public Vector2 subtract(final double a) {
@@ -63,7 +63,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param a
+     * @param a scalar
      * @return the product of this vector and a scalar a
      */
     public Vector2 multiply(final double a) {
@@ -71,7 +71,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param a
+     * @param a scalar
      * @return the division of this vector and a scalar a
      */
     public Vector2 divide(final double a) {
@@ -86,7 +86,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param v
+     * @param v vector
      * @return the sum of this vector and the vector v
      */
     public Vector2 add(final Vector2 v) {
@@ -94,7 +94,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param v
+     * @param v vector
      * @return the difference of this vector and the vector v
      */
     public Vector2 subtract(final Vector2 v) {
@@ -102,7 +102,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param v
+     * @param v vector
      * @return the product of this vector and the vector v
      */
     public Vector2 multiply(final Vector2 v) {
@@ -110,7 +110,7 @@ public record Vector2(double x, double y) {
     }
 
     /**
-     * @param v
+     * @param v vector
      * @return the division of this vector and the vector v
      */
     public Vector2 divide(final Vector2 v) {

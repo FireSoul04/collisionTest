@@ -1,21 +1,18 @@
 package com.firesoul.collisiontest.model.impl;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 public final class CollisionAlgorithms {
     
-    public final record Rectangle(double x, double y, double w, double h) {}
-    public final record Swept(Vector2 normal, Vector2 point, double time) {}
+    public record Rectangle(double x, double y, double w, double h) {}
+    public record Swept(Vector2 normal, Vector2 point, double time) {}
 
     // DEBUG VISUALS
-    public static List<Rectangle> debugRect = new CopyOnWriteArrayList<>();
-    public static List<Vector2> debugPoint = new CopyOnWriteArrayList<>();
-    public static List<Rectangle> debugNormal = new CopyOnWriteArrayList<>();
+//    public static List<Rectangle> debugRect = new CopyOnWriteArrayList<>();
+//    public static List<Vector2> debugPoint = new CopyOnWriteArrayList<>();
+//    public static List<Rectangle> debugNormal = new CopyOnWriteArrayList<>();
     // DEBUG VISUALS
 
     public static Rectangle fitInRect(final Collider s) {
@@ -42,25 +39,30 @@ public final class CollisionAlgorithms {
         if (collided) {
             Vector2 normal = Vector2.zero();
             Vector2 collisionPoint = Vector2.zero();
-            if (Math.abs(r1.x() + r1.w() - r2.x()) < 1.0) {
+            Vector2 mediumPoint = new Vector2(r1.x() + r2.x(), r1.y() + r2.y()).divide(2.0);
+            double collisionOnRight = r1.x() + r1.w() - r2.x();
+            double collisionOnLeft = r1.x() - (r2.x() + r2.w());
+            if (Math.abs(collisionOnRight) < 1.0) {
                 normal = Vector2.right();
-                collisionPoint = new Vector2(r1.x() + r1.w() - r2.x(), (r1.y() + r2.y())/2);
-            } else if (Math.abs(r1.x() - (r2.x() + r2.w())) < 1.0) {
+                collisionPoint = new Vector2(collisionOnRight, mediumPoint.y());
+            } else if (Math.abs(collisionOnLeft) < 1.0) {
                 normal = Vector2.left();
-                collisionPoint = new Vector2(r1.x() - (r2.x() + r2.w()), (r1.y() + r2.y())/2);
+                collisionPoint = new Vector2(collisionOnLeft, mediumPoint.y());
             }
-            if (Math.abs(r1.y() + r1.h() - r2.y()) < 1.0) {
+            double collisionOnBottom = r1.y() + r1.h() - r2.y();
+            double collisionOnTop = r2.y() + r2.h() - r1.y();
+            if (Math.abs(collisionOnBottom) < 1.0) {
                 normal = Vector2.down();
-                collisionPoint = new Vector2((r1.x() + r2.x())/2, r1.y() + r1.h() - r2.y());
-            } else if (Math.abs(r1.y() - (r2.y() + r2.h())) < 1.0) {
+                collisionPoint = new Vector2(mediumPoint.x(), collisionOnTop);
+            } else if (Math.abs(collisionOnTop) < 1.0) {
                 normal = Vector2.up();
-                collisionPoint = new Vector2((r1.x() + r2.x())/2, r1.y() - (r2.y() + r2.h()));
+                collisionPoint = new Vector2(mediumPoint.x(), collisionOnBottom);
             }
 
             // DEBUG VISUALS
-            debugRect.add(r2);
-            debugPoint.add(collisionPoint);
-            debugNormal.add(new Rectangle(collisionPoint.x(), collisionPoint.y(), normal.x(), normal.y()));
+//            debugRect.add(r2);
+//            debugPoint.add(collisionPoint);
+//            debugNormal.add(new Rectangle(collisionPoint.x(), collisionPoint.y(), normal.x(), normal.y()));
             // DEBUG VISUALS
 
             return new Swept(normal, collisionPoint, 1.0);
@@ -75,7 +77,7 @@ public final class CollisionAlgorithms {
         double farX = (target.x() + target.w() - ray.x())*inverseDirection.x();
         double farY = (target.y() + target.h() - ray.y())*inverseDirection.y();
         Vector2 normal = Vector2.zero();
-        Vector2 collisionPoint = Vector2.zero();
+        Vector2 collisionPoint;
 
         if (nearX > farX) {
             final double temp = nearX;
@@ -107,25 +109,32 @@ public final class CollisionAlgorithms {
         }
 
         // DEBUG VISUALS
-        debugRect.add(target);
-        debugPoint.add(collisionPoint);
-        debugNormal.add(new Rectangle(collisionPoint.x(), collisionPoint.y(), normal.x(), normal.y()));
+//        debugRect.add(target);
+//        debugPoint.add(collisionPoint);
+//        debugNormal.add(new Rectangle(collisionPoint.x(), collisionPoint.y(), normal.x(), normal.y()));
         // DEBUG VISUALS
         
         return new Swept(normal, collisionPoint, nearHit);
     }
 
-    public static Swept sweptAABB(final Collider c1, final Collider c2, final double deltaTime) {
+    public static Swept sweptAABB(final GameObject g1, final GameObject g2, final double deltaTime) {
+        if (g1.getCollider().isEmpty() || g2.getCollider().isEmpty()) {
+            return null;
+        }
+
+        final Collider c1 = g1.getCollider().get();
+        final Collider c2 = g2.getCollider().get();
+
         final Rectangle r1 = fitInRect(c1);
         final Rectangle r2 = fitInRect(c2);
 
-        if (c1.getAttachedGameObject().getVelocity().equals(Vector2.zero())) {
+        if (g1.getVelocity().equals(Vector2.zero())) {
             return simpleAABB(r1, r2);
         }
 
         final Rectangle extendedRect = new Rectangle(r2.x() - r1.w()/2, r2.y() - r1.h()/2, r2.w() + r1.w(), r2.h() + r1.h());
         final Vector2 ray = new Vector2(r1.x() + r1.w()/2, r1.y() + r1.h()/2);
-        final Swept sw = rayAABB(extendedRect, ray, c1.getAttachedGameObject().getVelocity().multiply(deltaTime));
+        final Swept sw = rayAABB(extendedRect, ray, g1.getVelocity().multiply(deltaTime));
         if (sw != null && sw.time() >= 0.0 && sw.time() < 1.0) {
             return sw;
         } else {
@@ -133,12 +142,10 @@ public final class CollisionAlgorithms {
         }
     }
 
-    public static void resolveSweptAABB(final Collider c1, final Collider c2, final double deltaTime) {
-        final Swept sw = sweptAABB(c1, c2, deltaTime);
+    public static void resolveSweptAABB(final GameObject g1, final GameObject g2, final double deltaTime) {
+        final Swept sw = sweptAABB(g1, g2, deltaTime);
         if (sw != null) {
-            GameObject g1 = c1.getAttachedGameObject();
-            GameObject g2 = c2.getAttachedGameObject();
-            c1.onCollision(c2, sw.normal(), sw.time());
+            g1.onCollision(g2, sw.normal(), sw.time());
             if (g2.isStatic()) {
                 g1.setVelocity(g1.getVelocity()
                     .add(sw.normal()
@@ -188,11 +195,11 @@ public final class CollisionAlgorithms {
             }
         }
         
-        if (c2.getAttachedGameObject().isStatic()) {
-            final Vector2 d = c1.getPosition().subtract(c2.getPosition());
-            final double s = d.dot(d);
-            c1.move(d.multiply(overlap).divide(s));
-        }
+//        if (c2.getAttachedGameObject().isStatic()) {
+//            final Vector2 d = c1.getPosition().subtract(c2.getPosition());
+//            final double s = d.dot(d);
+//            c1.move(d.multiply(overlap).divide(s));
+//        }
 
         return true;
     }

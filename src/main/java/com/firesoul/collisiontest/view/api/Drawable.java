@@ -4,7 +4,7 @@ import com.firesoul.collisiontest.model.util.Vector2;
 
 public interface Drawable {
 
-    public static final String RESOURCES_PATH = "src/main/resources/";
+    String RESOURCES_PATH = "src/main/resources/";
 
     void mirrorX(double directionX);
 

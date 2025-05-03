@@ -78,31 +78,34 @@ public class LevelImpl implements Level {
     }
 
     private void checkCollisions(final double deltaTime) {
-        final List<Collider> colliders = this.gameObjects.stream()
-                .map(GameObject::getCollider)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-        final List<Collider> dynamicColliders = colliders.stream()
-                .filter(t -> t.getAttachedGameObject().isDynamic())
-                .toList();
-        for (final Collider c1 : dynamicColliders) {
-            boolean collided = false;
-            final Map<Collider, Double> collidersByCollisionTime = new HashMap<>();
-            for (final Collider c2 : colliders.stream().filter(t -> !t.equals(c1)).toList()) {
-                final CollisionAlgorithms.Swept sw = CollisionAlgorithms.sweptAABB(c1, c2, deltaTime);
-                collided = sw != null;
+        final List<GameObject> gameObjects = this.gameObjects.stream()
+            .filter(g -> g.getCollider().isPresent())
+            .toList();
+        final List<GameObject> dynamicGameObjects = gameObjects.stream()
+            .filter(GameObject::isDynamic)
+            .toList();
+        for (final GameObject g1 : dynamicGameObjects) {
+            final Map<GameObject, Double> collidersByCollisionTime = new HashMap<>();
+            for (final GameObject g2 : gameObjects.stream().filter(t -> !t.equals(g1)).toList()) {
+                final Collider c1 = g1.getCollider().orElseThrow();
+                final Collider c2 = g2.getCollider().orElseThrow();
+                final CollisionAlgorithms.Swept sw = CollisionAlgorithms.sweptAABB(g1, g2, deltaTime);
+                boolean collided = sw != null;
                 // collided = Controller.SAT(s1, s2);
                 if (collided) {
-                    collidersByCollisionTime.put(c2, sw.time());
+                    collidersByCollisionTime.put(g2, sw.time());
                     c1.addCollided(c2);
                 } else {
                     c1.removeCollided(c2);
                 }
             }
-
-            for (var x : collidersByCollisionTime.entrySet().stream().sorted((a, b) -> Double.compare(a.getValue(), b.getValue())).toList()) {
-                CollisionAlgorithms.resolveSweptAABB(c1, x.getKey(), deltaTime);
+            for (var x : collidersByCollisionTime
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparingDouble(Map.Entry::getValue))
+                .toList()
+            ) {
+                CollisionAlgorithms.resolveSweptAABB(g1, x.getKey(), deltaTime);
             }
         }
     }

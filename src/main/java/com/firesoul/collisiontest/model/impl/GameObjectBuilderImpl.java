@@ -50,11 +50,8 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
 
     @Override
     public GameObject build() {
-        final GameObject builded = new GameObjectImpl(this.position, this.orientation, this.dynamic, this.collider, this.sprite);
-        if (this.getCollider().isPresent()) {
-            this.collider.get().attachGameObject(builded);
-        }
-        return builded;
+        this.collider.ifPresent(t -> t.setPosition(this.position));
+        return new GameObjectImpl(this.position, this.orientation, this.dynamic, this.collider, this.sprite);
     }
 
     protected Vector2 getPosition() {

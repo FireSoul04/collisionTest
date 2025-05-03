@@ -1,11 +1,7 @@
 package com.firesoul.collisiontest.model.util;
 
-import com.firesoul.collisiontest.controller.impl.InputController;
-import com.firesoul.collisiontest.model.api.Event;
-
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Supplier;
 
 public class GameTimer {
 

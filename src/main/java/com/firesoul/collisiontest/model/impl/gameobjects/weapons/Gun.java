@@ -13,7 +13,7 @@ public class Gun extends WeaponImpl {
     private final Level world;
     private final GameTimer shootCooldown;
     private final Vector2 projectileOffset;
-    private Vector2 projectileVelocity;
+    private final Vector2 projectileVelocity;
 
     private final GameTimer reloadTimer;
     private final int maxProjectiles;

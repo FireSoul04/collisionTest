@@ -42,14 +42,13 @@ public class Sword extends WeaponImpl {
     }
 
     @Override
-    public void onCollision(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        final GameObject g = collidedShape.getAttachedGameObject();
-        if (g instanceof Enemy e && this.getCollider().isPresent() && this.getCollider().get().isSolid()) {
+    public void onCollision(final GameObject gameObject, final Vector2 collisionDirection, final double collisionTime) {
+        if (gameObject instanceof Enemy e && this.getCollider().isPresent() && this.getCollider().get().isSolid()) {
             e.takeDamage(3);
 
             final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().get());
-            final var r2 = CollisionAlgorithms.fitInRect(collidedShape);
-            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (g.getPosition().x() + r2.w()/2.0));
+            final var r2 = CollisionAlgorithms.fitInRect(gameObject.getCollider().orElseThrow());
+            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (gameObject.getPosition().x() + r2.w()/2.0));
             this.getHolder().setVelocity(new Vector2(distX*5, this.getVelocity().y()));
         }
     }

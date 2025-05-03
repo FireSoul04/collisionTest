@@ -25,9 +25,8 @@ public class Projectile extends GameObjectImpl {
     }
 
     @Override
-    public void onCollision(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        final GameObject g = collidedShape.getAttachedGameObject();
-        if (g instanceof Enemy e) {
+    public void onCollision(final GameObject gameObject, final Vector2 collisionDirection, final double collisionTime) {
+        if (gameObject instanceof Enemy e) {
             this.destroy();
             e.takeDamage(3);
         }

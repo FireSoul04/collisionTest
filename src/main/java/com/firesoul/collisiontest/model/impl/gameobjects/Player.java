@@ -37,7 +37,7 @@ public class Player extends EntityImpl {
     // Jump logic
     private final Vector2 jumpAcceleration = new Vector2(0.0, -0.06);
     private boolean onGround = false;
-    private final int maxJumpHeight = 20;
+    private final int maxJumpHeight = 16;
     private int currentJumpHeight = 0;
 
     public Player(
@@ -73,17 +73,16 @@ public class Player extends EntityImpl {
     }
 
     @Override
-    public void onCollision(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        final GameObject g = collidedShape.getAttachedGameObject();
-        if (g.isStatic() && collisionDirection.equals(Vector2.up())) {
+    public void onCollision(final GameObject gameObject, final Vector2 collisionDirection, final double collisionTime) {
+        if (gameObject.isStatic() && collisionDirection.equals(Vector2.up())) {
             this.currentJumpHeight = 0;
             this.onGround = true;
-        } else if (g instanceof Enemy) {
+        } else if (gameObject instanceof Enemy) {
             this.takeDamage(3);
 
-            final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().get());
-            final var r2 = CollisionAlgorithms.fitInRect(collidedShape);
-            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (g.getPosition().x() + r2.w()/2.0));
+            final var r1 = CollisionAlgorithms.fitInRect(this.getCollider().orElseThrow());
+            final var r2 = CollisionAlgorithms.fitInRect(gameObject.getCollider().orElseThrow());
+            final double distX = Math.signum((this.getPosition().x() + r1.w()/2.0) - (gameObject.getPosition().x() + r2.w()/2.0));
             this.setVelocity(new Vector2(distX*10, this.getVelocity().y()));
             this.facingDirectionX = -distX;
         }

@@ -22,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SwingRenderer extends JPanel implements Renderer {
 
-    private final JFrame window = new JFrame("Collision test");
     private final InputController input = new InputController();
     private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
@@ -37,20 +36,21 @@ public class SwingRenderer extends JPanel implements Renderer {
         this.height = height;
         this.scale = scale;
 
-        this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.window.addKeyListener(this.input.getKeyListener());
+        JFrame window = new JFrame("Collision test");
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.addKeyListener(this.input.getKeyListener());
 
-        this.window.getContentPane().add(this);
-        this.window.getContentPane().setPreferredSize(new Dimension((int) (width * scale.x()), (int) (height * scale.y())));
+        window.getContentPane().add(this);
+        window.getContentPane().setPreferredSize(new Dimension((int) (width * scale.x()), (int) (height * scale.y())));
 
-        this.window.setLocation(startPosition);
-        this.window.setVisible(true);
-        this.window.pack();
-        this.window.setMinimumSize(this.window.getSize());
-        this.window.addComponentListener(new ComponentAdapter() {
+        window.setLocation(startPosition);
+        window.setVisible(true);
+        window.pack();
+        window.setMinimumSize(window.getSize());
+        window.addComponentListener(new ComponentAdapter() {
             public void componentResized(final ComponentEvent e) {
-                final Dimension d = ((JFrame) e.getComponent()).getContentPane().getSize();
-                SwingRenderer.this.scale = new Vector2(d.getWidth() / (double) width, d.getHeight() / (double) height);
+            final Dimension d = ((JFrame) e.getComponent()).getContentPane().getSize();
+            SwingRenderer.this.scale = new Vector2(d.getWidth() / (double) width, d.getHeight() / (double) height);
             }
         });
 

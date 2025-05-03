@@ -1,22 +1,16 @@
 package com.firesoul.collisiontest.model.impl;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
-import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
-import com.firesoul.collisiontest.model.impl.gameobjects.Player;
-import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderer;
 
 public class GameCollisions implements CollisionTest {
 
     private final Renderer renderer;
     private final InputController input;
-    private Level level;
+    private final Level level;
 
     public GameCollisions(final Renderer renderer) {
         this.renderer = renderer;

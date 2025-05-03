@@ -7,10 +7,10 @@ import java.util.Optional;
 import com.firesoul.collisiontest.controller.impl.Controller;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
-import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.impl.gameobjects.EnemyImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.impl.gameobjects.Projectile;
+import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -37,9 +37,8 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", new SwingSprite("player", position, 0.0, this.renderer),
             "damage", new SwingSprite("player_damage", position, 0.0, this.renderer)
         );
-        final Player player = new Player(position, 0.0, Optional.of(collider), sprites, input);
-        collider.attachGameObject(player);
-        return player;
+        collider.setPosition(position);
+        return new Player(position, 0.0, Optional.of(collider), sprites, input);
     }
 
     @Override
@@ -52,9 +51,8 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
         );
         final Collider collider = new MeshCollider(colliderPoints, 2.0, 0.0);
         final Drawable sprite = new SwingSprite("projectile", position, 0.0, this.renderer);
-        final GameObject projectile = new Projectile(position, speed, Optional.of(collider), Optional.of(sprite), speed);
-        collider.attachGameObject(projectile);
-        return projectile;
+        collider.setPosition(position);
+        return new Projectile(position, speed, Optional.of(collider), Optional.of(sprite), speed);
     }
 
     @Override
@@ -64,17 +62,15 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
                 "idle", new SwingSprite("enemy", position, 0.0, this.renderer),
                 "damage", new SwingSprite("enemy_damage", position, 0.0, this.renderer)
         );
-        final Enemy enemy = new EnemyImpl(position, 0.0, true, Optional.of(collider), sprites, 200, 10, () -> null);
-        collider.attachGameObject(enemy);
-        return enemy;
+        collider.setPosition(position);
+        return new EnemyImpl(position, 0.0, true, Optional.of(collider), sprites, 200, 10, () -> null);
     }
 
     @Override
     public GameObject block(final Vector2 position) {
         final Collider collider = new MeshCollider(Controller.regularPolygon(4), 14.0, Math.PI/4);
         // final Drawable sprite = null;
-        final GameObject block = new GameObjectImpl(position, 0.0, false, Optional.of(collider), Optional.empty());
-        collider.attachGameObject(block);
-        return block;
+        collider.setPosition(position);
+        return new GameObjectImpl(position, 0.0, false, Optional.of(collider), Optional.empty());
     }
 }

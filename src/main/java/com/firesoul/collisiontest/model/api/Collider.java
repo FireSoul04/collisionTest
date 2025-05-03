@@ -15,10 +15,6 @@ public interface Collider {
 
     Set<Collider> getCollidedShapes();
 
-    void attachGameObject(GameObject gameObject);
-
-    GameObject getAttachedGameObject();
-
     double getOrientation();
 
     Vector2 getPosition();
@@ -34,6 +30,4 @@ public interface Collider {
     boolean isSolid();
 
     void setSolid(boolean solid);
-
-    void onCollision(Collider collidedShape, Vector2 collisionDirection, double collisionTime);
 }
