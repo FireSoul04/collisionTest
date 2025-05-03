@@ -13,7 +13,7 @@ import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Player extends EntityImpl {
 
-    private final double speed = 0.05;
+    private final double speed = 0.03;
     private final double rotSpeed = 0.015;
 
     private final InputController input;
@@ -28,7 +28,7 @@ public class Player extends EntityImpl {
     // Movement logic
     private double friction = 1.0;
     private int currentVelocity = 1;
-    private final int maxVelocity = 10;
+    private final int maxVelocity = 5;
     // Gravity logic
     private final Vector2 gravityAcceleration = new Vector2(0.0, 0.25);
     // Jump logic

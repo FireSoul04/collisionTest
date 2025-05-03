@@ -44,9 +44,9 @@ public class GameCollisions implements CollisionTest {
     }
 
     private void addGameObjects() {
-        final Vector2 playerPosition = new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(2.0);
+        final Vector2 playerPosition = new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight()).divide(2.0);
         this.player = this.gf.player(playerPosition, this.input, this);
-        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(330))));
+        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(390))));
         this.gameObjects.add(this.player);
 
         final WeaponFactory wf = new WeaponFactoryImpl(this.renderer);
@@ -74,7 +74,7 @@ public class GameCollisions implements CollisionTest {
         this.projectiles.clear();
 
         this.renderer.getCamera().setPosition(this.player.getPosition().subtract(
-            new Vector2(this.renderer.getWidth(), this.renderer.getHeight())
+            new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight())
                 .divide(2.0)
         ));
 

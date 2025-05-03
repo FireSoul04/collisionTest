@@ -16,9 +16,9 @@ public interface Renderer {
 
     int getHeight();
 
-    int getScaledWidth();
+    int getGameWidth();
 
-    int getScaledHeight();
+    int getGameHeight();
 
     InputController getInput();
 

@@ -34,7 +34,7 @@ public class SwingRenderer extends JPanel implements Renderer {
 
     private Vector2 scale;
 
-    public SwingRenderer(final Camera camera, final int width, final int height, final Vector2 scale) {
+    public SwingRenderer(final Camera camera, final Point startPosition, final int width, final int height, final Vector2 scale) {
         this.width = width;
         this.height = height;
         this.scale = scale;
@@ -45,6 +45,7 @@ public class SwingRenderer extends JPanel implements Renderer {
         this.window.getContentPane().add(this);
         this.window.getContentPane().setPreferredSize(new Dimension((int) (width * scale.x()), (int) (height * scale.y())));
 
+        this.window.setLocation(startPosition);
         this.window.setVisible(true);
         this.window.pack();
         this.window.setMinimumSize(this.window.getSize());
@@ -73,23 +74,13 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
-    public int getWidth() {
+    public int getGameWidth() {
         return this.width;
     }
 
     @Override
-    public int getHeight() {
+    public int getGameHeight() {
         return this.height;
-    }
-
-    @Override
-    public int getScaledWidth() {
-        return (int) (this.width * this.scale.x());
-    }
-
-    @Override
-    public int getScaledHeight() {
-        return (int) (this.height * this.scale.y());
     }
 
     @Override
@@ -108,7 +99,7 @@ public class SwingRenderer extends JPanel implements Renderer {
 
         final Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.BLACK);
-        g2.fillRect(0, 0, this.getScaledWidth(), this.getScaledHeight());
+        g2.fillRect(0, 0, this.getWidth(), this.getHeight());
         g2.scale(this.scale.x(), this.scale.y());
         g2.translate(-this.camera.getPosition().x(), -this.camera.getPosition().y());
 

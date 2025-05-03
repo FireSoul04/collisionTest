@@ -21,6 +21,8 @@ import java.util.Optional;
 
 public class Controller implements Runnable {
 
+    private static final double INITIAL_SCREEN_RATIO = 2.0 / 3.0;
+
     private final Renderer renderer;
 
     private final CollisionTest test;
@@ -32,8 +34,13 @@ public class Controller implements Runnable {
         final Camera camera = new CameraImpl(Vector2.zero(), 0.0, width, height);
 
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final Vector2 scale = Vector2.one();//new Vector2(screenSize.getWidth() / width, screenSize.getHeight() / height).divide(2.0);
-        this.renderer = new SwingRenderer(camera, width, height, scale);
+        final Vector2 scale = new Vector2(screenSize.getWidth() / width, screenSize.getHeight() / height)
+            .multiply(INITIAL_SCREEN_RATIO);
+        final Point startPosition = new Point(
+            (int) ((screenSize.getWidth() - width * scale.x()) / 2),
+            (int) ((screenSize.getHeight() - height * scale.y()) / 2)
+        );
+        this.renderer = new SwingRenderer(camera, startPosition, width, height, scale);
         this.test = new GameCollisions(this.renderer);
         camera.setBoundsX(this.test.getWidth());
         camera.setBoundsX(this.test.getHeight());
