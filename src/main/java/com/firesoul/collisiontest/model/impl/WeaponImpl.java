@@ -1,0 +1,53 @@
+package com.firesoul.collisiontest.model.impl;
+
+import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.api.Weapon;
+import com.firesoul.collisiontest.model.util.GameTimer;
+import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Drawable;
+
+import java.util.Map;
+import java.util.Optional;
+
+public class WeaponImpl extends GameObjectImpl implements Weapon {
+
+    private final GameObject holder;
+    private final Vector2 offset;
+    private final Vector2 spriteOffset;
+
+    public WeaponImpl(
+        final GameObject holder,
+        final Vector2 offset,
+        final Vector2 spriteOffset,
+        final double orientation,
+        final Optional<Collider> collider,
+        final Optional<Drawable> sprite
+    ) {
+        super(holder.getPosition().add(offset), orientation, true, collider, sprite);
+        this.holder = holder;
+        this.offset = offset;
+        this.spriteOffset = spriteOffset;
+        this.getSprite().ifPresent(s -> s.setVisible(false));
+    }
+
+    @Override
+    public void update(final double deltaTime) {
+        this.setPosition(this.holder.getPosition().add(this.offset));
+        this.getSprite().ifPresent(t -> t.translate(this.getHolder().getPosition().add(this.spriteOffset)));
+    }
+
+    @Override
+    public void attack() {
+
+    }
+
+    @Override
+    public GameObject getHolder() {
+        return this.holder;
+    }
+
+    protected Vector2 getSpriteOffset() {
+        return this.spriteOffset;
+    }
+}

@@ -1,8 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
-import java.awt.event.KeyEvent;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
@@ -18,15 +16,15 @@ public class Player extends EntityImpl {
     private final double speed = 0.05;
     private final double rotSpeed = 0.015;
 
-    private Weapon weapon;
-    private final GameCollisions world;
     private final InputController input;
 
     private final Map<String, Drawable> sprites;
 
     // Attack logic
-    private final GameTimer swingCoolDown = new GameTimer(() -> {}, 0, 300);
-    private final GameTimer shootCooldown = new GameTimer(() -> {}, 0, 500);
+    private final List<Weapon> weapons = new ArrayList<>();
+    private int nextWeapon = 0;
+    private Optional<Weapon> equippedWeapon = Optional.empty();
+    private final GameTimer weaponCooldown = new GameTimer(() -> {}, 0, 300);
     // Movement logic
     private double friction = 1.0;
     private int currentVelocity = 1;
@@ -44,23 +42,12 @@ public class Player extends EntityImpl {
         final double orientation,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
-        final InputController input,
-        final GameCollisions world
+        final InputController input
     ) {
         super(position, orientation, true, collider, Optional.of(sprites.get("idle")), 250, 12);
 
         this.sprites = sprites;
         this.input = input;
-        this.world = world;
-
-        this.input.addEvent("Jump", () -> this.input.isKeyPressed(KeyEvent.VK_SPACE));
-        this.input.addEvent("MoveLeft", () -> this.input.isKeyPressed(KeyEvent.VK_A));
-        this.input.addEvent("MoveRight", () -> this.input.isKeyPressed(KeyEvent.VK_D));
-        this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
-        this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
-
-        this.input.addEvent("SwingSword", () -> this.input.isKeyPressedOnce(KeyEvent.VK_E));
-        this.input.addEvent("Shoot", () -> this.input.isKeyPressedOnce(KeyEvent.VK_Q));
     }
 
     @Override
@@ -77,7 +64,7 @@ public class Player extends EntityImpl {
     }
 
     @Override
-    public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
+    public void onCollision(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
         final GameObject g = collidedShape.getAttachedGameObject();
         if (g.isStatic() && collisionDirection.equals(Vector2.up())) {
             this.currentJumpHeight = 0;
@@ -95,16 +82,20 @@ public class Player extends EntityImpl {
     @Override
     public void onDestroy() {
         System.out.println("Game over");
-        this.weapon.destroy();
+        this.equippedWeapon.ifPresent(GameObject::destroy);
         this.input.resetEvents();
     }
 
     public void equip(final Weapon weapon) {
-        this.weapon = weapon;
+        this.weapons.add(weapon);
+        if (this.equippedWeapon.isEmpty()) {
+            this.equippedWeapon = Optional.of(weapon);
+            weapon.getSprite().ifPresent(s -> s.setVisible(true));
+        }
     }
 
-    public Weapon getWeapon() {
-        return this.weapon;
+    public Optional<Weapon> getEquippedWeapon() {
+        return this.equippedWeapon;
     }
 
     public double getSpeed() {
@@ -127,8 +118,10 @@ public class Player extends EntityImpl {
         velocity = this.applyGravity(velocity);
         this.onGround = false;
 
-        this.swingSword();
-        this.shoot();
+        this.equippedWeapon.ifPresent(t -> {
+            this.useWeapon(t);
+            this.changeWeapon(t);
+        });
 
         this.setVelocity(velocity);
     }
@@ -174,17 +167,20 @@ public class Player extends EntityImpl {
         return velocity.add(this.gravityAcceleration);
     }
 
-    private void swingSword() {
-        if (this.input.getEvent("SwingSword") && !this.swingCoolDown.isRunning()) {
-            this.swingCoolDown.start();
-            this.weapon.attack();
+    private void useWeapon(final Weapon equippedWeapon) {
+        if (this.input.getEvent("UseWeapon") && !this.weaponCooldown.isRunning()) {
+            this.weaponCooldown.start();
+            equippedWeapon.attack();
         }
     }
 
-    private void shoot() {
-        if (this.input.getEvent("Shoot") && !this.shootCooldown.isRunning()) {
-            this.shootCooldown.start();
-            this.world.spawnProjectile();
+    private void changeWeapon(final Weapon equippedWeapon) {
+        if (this.input.getEvent("ChangeWeapon") && !this.weaponCooldown.isRunning()) {
+            this.weaponCooldown.start();
+            this.nextWeapon = (this.nextWeapon + 1) % this.weapons.size();
+            this.equippedWeapon = Optional.of(this.weapons.get(this.nextWeapon));
+            equippedWeapon.getSprite().ifPresent(s -> s.setVisible(false));
+            this.weapons.get(this.nextWeapon).getSprite().ifPresent(s -> s.setVisible(true));
         }
     }
 }

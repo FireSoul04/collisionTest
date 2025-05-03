@@ -138,7 +138,7 @@ public final class CollisionAlgorithms {
         if (sw != null) {
             GameObject g1 = c1.getAttachedGameObject();
             GameObject g2 = c2.getAttachedGameObject();
-            c1.onCollide(c2, sw.normal(), sw.time());
+            c1.onCollision(c2, sw.normal(), sw.time());
             if (g2.isStatic()) {
                 g1.setVelocity(g1.getVelocity()
                     .add(sw.normal()

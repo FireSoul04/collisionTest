@@ -103,7 +103,7 @@ public class MeshCollider implements Collider {
     }
 
     @Override
-    public void onCollide(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
-        this.attachedGameObject.onCollide(collidedShape, collisionDirection, collisionTime);
+    public void onCollision(final Collider collidedShape, final Vector2 collisionDirection, final double collisionTime) {
+        this.attachedGameObject.onCollision(collidedShape, collisionDirection, collisionTime);
     }
 }

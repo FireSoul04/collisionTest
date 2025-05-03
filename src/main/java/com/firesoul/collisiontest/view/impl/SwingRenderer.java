@@ -65,18 +65,22 @@ public class SwingRenderer extends JPanel implements Renderer {
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         for (final GameObject go : this.gameObjects) {
-            final Collider s = go.getCollider().get();
+            final Optional<Collider> colliderOpt = go.getCollider();
             final Optional<Drawable> spriteOpt = go.getSprite();
-            final Set<Collider> collidedShapes = s.getCollidedShapes();
 
-            boolean red = false;
-            for (final Collider sh : collidedShapes) {
-                final boolean bothSolid = s.isSolid() && sh.isSolid();
-                red |= bothSolid && s.isCollided();
+            if (colliderOpt.isPresent()) {
+                final Collider collider = colliderOpt.get();
+                final Set<Collider> collidedShapes = collider.getCollidedShapes();
+
+                boolean red = false;
+                for (final Collider sh : collidedShapes) {
+                    final boolean bothSolid = collider.isSolid() && sh.isSolid();
+                    red |= bothSolid && collider.isCollided();
+                }
+                g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
+                final Rectangle hitbox = CollisionAlgorithms.fitInRect(collider);
+                g2.drawRect((int) hitbox.x(), (int) hitbox.y(), (int) hitbox.w(), (int) hitbox.h());
             }
-            g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
-            final Rectangle sh = CollisionAlgorithms.fitInRect(s);
-            g2.drawRect((int) sh.x(), (int) sh.y(), (int) sh.w(), (int) sh.h());
             
             if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
                 swingSprite.drawSprite(g);

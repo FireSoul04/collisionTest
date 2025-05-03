@@ -37,5 +37,5 @@ public interface GameObject {
 
     void destroy();
 
-    default void onCollide(Collider collidedShape, Vector2 collisionDirection, double collisionTime) {}
+    default void onCollision(Collider collidedShape, Vector2 collisionDirection, double collisionTime) {}
 }

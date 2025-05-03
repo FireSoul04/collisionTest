@@ -29,20 +29,12 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             new Vector2(1.0, 2.5)
         );
         final Collider collider = new MeshCollider(colliderPoints, 20.0, 0);
-        final Collider swordCollider = new MeshCollider(Controller.regularPolygon(4), 16.0, Math.PI/2);
         final Map<String, Drawable> sprites = Map.of(
             "idle", new SwingSprite("player", position, 0.0, this.renderer),
             "damage", new SwingSprite("player_damage", position, 0.0, this.renderer)
         );
-        final Map<String, Drawable> swordSprites = Map.of(
-            "idle", new SwingSprite("sword1", Vector2.zero(), 0.0, this.renderer),
-            "swing", new SwingSprite("sword_swing", Vector2.zero(), 0.0, this.renderer)
-        );
-        final Player player = new Player(position, 0.0, Optional.of(collider), sprites, input, world);
-        final Weapon sword = new Sword(player, new Vector2(35.0, -20.0), new Vector2(45.0, -10.0), 0.0, swordCollider, swordSprites);
-        player.equip(sword);
+        final Player player = new Player(position, 0.0, Optional.of(collider), sprites, input);
         collider.attachGameObject(player);
-        swordCollider.attachGameObject(sword);
         return player;
     }
 
