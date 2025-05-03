@@ -7,20 +7,20 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Camera;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.impl.CameraImpl;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
 
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.geom.AffineTransform;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 public class SwingRenderer extends JPanel implements Renderer {
 
@@ -29,14 +29,31 @@ public class SwingRenderer extends JPanel implements Renderer {
     private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
     private final Camera camera;
+    private final int width;
+    private final int height;
 
-    public SwingRenderer(final Camera camera, final int width, final int height) {
+    private Vector2 scale;
+
+    public SwingRenderer(final Camera camera, final int width, final int height, final Vector2 scale) {
+        this.width = width;
+        this.height = height;
+        this.scale = scale;
+
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.window.setSize(width, height);
         this.window.addKeyListener(this.input.getKeyListener());
-        this.window.add(this);
+
+        this.window.getContentPane().add(this);
+        this.window.getContentPane().setPreferredSize(new Dimension((int) (width * scale.x()), (int) (height * scale.y())));
 
         this.window.setVisible(true);
+        this.window.pack();
+        this.window.setMinimumSize(this.window.getSize());
+        this.window.addComponentListener(new ComponentAdapter() {
+            public void componentResized(final ComponentEvent e) {
+                final Dimension d = ((JFrame) e.getComponent()).getContentPane().getSize();
+                SwingRenderer.this.scale = new Vector2(d.getWidth() / (double) width, d.getHeight() / (double) height);
+            }
+        });
 
         this.camera = camera;
     }
@@ -56,6 +73,26 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public int getScaledWidth() {
+        return (int) (this.width * this.scale.x());
+    }
+
+    @Override
+    public int getScaledHeight() {
+        return (int) (this.height * this.scale.y());
+    }
+
+    @Override
     public InputController getInput() {
         return this.input;
     }
@@ -71,7 +108,8 @@ public class SwingRenderer extends JPanel implements Renderer {
 
         final Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.BLACK);
-        g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+        g2.fillRect(0, 0, this.getScaledWidth(), this.getScaledHeight());
+        g2.scale(this.scale.x(), this.scale.y());
         g2.translate(-this.camera.getPosition().x(), -this.camera.getPosition().y());
 
         for (final GameObject go : this.gameObjects.stream().filter(this::isInBounds).toList()) {
@@ -89,7 +127,7 @@ public class SwingRenderer extends JPanel implements Renderer {
                 final Rectangle hitbox = CollisionAlgorithms.fitInRect(collider);
                 g2.drawRect((int) hitbox.x(), (int) hitbox.y(), (int) hitbox.w(), (int) hitbox.h());
             }
-            
+
             if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
                 swingSprite.drawSprite(g);
             }

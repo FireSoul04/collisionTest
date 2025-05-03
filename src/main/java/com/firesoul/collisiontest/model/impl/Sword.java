@@ -17,7 +17,7 @@ public class Sword extends WeaponImpl {
     private Vector2 update = Vector2.zero();
     private double angle = 0.0;
     private final double step = 0.25;
-    private final double range = 8.0;
+    private final double range = 4.0;
 
     private final GameTimer swingCooldown;
 

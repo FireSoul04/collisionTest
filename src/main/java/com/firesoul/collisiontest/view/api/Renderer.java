@@ -16,6 +16,10 @@ public interface Renderer {
 
     int getHeight();
 
+    int getScaledWidth();
+
+    int getScaledHeight();
+
     InputController getInput();
 
     Camera getCamera();

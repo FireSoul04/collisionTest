@@ -12,6 +12,7 @@ import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +27,13 @@ public class Controller implements Runnable {
     // private final CollisionTest test = new RegularPolygons(w);
 
     public Controller() {
-        final int width = 1280;
-        final int height = 720;
+        final int width = 640;
+        final int height = 360;
         final Camera camera = new CameraImpl(Vector2.zero(), 0.0, width, height);
-        this.renderer = new SwingRenderer(camera, width, height);
+
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Vector2 scale = Vector2.one();//new Vector2(screenSize.getWidth() / width, screenSize.getHeight() / height).divide(2.0);
+        this.renderer = new SwingRenderer(camera, width, height, scale);
         this.test = new GameCollisions(this.renderer);
         camera.setBoundsX(this.test.getWidth());
         camera.setBoundsX(this.test.getHeight());

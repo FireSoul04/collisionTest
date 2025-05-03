@@ -46,7 +46,7 @@ public class GameCollisions implements CollisionTest {
     private void addGameObjects() {
         final Vector2 playerPosition = new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(2.0);
         this.player = this.gf.player(playerPosition, this.input, this);
-        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
+        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(330))));
         this.gameObjects.add(this.player);
 
         final WeaponFactory wf = new WeaponFactoryImpl(this.renderer);
@@ -58,7 +58,7 @@ public class GameCollisions implements CollisionTest {
         this.player.equip(gun);
 
         for (int x = 1; x < 50; x++) {
-            this.gameObjects.add(this.gf.block(new Vector2(x*GameCollisions.TILE_SIZE*2, 600)));
+            this.gameObjects.add(this.gf.block(new Vector2(x * GameCollisions.TILE_SIZE, 600)));
         }
     }
 
@@ -80,7 +80,12 @@ public class GameCollisions implements CollisionTest {
 
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();
-            if (pos.x() < -renderer.getWidth() || pos.x() > renderer.getWidth()*2 || pos.y() < -renderer.getHeight() || pos.y() > renderer.getHeight()*2) {
+            if (
+                pos.x() < -this.width ||
+                pos.x() > this.height * 2 ||
+                pos.y() < -this.width ||
+                pos.y() > this.height * 2
+            ) {
                 g.destroy();
             }
         }

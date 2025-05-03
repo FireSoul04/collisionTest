@@ -82,9 +82,8 @@ public class SwingSprite extends JComponent implements Drawable {
             at.translate(this.position.x(), this.position.y());
             at.rotate(this.orientation);
             at.scale(this.direction, 1.0);
-            at.translate(-this.sprite.getWidth(this), -this.sprite.getHeight(this));
-            at.scale(2.0, 2.0);
-            g2.drawImage(this.sprite, at, this);
+            at.translate(-this.sprite.getWidth(null)/2.0, -this.sprite.getHeight(null)/2.0);
+            g2.drawImage(this.sprite, at, null);
         }
     }
 }

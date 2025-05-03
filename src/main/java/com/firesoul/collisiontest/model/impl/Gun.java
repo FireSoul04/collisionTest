@@ -1,6 +1,5 @@
 package com.firesoul.collisiontest.model.impl;
 
-import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -36,12 +35,6 @@ public class Gun extends WeaponImpl {
         this.reloadTimer = new GameTimer(() -> this.projectiles = this.maxProjectiles, 0, 2000);
         this.projectiles = this.maxProjectiles;
         this.projectileVelocity = Vector2.right().multiply(10.0);
-    }
-
-    @Override
-    public void update(double deltaTime) {
-        super.update(deltaTime);
-        System.out.println(this.projectileOffset);
     }
 
     @Override

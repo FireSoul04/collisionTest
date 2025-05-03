@@ -27,9 +27,9 @@ public class WeaponFactoryImpl implements WeaponFactory {
                 "idle", new SwingSprite("sword1", Vector2.zero(), 0.0, this.renderer),
                 "swing", new SwingSprite("sword_swing", Vector2.zero(), 0.0, this.renderer)
         );
-        final Vector2 offset = new Vector2(35.0, -20.0);
-        final Vector2 spriteOffset = new Vector2(45.0, -10.0);
-        final Collider collider = new MeshCollider(Controller.regularPolygon(4), 16.0, Math.PI/2);
+        final Vector2 offset = new Vector2(17.0, -10.0);
+        final Vector2 spriteOffset = new Vector2(22.0, -5.0);
+        final Collider collider = new MeshCollider(Controller.regularPolygon(4), 8.0, Math.PI/2);
         final Weapon sword = new Sword(holder, offset, spriteOffset, 0.0, collider, sprites);
         collider.attachGameObject(sword);
         return sword;
@@ -38,8 +38,8 @@ public class WeaponFactoryImpl implements WeaponFactory {
     @Override
     public Weapon gun(final Player holder, final GameCollisions world) {
         final SwingSprite sprite = new SwingSprite("gun", Vector2.zero(), 0.0, this.renderer);
-        final Vector2 offset = new Vector2(25.0, 0.0);
-        final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 2.5, -5.0);
+        final Vector2 offset = new Vector2(12.0, 0.0);
+        final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 1.2, -2.5);
         return new Gun(holder, offset, projectileOffset, 0.0, Optional.of(sprite), world, 6);
     }
 }

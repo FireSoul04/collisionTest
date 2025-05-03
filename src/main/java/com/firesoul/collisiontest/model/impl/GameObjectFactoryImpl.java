@@ -28,7 +28,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             new Vector2(1.0, -2.5),
             new Vector2(1.0, 2.5)
         );
-        final Collider collider = new MeshCollider(colliderPoints, 20.0, 0);
+        final Collider collider = new MeshCollider(colliderPoints, 10.0, 0);
         final Map<String, Drawable> sprites = Map.of(
             "idle", new SwingSprite("player", position, 0.0, this.renderer),
             "damage", new SwingSprite("player_damage", position, 0.0, this.renderer)
@@ -46,7 +46,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             new Vector2(2.0, -1.0),
             new Vector2(-2.0, -1.0)
         );
-        final Collider collider = new MeshCollider(colliderPoints, 4.0, 0.0);
+        final Collider collider = new MeshCollider(colliderPoints, 2.0, 0.0);
         final Drawable sprite = new SwingSprite("projectile", position, 0.0, this.renderer);
         final GameObject projectile = new Projectile(position, speed, Optional.of(collider), Optional.of(sprite), speed);
         collider.attachGameObject(projectile);
@@ -55,7 +55,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
 
     @Override
     public GameObject ballEnemy(final Vector2 position) {
-        final Collider collider = new MeshCollider(Controller.regularPolygon(50), 35.0, 0);
+        final Collider collider = new MeshCollider(Controller.regularPolygon(50), 17.0, 0);
         final Map<String, Drawable> sprites = Map.of(
                 "idle", new SwingSprite("enemy", position, 0.0, this.renderer),
                 "damage", new SwingSprite("enemy_damage", position, 0.0, this.renderer)
@@ -67,7 +67,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
 
     @Override
     public GameObject block(final Vector2 position) {
-        final Collider collider = new MeshCollider(Controller.regularPolygon(4), 28.0, Math.PI/4);
+        final Collider collider = new MeshCollider(Controller.regularPolygon(4), 14.0, Math.PI/4);
         // final Drawable sprite = null;
         final GameObject block = new GameObjectImpl(position, 0.0, false, Optional.of(collider), Optional.empty());
         collider.attachGameObject(block);
