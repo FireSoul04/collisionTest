@@ -2,6 +2,8 @@ package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
+import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
+import com.firesoul.collisiontest.model.impl.gameobjects.Projectile;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
@@ -10,7 +12,6 @@ import java.util.Optional;
 
 public class Gun extends WeaponImpl {
 
-    private final Level world;
     private final GameTimer shootCooldown;
     private final Vector2 projectileOffset;
     private final Vector2 projectileVelocity;
@@ -27,9 +28,8 @@ public class Gun extends WeaponImpl {
         final Level world,
         final int maxProjectiles
     ) {
-        super(holder, offset, offset, Optional.empty(), sprite);
+        super(holder, offset, offset, world, Optional.empty(), sprite);
         this.shootCooldown = new GameTimer(() -> {}, 0, 400);
-        this.world = world;
         this.projectileOffset = projectileOffset;
         this.maxProjectiles = maxProjectiles;
         this.reloadTimer = new GameTimer(() -> this.projectiles = this.maxProjectiles, 0, 2000);
@@ -42,10 +42,13 @@ public class Gun extends WeaponImpl {
         if (!this.shootCooldown.isRunning() && !this.reloadTimer.isRunning()) {
             this.shootCooldown.start();
             this.projectiles--;
-            this.world.spawnProjectile(this.getHolder().getPosition().add(
-                new Vector2(this.projectileOffset.x() * this.getDirectionX(), this.projectileOffset.y())),
-                new Vector2(this.projectileVelocity.x() * this.getDirectionX(), this.projectileVelocity.y())
-            );
+
+            this.getWorld().instanciate(new GameObjectFactoryImpl(this.getWorld()).projectile(
+                    this.getHolder().getPosition().add(
+                            new Vector2(this.projectileOffset.x() * this.getDirectionX(), this.projectileOffset.y())
+                    ),
+                    this.projectileVelocity.x() * this.getDirectionX()
+            ));
         }
 
         if (this.projectiles == 0) {

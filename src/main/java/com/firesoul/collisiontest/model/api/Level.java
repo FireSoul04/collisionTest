@@ -16,5 +16,5 @@ public interface Level {
 
     Vector2 getPlayerPosition();
 
-    void spawnProjectile(Vector2 position, Vector2 velocity);
+    void instanciate(GameObject gameObject);
 }

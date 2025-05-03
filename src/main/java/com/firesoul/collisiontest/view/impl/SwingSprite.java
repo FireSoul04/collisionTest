@@ -38,10 +38,9 @@ public class SwingSprite extends JComponent implements Drawable {
         this.setSize(this.sprite.getWidth(null), this.sprite.getHeight(null));
     }
 
-    public SwingSprite(final String name, final Vector2 position, final double orientation) {
-        this(name, position, orientation, true);
+    public SwingSprite(final String name, final Vector2 position) {
+        this(name, position, 0.0, true);
     }
-
     @Override
     public void draw() {
         this.repaint();

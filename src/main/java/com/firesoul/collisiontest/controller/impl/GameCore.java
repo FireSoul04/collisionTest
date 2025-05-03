@@ -4,6 +4,7 @@ import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.impl.gameobjects.CameraImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 import java.awt.*;
@@ -19,8 +20,6 @@ public class GameCore implements Runnable {
     public GameCore() {
         final int width = 640;
         final int height = 360;
-        final Camera camera = new CameraImpl(Vector2.zero(), 0.0, width, height);
-
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         final Vector2 scale = new Vector2(screenSize.getWidth() / width, screenSize.getHeight() / height)
             .multiply(INITIAL_SCREEN_RATIO);
@@ -28,6 +27,7 @@ public class GameCore implements Runnable {
             (int) ((screenSize.getWidth() - width * scale.x()) / 2),
             (int) ((screenSize.getHeight() - height * scale.y()) / 2)
         );
+        final Camera camera = new CameraImpl(Vector2.zero(), 0.0, width, height, null);
         this.logic = new Platformer(new SwingRenderer(camera, startPosition, width, height, scale));
     }
 

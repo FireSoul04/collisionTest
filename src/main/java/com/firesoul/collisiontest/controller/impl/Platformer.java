@@ -7,7 +7,6 @@ import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.impl.LevelImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
 
 public class Platformer implements GameLogic {
@@ -52,5 +51,10 @@ public class Platformer implements GameLogic {
         this.renderer.getCamera().setPosition(this.level.getPlayerPosition().subtract(
             new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight()).divide(2.0)
         ));
+    }
+
+    @Override
+    public Level getLevel() {
+        return this.level;
     }
 }

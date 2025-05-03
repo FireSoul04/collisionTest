@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
@@ -41,11 +42,12 @@ public class Player extends EntityImpl {
 
     public Player(
         final Vector2 position,
+        final Level world,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
         final InputController input
     ) {
-        super(position, true, collider, Optional.of(sprites.get("idle")), 250, 12);
+        super(position, true, world, collider, Optional.of(sprites.get("idle")), 250, 12);
 
         this.sprites = sprites;
         this.input = input;

@@ -23,6 +23,10 @@ public class MeshCollider implements Collider {
         this.rotate(angle);
     }
 
+    public MeshCollider(final List<Vector2> points, final double size) {
+        this(points, size, 0.0);
+    }
+
     @Override
     public void move(final Vector2 position) {
         this.position = this.position.add(position);

@@ -1,7 +1,7 @@
 package com.firesoul.collisiontest.model.impl.gameobjects;
 
+import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
-import com.firesoul.collisiontest.model.impl.GameObjectImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.Optional;
@@ -13,8 +13,9 @@ public class CameraImpl extends GameObjectImpl implements Camera {
     private double boundsX;
     private double boundsY;
 
-    public CameraImpl(final Vector2 position, final double orientation, final int width, final int height) {
-        super(position, true, Optional.empty(), Optional.empty());
+    public CameraImpl(final Vector2 position, final double orientation, final int width,
+                      final int height, final Level world) {
+        super(position, true, world, Optional.empty(), Optional.empty());
         this.rotate(orientation);
         this.width = width;
         this.height = height;

@@ -1,6 +1,7 @@
 package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 
 import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
@@ -24,13 +25,14 @@ public class Sword extends WeaponImpl {
     private final GameTimer swingCooldown;
 
     public Sword(
-        final GameObject holder,
-        final Vector2 offset,
-        final Vector2 spriteOffset,
-        final Collider collider,
-        final Map<String, Drawable> sprites
+            final GameObject holder,
+            final Vector2 offset,
+            final Vector2 spriteOffset,
+            final Level world,
+            final Collider collider,
+            final Map<String, Drawable> sprites
     ) {
-        super(holder, offset, spriteOffset, Optional.of(collider), Optional.of(sprites.get("idle")));
+        super(holder, offset, spriteOffset, world, Optional.of(collider), Optional.of(sprites.get("idle")));
         this.sprites = sprites;
         this.swingTimer = new GameTimer(() -> {
             this.setSolid(false);

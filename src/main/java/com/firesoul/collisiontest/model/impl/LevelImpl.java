@@ -3,6 +3,8 @@ package com.firesoul.collisiontest.model.impl;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
+import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
+import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
 
@@ -68,8 +70,8 @@ public class LevelImpl implements Level {
     }
 
     @Override
-    public void spawnProjectile(final Vector2 position, final Vector2 velocity) {
-        this.projectiles.add(this.gf.projectile(position, velocity.x()));
+    public void instanciate(GameObject gameObject) {
+        this.gameObjects.add(gameObject);
     }
 
     private void checkCollisions(final double deltaTime) {
