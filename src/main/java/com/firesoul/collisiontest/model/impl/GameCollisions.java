@@ -14,6 +14,9 @@ public class GameCollisions implements CollisionTest {
 
     private static final int TILE_SIZE = 20;
 
+    private final int width = 1600;
+    private final int height = 1200;
+
     private final Renderer renderer;
     private final InputController input;
 
@@ -43,7 +46,7 @@ public class GameCollisions implements CollisionTest {
     private void addGameObjects() {
         final Vector2 playerPosition = new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(2.0);
         this.player = this.gf.player(playerPosition, this.input, this);
-        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
+//        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
         this.gameObjects.add(this.player);
 
         final WeaponFactory wf = new WeaponFactoryImpl(this.renderer);
@@ -54,7 +57,7 @@ public class GameCollisions implements CollisionTest {
         this.player.equip(sword);
         this.player.equip(gun);
 
-        for (int x = 1; x < 25; x++) {
+        for (int x = 1; x < 50; x++) {
             this.gameObjects.add(this.gf.block(new Vector2(x*GameCollisions.TILE_SIZE*2, 600)));
         }
     }
@@ -69,6 +72,11 @@ public class GameCollisions implements CollisionTest {
         this.gameObjects.forEach(t -> t.update(deltaTime));
         this.gameObjects.addAll(this.projectiles);
         this.projectiles.clear();
+
+        this.renderer.getCamera().setPosition(this.player.getPosition().subtract(
+            new Vector2(this.renderer.getWidth(), this.renderer.getHeight())
+                .divide(2.0)
+        ));
 
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();
@@ -98,5 +106,15 @@ public class GameCollisions implements CollisionTest {
     @Override
     public void readInput() {
         this.player.readInput();
+    }
+
+    @Override
+    public double getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public double getHeight() {
+        return this.height;
     }
 }

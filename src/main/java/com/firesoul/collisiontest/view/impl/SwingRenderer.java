@@ -4,10 +4,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.Camera;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.CameraImpl;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Rectangle;
+import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
 
@@ -25,13 +28,17 @@ public class SwingRenderer extends JPanel implements Renderer {
     private final InputController input = new InputController();
     private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
-    public SwingRenderer() {
+    private final Camera camera;
+
+    public SwingRenderer(final Camera camera, final int width, final int height) {
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.window.setSize(1280, 720);
+        this.window.setSize(width, height);
         this.window.addKeyListener(this.input.getKeyListener());
         this.window.add(this);
 
         this.window.setVisible(true);
+
+        this.camera = camera;
     }
 
     @Override
@@ -44,10 +51,7 @@ public class SwingRenderer extends JPanel implements Renderer {
     @Override
     public void update(final List<GameObject> gameObjects) {
         this.gameObjects.clear();
-
-        for (final GameObject g : gameObjects) {
-            this.gameObjects.add(g);
-        }
+        this.gameObjects.addAll(gameObjects);
         this.repaint();
     }
 
@@ -57,23 +61,27 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
+    public Camera getCamera() {
+        return this.camera;
+    }
+
+    @Override
     protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
         final Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+        g2.translate(-this.camera.getPosition().x(), -this.camera.getPosition().y());
 
-        for (final GameObject go : this.gameObjects) {
+        for (final GameObject go : this.gameObjects.stream().filter(this::isInBounds).toList()) {
             final Optional<Collider> colliderOpt = go.getCollider();
             final Optional<Drawable> spriteOpt = go.getSprite();
 
             if (colliderOpt.isPresent()) {
                 final Collider collider = colliderOpt.get();
-                final Set<Collider> collidedShapes = collider.getCollidedShapes();
-
                 boolean red = false;
-                for (final Collider sh : collidedShapes) {
+                for (final Collider sh : collider.getCollidedShapes()) {
                     final boolean bothSolid = collider.isSolid() && sh.isSolid();
                     red |= bothSolid && collider.isCollided();
                 }
@@ -102,5 +110,21 @@ public class SwingRenderer extends JPanel implements Renderer {
             // DEBUG
         }
         g2.dispose();
+    }
+
+    private boolean isInBounds(final GameObject g) {
+        Vector2 offset = Vector2.zero();
+
+        if (g.getSprite().isPresent() && g.getSprite().get() instanceof SwingSprite swingSprite) {
+            offset = new Vector2(swingSprite.getWidth(), swingSprite.getHeight());
+        } else if (g.getCollider().isPresent()) {
+            final var rect = CollisionAlgorithms.fitInRect(g.getCollider().get());
+            offset = new Vector2(rect.w(), rect.h());
+        }
+
+        return g.getPosition().x() - offset.x() < this.camera.getPosition().x() + (this.camera.getWidth())
+            && g.getPosition().y() - offset.y() < this.camera.getPosition().y() + (this.camera.getHeight())
+            && g.getPosition().x() + offset.x() > this.camera.getPosition().x()
+            && g.getPosition().y() + offset.y() > this.camera.getPosition().y();
     }
 }

@@ -1,12 +1,15 @@
 package com.firesoul.collisiontest.controller.impl;
 
+import com.firesoul.collisiontest.model.api.Camera;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.impl.CameraImpl;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms.Swept;
 import com.firesoul.collisiontest.model.impl.GameCollisions;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 import java.util.ArrayList;
@@ -17,10 +20,20 @@ import java.util.Optional;
 
 public class Controller implements Runnable {
 
-    private final SwingRenderer w = new SwingRenderer();
+    private final Renderer renderer;
 
-    private final CollisionTest test = new GameCollisions(w);
+    private final CollisionTest test;
     // private final CollisionTest test = new RegularPolygons(w);
+
+    public Controller() {
+        final int width = 1280;
+        final int height = 720;
+        final Camera camera = new CameraImpl(Vector2.zero(), 0.0, width, height);
+        this.renderer = new SwingRenderer(camera, width, height);
+        this.test = new GameCollisions(this.renderer);
+        camera.setBoundsX(this.test.getWidth());
+        camera.setBoundsX(this.test.getHeight());
+    }
 
     @Override
     public void run() {

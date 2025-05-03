@@ -10,11 +10,12 @@ import com.firesoul.collisiontest.model.api.CollisionTest;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 public class RegularPolygons implements CollisionTest {
 
-    private final SwingRenderer w;
+    private final Renderer renderer;
     private final InputController input;
     private final double speed = 1.0;
     private final double rotSpeed = 0.1;
@@ -22,20 +23,20 @@ public class RegularPolygons implements CollisionTest {
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final GameObject player;
 
-    public RegularPolygons(final SwingRenderer w) {
-        this.w = w;
-        this.input = w.getInput();
+    public RegularPolygons(final SwingRenderer renderer) {
+        this.renderer = renderer;
+        this.input = renderer.getInput();
 
-        GameObjectBuilder playerBuilder = new GameObjectBuilderImpl(new Vector2(w.getWidth(), w.getHeight()).divide(4.0), true);
+        GameObjectBuilder playerBuilder = new GameObjectBuilderImpl(new Vector2(renderer.getWidth(), renderer.getHeight()).divide(4.0), true);
         playerBuilder = playerBuilder.collider(new MeshCollider(Controller.regularPolygon(5), 50.0, 0.0));
         this.player = playerBuilder.build();
         this.gameObjects.add(this.player);
 
-        GameObjectBuilder triBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(2.0), false);
+        GameObjectBuilder triBuilder = new GameObjectBuilderImpl(new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(2.0), false);
         triBuilder = triBuilder.collider(new MeshCollider(Controller.regularPolygon(3), 50.0, 0.0));
         this.gameObjects.add(triBuilder.build());
         
-        GameObjectBuilder circleBuilder = new GameObjectBuilderImpl(new Vector2(this.w.getWidth(), this.w.getHeight()).divide(1.2), false);
+        GameObjectBuilder circleBuilder = new GameObjectBuilderImpl(new Vector2(this.renderer.getWidth(), this.renderer.getHeight()).divide(1.2), false);
         circleBuilder = circleBuilder.collider(new MeshCollider(Controller.regularPolygon(50), 50.0, 0.0));
         this.gameObjects.add(circleBuilder.build());
         
@@ -50,8 +51,7 @@ public class RegularPolygons implements CollisionTest {
 
     @Override
     public void render() {
-        this.w.update(this.gameObjects);
-        this.w.repaint();
+        this.renderer.update(this.gameObjects);
     }
 
     @Override
@@ -86,5 +86,15 @@ public class RegularPolygons implements CollisionTest {
     @Override
     public List<GameObject> getGameObjects() {
         return this.gameObjects;
+    }
+
+    @Override
+    public double getWidth() {
+        return this.renderer.getWidth();
+    }
+
+    @Override
+    public double getHeight() {
+        return this.renderer.getHeight();
     }
 }

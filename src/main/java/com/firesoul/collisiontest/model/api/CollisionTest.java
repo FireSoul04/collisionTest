@@ -11,4 +11,8 @@ public interface CollisionTest {
     void readInput();
 
     List<GameObject> getGameObjects();
+
+    double getWidth();
+
+    double getHeight();
 }
