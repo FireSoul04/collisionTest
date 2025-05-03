@@ -13,6 +13,7 @@ public class Gun extends WeaponImpl {
     private final GameCollisions world;
     private final GameTimer shootCooldown;
     private final Vector2 projectileOffset;
+    private Vector2 projectileVelocity;
 
     private final GameTimer reloadTimer;
     private final int maxProjectiles;
@@ -34,6 +35,13 @@ public class Gun extends WeaponImpl {
         this.maxProjectiles = maxProjectiles;
         this.reloadTimer = new GameTimer(() -> this.projectiles = this.maxProjectiles, 0, 2000);
         this.projectiles = this.maxProjectiles;
+        this.projectileVelocity = Vector2.right().multiply(10.0);
+    }
+
+    @Override
+    public void update(double deltaTime) {
+        super.update(deltaTime);
+        System.out.println(this.projectileOffset);
     }
 
     @Override
@@ -41,7 +49,10 @@ public class Gun extends WeaponImpl {
         if (!this.shootCooldown.isRunning() && !this.reloadTimer.isRunning()) {
             this.shootCooldown.start();
             this.projectiles--;
-            this.world.spawnProjectile(this.getPosition().add(projectileOffset));
+            this.world.spawnProjectile(this.getHolder().getPosition().add(
+                new Vector2(this.projectileOffset.x() * this.getDirectionX(), this.projectileOffset.y())),
+                new Vector2(this.projectileVelocity.x() * this.getDirectionX(), this.projectileVelocity.y())
+            );
         }
 
         if (this.projectiles == 0) {

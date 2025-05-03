@@ -3,7 +3,6 @@ package com.firesoul.collisiontest.model.impl;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Weapon;
-import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 
@@ -15,6 +14,8 @@ public class WeaponImpl extends GameObjectImpl implements Weapon {
     private final GameObject holder;
     private final Vector2 offset;
     private final Vector2 spriteOffset;
+
+    private double directionX = 1.0;
 
     public WeaponImpl(
         final GameObject holder,
@@ -33,8 +34,15 @@ public class WeaponImpl extends GameObjectImpl implements Weapon {
 
     @Override
     public void update(final double deltaTime) {
+        final Vector2 position = new Vector2(
+            this.spriteOffset.x() * this.directionX,
+            this.spriteOffset.y()
+        );
         this.setPosition(this.holder.getPosition().add(this.offset));
-        this.getSprite().ifPresent(t -> t.translate(this.getHolder().getPosition().add(this.spriteOffset)));
+        this.getSprite().ifPresent(t -> {
+            t.translate(this.getHolder().getPosition().add(position));
+            t.mirrorX(this.directionX);
+        });
     }
 
     @Override
@@ -47,7 +55,21 @@ public class WeaponImpl extends GameObjectImpl implements Weapon {
         return this.holder;
     }
 
+    @Override
+    public void setDirectionX(double directionX) {
+        final double direction = Math.signum(directionX);
+        this.directionX = direction == 0.0 ? this.directionX : direction;
+    }
+
+    protected Vector2 getOffset() {
+        return this.offset;
+    }
+
     protected Vector2 getSpriteOffset() {
         return this.spriteOffset;
+    }
+
+    protected double getDirectionX() {
+        return this.directionX;
     }
 }

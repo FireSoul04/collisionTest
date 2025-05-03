@@ -6,11 +6,17 @@ public interface Drawable {
 
     public static final String RESOURCES_PATH = "src/main/resources/";
 
+    void mirrorX(double directionX);
+
     void translate(Vector2 position);
 
     void rotate(double angle);
 
     void draw();
+
+    int getWidth();
+
+    int getHeight();
 
     boolean isVisible();
 

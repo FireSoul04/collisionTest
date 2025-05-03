@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
+import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -19,6 +20,8 @@ public class SwingSprite extends JComponent implements Drawable {
     private Vector2 position;
     private double orientation;
 
+    private double direction;
+
     private Image sprite;
     private boolean visible;
 
@@ -27,6 +30,7 @@ public class SwingSprite extends JComponent implements Drawable {
         this.position = position;
         this.orientation = orientation;
         this.visible = visible;
+        this.direction = 1.0;
         try {
             this.sprite = ImageIO.read(new File(Drawable.RESOURCES_PATH + name + ".png"));
         } catch (IOException e) {
@@ -44,6 +48,11 @@ public class SwingSprite extends JComponent implements Drawable {
     @Override
     public void draw() {
         this.repaint();
+    }
+
+    @Override
+    public void mirrorX(double directionX) {
+        this.direction = directionX;
     }
 
     @Override
@@ -72,6 +81,7 @@ public class SwingSprite extends JComponent implements Drawable {
             final AffineTransform at = new AffineTransform();
             at.translate(this.position.x(), this.position.y());
             at.rotate(this.orientation);
+            at.scale(this.direction, 1.0);
             at.translate(-this.sprite.getWidth(this), -this.sprite.getHeight(this));
             at.scale(2.0, 2.0);
             g2.drawImage(this.sprite, at, this);

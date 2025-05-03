@@ -54,9 +54,11 @@ public class Sword extends WeaponImpl {
     @Override
     public void update(final double deltaTime) {
         super.update(deltaTime);
-        this.setPosition(this.getPosition().add(this.update));
-        this.getSprite().ifPresent(t -> t.translate(this.getHolder().getPosition().add(this.getSpriteOffset())));
-
+        this.getCollider().ifPresent(t -> t.setPosition(
+            this.getHolder().getPosition()
+                .add(new Vector2(this.getOffset().x() * this.getDirectionX(), this.getOffset().y()))
+                .add(new Vector2(this.update.x() * this.getDirectionX(), this.update.y())))
+        );
         if (this.swingCooldown.isRunning()) {
             this.update = this.update.add(new Vector2(Math.cos(this.angle), Math.sin(this.angle)).multiply(this.range));
             this.angle += this.step;

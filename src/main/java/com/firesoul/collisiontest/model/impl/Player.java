@@ -24,7 +24,7 @@ public class Player extends EntityImpl {
     private final List<Weapon> weapons = new ArrayList<>();
     private int nextWeapon = 0;
     private Optional<Weapon> equippedWeapon = Optional.empty();
-    private final GameTimer weaponCooldown = new GameTimer(() -> {}, 0, 300);
+    private final GameTimer weaponCooldown = new GameTimer(() -> {}, 0, 1000);
     // Movement logic
     private double friction = 1.0;
     private int currentVelocity = 1;
@@ -130,9 +130,13 @@ public class Player extends EntityImpl {
         Vector2 velocity = Vector2.zero();
         if (this.input.getEvent("MoveLeft")) {
             velocity = velocity.add(Vector2.left().multiply(this.currentVelocity));
+            this.getSprite().ifPresent(s -> s.mirrorX(-1.0));
+            this.weapons.forEach(t -> t.setDirectionX(-1.0));
         }
         if (this.input.getEvent("MoveRight")) {
             velocity = velocity.add(Vector2.right().multiply(this.currentVelocity));
+            this.getSprite().ifPresent(s -> s.mirrorX(1.0));
+            this.weapons.forEach(t -> t.setDirectionX(1.0));
         }
         if (velocity.x() != 0.0 && this.currentVelocity < this.maxVelocity) {
             this.currentVelocity++;
@@ -168,8 +172,7 @@ public class Player extends EntityImpl {
     }
 
     private void useWeapon(final Weapon equippedWeapon) {
-        if (this.input.getEvent("UseWeapon") && !this.weaponCooldown.isRunning()) {
-            this.weaponCooldown.start();
+        if (this.input.getEvent("UseWeapon")) {
             equippedWeapon.attack();
         }
         if (this.input.getEvent("Reload") && equippedWeapon instanceof Gun gun) {
