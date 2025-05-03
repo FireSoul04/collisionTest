@@ -82,7 +82,7 @@ public class Player extends EntityImpl {
     @Override
     public void onDestroy() {
         System.out.println("Game over");
-        this.equippedWeapon.ifPresent(GameObject::destroy);
+        this.weapons.forEach(GameObject::destroy);
         this.input.resetEvents();
     }
 

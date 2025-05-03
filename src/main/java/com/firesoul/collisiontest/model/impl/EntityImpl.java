@@ -39,11 +39,6 @@ public class EntityImpl extends GameObjectImpl implements Entity {
     }
 
     @Override
-    public void onDestroy() {
-        
-    }
-
-    @Override
     public boolean isInvincible() {
         return this.invincible;
     }

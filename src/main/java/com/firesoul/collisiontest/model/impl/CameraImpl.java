@@ -33,8 +33,6 @@ public class CameraImpl extends GameObjectImpl implements Camera {
         } else if (position.y() > this.boundsY) {
             target = new Vector2(target.x(), this.boundsY);
         }
-        System.out.println(position);
-        System.out.println(target);
         super.setPosition(target);
     }
 

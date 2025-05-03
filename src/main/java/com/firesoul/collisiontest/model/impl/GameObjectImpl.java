@@ -115,7 +115,13 @@ public class GameObjectImpl implements GameObject {
     }
 
     @Override
+    public void onDestroy() {
+
+    }
+
+    @Override
     public void destroy() {
+        this.onDestroy();
         this.active = false;
     }
 }

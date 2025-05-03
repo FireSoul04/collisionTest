@@ -35,6 +35,8 @@ public interface GameObject {
     
     boolean isActive();
 
+    void onDestroy();
+
     void destroy();
 
     default void onCollision(Collider collidedShape, Vector2 collisionDirection, double collisionTime) {}
