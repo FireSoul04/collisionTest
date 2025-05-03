@@ -172,6 +172,9 @@ public class Player extends EntityImpl {
             this.weaponCooldown.start();
             equippedWeapon.attack();
         }
+        if (this.input.getEvent("Reload") && equippedWeapon instanceof Gun gun) {
+            gun.reload();
+        }
     }
 
     private void changeWeapon(final Weapon equippedWeapon) {

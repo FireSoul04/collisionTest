@@ -36,6 +36,7 @@ public class GameCollisions implements CollisionTest {
         this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
 
         this.input.addEvent("UseWeapon", () -> this.input.isKeyPressedOnce(KeyEvent.VK_E));
+        this.input.addEvent("Reload", () -> this.input.isKeyPressedOnce(KeyEvent.VK_R));
         this.input.addEvent("ChangeWeapon", () -> this.input.isKeyPressedOnce(KeyEvent.VK_Q));
     }
 

@@ -38,16 +38,20 @@ public class Gun extends WeaponImpl {
 
     @Override
     public void attack() {
-        if (!this.reloadTimer.isRunning()) {
-            if (!this.shootCooldown.isRunning()) {
-                this.shootCooldown.start();
-                this.projectiles--;
-                this.world.spawnProjectile(this.getPosition().add(projectileOffset));
-            }
+        if (!this.shootCooldown.isRunning() && !this.reloadTimer.isRunning()) {
+            this.shootCooldown.start();
+            this.projectiles--;
+            this.world.spawnProjectile(this.getPosition().add(projectileOffset));
+        }
 
-            if (this.projectiles == 0) {
-                this.reloadTimer.start();
-            }
+        if (this.projectiles == 0) {
+            this.reload();
+        }
+    }
+
+    public void reload() {
+        if (this.projectiles < this.maxProjectiles && !this.reloadTimer.isRunning()) {
+            this.reloadTimer.start();
         }
     }
 }

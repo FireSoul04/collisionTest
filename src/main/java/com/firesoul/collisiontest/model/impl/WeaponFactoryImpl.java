@@ -40,7 +40,6 @@ public class WeaponFactoryImpl implements WeaponFactory {
         final SwingSprite sprite = new SwingSprite("gun", Vector2.zero(), 0.0, this.renderer);
         final Vector2 offset = new Vector2(25.0, 0.0);
         final Vector2 projectileOffset = new Vector2(sprite.getWidth(), 0.0);
-        final Weapon gun = new Gun(holder, offset, projectileOffset, 0.0, Optional.of(sprite), world, 6);
-        return gun;
+        return new Gun(holder, offset, projectileOffset, 0.0, Optional.of(sprite), world, 6);
     }
 }
