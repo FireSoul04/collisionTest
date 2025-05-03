@@ -27,11 +27,10 @@ public class Sword extends WeaponImpl {
         final GameObject holder,
         final Vector2 offset,
         final Vector2 spriteOffset,
-        final double orientation,
         final Collider collider,
         final Map<String, Drawable> sprites
     ) {
-        super(holder, offset, spriteOffset, orientation, Optional.of(collider), Optional.of(sprites.get("idle")));
+        super(holder, offset, spriteOffset, Optional.of(collider), Optional.of(sprites.get("idle")));
         this.sprites = sprites;
         this.swingTimer = new GameTimer(() -> {
             this.setSolid(false);

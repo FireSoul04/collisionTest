@@ -23,12 +23,11 @@ public class Gun extends WeaponImpl {
         final GameObject holder,
         final Vector2 offset,
         final Vector2 projectileOffset,
-        final double orientation,
         final Optional<Drawable> sprite,
         final Level world,
         final int maxProjectiles
     ) {
-        super(holder, offset, offset, orientation, Optional.empty(), sprite);
+        super(holder, offset, offset, Optional.empty(), sprite);
         this.shootCooldown = new GameTimer(() -> {}, 0, 400);
         this.world = world;
         this.projectileOffset = projectileOffset;

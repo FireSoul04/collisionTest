@@ -7,5 +7,5 @@ public interface WeaponFactory {
 
     Weapon sword(Player holder);
 
-    Weapon gun(Player holder, Level world);
+    Weapon gun(Player holder);
 }

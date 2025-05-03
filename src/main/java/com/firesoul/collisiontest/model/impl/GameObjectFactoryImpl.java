@@ -18,8 +18,14 @@ import com.firesoul.collisiontest.view.impl.SwingSprite;
 
 public class GameObjectFactoryImpl implements GameObjectFactory {
 
+    private final Level world;
+
+    public GameObjectFactoryImpl(final Level world) {
+        this.world = world;
+    }
+
     @Override
-    public Player player(final Vector2 position, final InputController input, final Level world) {
+    public Player player(final Vector2 position, final InputController input) {
         final List<Vector2> colliderPoints = List.of(
             new Vector2(-1.0, 2.5),
             new Vector2(-1.0, -2.5),
@@ -32,7 +38,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "damage", new SwingSprite("player_damage", position, 0.0)
         );
         collider.setPosition(position);
-        return new Player(position, 0.0, Optional.of(collider), sprites, input);
+        return new Player(position, Optional.of(collider), sprites, input);
     }
 
     @Override
@@ -46,7 +52,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
         final Collider collider = new MeshCollider(colliderPoints, 2.0, 0.0);
         final Drawable sprite = new SwingSprite("projectile", position, 0.0);
         collider.setPosition(position);
-        return new Projectile(position, speed, Optional.of(collider), Optional.of(sprite), speed);
+        return new Projectile(position, Optional.of(collider), Optional.of(sprite), speed);
     }
 
     @Override
@@ -57,7 +63,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
                 "damage", new SwingSprite("enemy_damage", position, 0.0)
         );
         collider.setPosition(position);
-        return new EnemyImpl(position, 0.0, true, Optional.of(collider), sprites, 200, 10, () -> null);
+        return new EnemyImpl(position, true, Optional.of(collider), sprites, 200, 10, () -> null);
     }
 
     @Override
@@ -65,6 +71,6 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
         final Collider collider = new MeshCollider(GameCore.regularPolygon(4), 14.0, Math.PI/4);
         // final Drawable sprite = null;
         collider.setPosition(position);
-        return new GameObjectImpl(position, 0.0, false, Optional.of(collider), Optional.empty());
+        return new GameObjectImpl(position, false, Optional.of(collider), Optional.empty());
     }
 }

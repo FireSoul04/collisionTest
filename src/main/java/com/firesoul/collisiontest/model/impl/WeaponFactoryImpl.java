@@ -19,6 +19,12 @@ import java.util.Optional;
 
 public class WeaponFactoryImpl implements WeaponFactory {
 
+    private final Level world;
+
+    public WeaponFactoryImpl(final Level world) {
+        this.world = world;
+    }
+
     @Override
     public Weapon sword(final Player holder) {
         final Map<String, Drawable> sprites = Map.of(
@@ -28,16 +34,16 @@ public class WeaponFactoryImpl implements WeaponFactory {
         final Vector2 offset = new Vector2(17.0, -10.0);
         final Vector2 spriteOffset = new Vector2(27.0, -5.0);
         final Collider collider = new MeshCollider(GameCore.regularPolygon(4), 8.0, Math.PI/2);
-        final Weapon sword = new Sword(holder, offset, spriteOffset, 0.0, collider, sprites);
+        final Weapon sword = new Sword(holder, offset, spriteOffset, collider, sprites);
         collider.setPosition(sword.getPosition());
         return sword;
     }
 
     @Override
-    public Weapon gun(final Player holder, final Level world) {
+    public Weapon gun(final Player holder) {
         final SwingSprite sprite = new SwingSprite("gun", Vector2.zero(), 0.0);
         final Vector2 offset = new Vector2(12.0, 0.0);
         final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 1.2, -2.5);
-        return new Gun(holder, offset, projectileOffset, 0.0, Optional.of(sprite), world, 6);
+        return new Gun(holder, offset, projectileOffset, Optional.of(sprite), world, 6);
     }
 }

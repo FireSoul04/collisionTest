@@ -14,9 +14,9 @@ public class EnemyImpl extends EntityImpl implements Enemy {
     private final Supplier<Void> behavior;
     private final Map<String, Drawable> sprites;
 
-    public EnemyImpl(final Vector2 position, final double orientation, final boolean dynamic, final Optional<Collider> collider,
+    public EnemyImpl(final Vector2 position, final boolean dynamic, final Optional<Collider> collider,
             final Map<String, Drawable> sprites, final int iframes, final int life, final Supplier<Void> behavior) {
-        super(position, orientation, dynamic, collider, Optional.of(sprites.get("idle")), iframes, life);
+        super(position, dynamic, collider, Optional.of(sprites.get("idle")), iframes, life);
         this.sprites = sprites;
         this.behavior = behavior;
     }

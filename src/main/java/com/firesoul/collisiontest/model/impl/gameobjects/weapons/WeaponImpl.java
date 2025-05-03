@@ -21,11 +21,10 @@ public class WeaponImpl extends GameObjectImpl implements Weapon {
         final GameObject holder,
         final Vector2 offset,
         final Vector2 spriteOffset,
-        final double orientation,
         final Optional<Collider> collider,
         final Optional<Drawable> sprite
     ) {
-        super(holder.getPosition().add(offset), orientation, true, collider, sprite);
+        super(holder.getPosition().add(offset), true, collider, sprite);
         this.holder = holder;
         this.offset = offset;
         this.spriteOffset = spriteOffset;

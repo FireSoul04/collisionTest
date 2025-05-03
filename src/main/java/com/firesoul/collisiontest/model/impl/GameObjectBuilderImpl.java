@@ -13,7 +13,6 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
 
     private final Vector2 position;
     private final boolean dynamic;
-    private double orientation;
     private Optional<Collider> collider;
     private Optional<Drawable> sprite;
 
@@ -21,17 +20,7 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
         Objects.requireNonNull(position);
         this.position = position;
         this.dynamic = dynamic;
-        this.orientation = 0.0;
         this.sprite = Optional.empty();
-    }
-
-    @Override
-    public GameObjectBuilder orientation(final double orientation) {
-        if (!Double.isFinite(orientation)) {
-            throw new IllegalStateException("Gameobject orientation must be a number");
-        }
-        this.orientation = orientation;
-        return this;
     }
 
     @Override
@@ -51,15 +40,11 @@ public class GameObjectBuilderImpl implements GameObjectBuilder {
     @Override
     public GameObject build() {
         this.collider.ifPresent(t -> t.setPosition(this.position));
-        return new GameObjectImpl(this.position, this.orientation, this.dynamic, this.collider, this.sprite);
+        return new GameObjectImpl(this.position, this.dynamic, this.collider, this.sprite);
     }
 
     protected Vector2 getPosition() {
         return this.position;
-    }
-
-    protected double getOrientation() {
-        return this.orientation;
     }
 
     protected Optional<Collider> getCollider() {

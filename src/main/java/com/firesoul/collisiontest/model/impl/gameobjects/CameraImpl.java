@@ -14,7 +14,8 @@ public class CameraImpl extends GameObjectImpl implements Camera {
     private double boundsY;
 
     public CameraImpl(final Vector2 position, final double orientation, final int width, final int height) {
-        super(position, orientation, true, Optional.empty(), Optional.empty());
+        super(position, true, Optional.empty(), Optional.empty());
+        this.rotate(orientation);
         this.width = width;
         this.height = height;
         this.boundsX = width;

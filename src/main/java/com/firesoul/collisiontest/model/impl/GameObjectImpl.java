@@ -20,9 +20,9 @@ public class GameObjectImpl implements GameObject {
     private double orientation;
     private boolean active;
 
-    public GameObjectImpl(final Vector2 position, final double orientation, final boolean dynamic, final Optional<Collider> collider, final Optional<Drawable> sprite) {
+    public GameObjectImpl(final Vector2 position, final boolean dynamic, final Optional<Collider> collider, final Optional<Drawable> sprite) {
         this.position = position;
-        this.orientation = orientation;
+        this.orientation = 0.0;
         this.dynamic = dynamic;
         this.sprite = sprite;
         this.collider = collider;

@@ -16,7 +16,6 @@ import com.firesoul.collisiontest.view.api.Drawable;
 public class Player extends EntityImpl {
 
     private final double speed = 0.03;
-    private final double rotSpeed = 0.015;
 
     private final InputController input;
 
@@ -42,12 +41,11 @@ public class Player extends EntityImpl {
 
     public Player(
         final Vector2 position,
-        final double orientation,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
         final InputController input
     ) {
-        super(position, orientation, true, collider, Optional.of(sprites.get("idle")), 250, 12);
+        super(position, true, collider, Optional.of(sprites.get("idle")), 250, 12);
 
         this.sprites = sprites;
         this.input = input;
@@ -109,10 +107,6 @@ public class Player extends EntityImpl {
 
     public double getSpeed() {
         return this.speed;
-    }
-
-    public double getRotationSpeed() {
-        return this.rotSpeed;
     }
 
     public void readInput() {

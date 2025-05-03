@@ -5,7 +5,6 @@ import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.*;
 
@@ -23,7 +22,7 @@ public class LevelImpl implements Level {
     private Player player;
 
     public LevelImpl(final InputController input) {
-        this.gf = new GameObjectFactoryImpl();
+        this.gf = new GameObjectFactoryImpl(this);
         this.addGameObjects(input);
     }
 
@@ -107,14 +106,14 @@ public class LevelImpl implements Level {
 
     private void addGameObjects(final InputController input) {
         final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
-        this.player = this.gf.player(playerPosition, input, this);
+        this.player = this.gf.player(playerPosition, input);
         Objects.requireNonNull(this.player);
         this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
         this.gameObjects.add(this.player);
 
-        final WeaponFactory wf = new WeaponFactoryImpl();
+        final WeaponFactory wf = new WeaponFactoryImpl(this);
         final Weapon sword = wf.sword(this.player);
-        final Weapon gun = wf.gun(this.player, this);
+        final Weapon gun = wf.gun(this.player);
         this.gameObjects.add(sword);
         this.gameObjects.add(gun);
         this.player.equip(sword);
