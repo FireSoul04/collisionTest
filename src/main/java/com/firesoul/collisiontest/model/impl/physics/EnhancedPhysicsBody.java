@@ -47,12 +47,12 @@ public class EnhancedPhysicsBody implements PhysicsBody {
     }
 
     @Override
-    public void applyForce(Vector2 force) {
+    public void applyForce(final Vector2 force) {
         this.forces.add(force);
     }
 
     @Override
-    public void move(Vector2 direction) {
+    public void move(final Vector2 direction) {
         if (direction.x() != 0.0 && this.currentVelocity.x() < this.maxVelocity.x()) {
             this.currentVelocity = this.currentVelocity.add(direction.normalize());
         } else if (direction.x() == 0.0) {

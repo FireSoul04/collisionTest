@@ -19,7 +19,7 @@ import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Player extends EntityImpl {
 
-    private final double speed = 0.10;
+    private final double speed = 0.1;
 
     private final InputController input;
 
