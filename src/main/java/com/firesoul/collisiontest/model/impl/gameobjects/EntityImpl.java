@@ -26,6 +26,21 @@ public class EntityImpl extends GameObjectImpl implements Entity {
     }
 
     @Override
+    public int getLife() {
+        return this.life;
+    }
+
+    @Override
+    public void setLife(final int life) {
+        this.life = life;
+    }
+
+    @Override
+    public void addLife(final int amount) {
+        this.life = this.life + amount;
+    }
+
+    @Override
     public void takeDamage(final int amount) {
         if (!this.invincible) {
             this.life = this.life - amount;

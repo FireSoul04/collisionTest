@@ -8,14 +8,13 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.physics.Collider;
-import com.firesoul.collisiontest.model.impl.gameobjects.EnemyImpl;
-import com.firesoul.collisiontest.model.impl.gameobjects.GameObjectImpl;
-import com.firesoul.collisiontest.model.impl.gameobjects.Player;
-import com.firesoul.collisiontest.model.impl.gameobjects.Projectile;
+import com.firesoul.collisiontest.model.impl.gameobjects.*;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Bar;
 import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.view.impl.SwingBar;
 import com.firesoul.collisiontest.view.impl.SwingSprite;
 
 public class GameObjectFactoryImpl implements GameObjectFactory {
@@ -34,7 +33,11 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", new SwingSprite("player", position),
             "damage", new SwingSprite("player_damage", position)
         );
-        return new Player(position, this.world, Optional.of(collider), sprites, input);
+        final LifeBar lifeBar = new LifeBar(this.world,
+            new SwingBar(Vector2.zero(), 20, 10, 12, true)
+        );
+        this.world.instanciate(lifeBar);
+        return new Player(position, this.world, Optional.of(collider), sprites, input, lifeBar);
     }
 
     @Override

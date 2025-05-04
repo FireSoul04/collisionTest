@@ -18,7 +18,7 @@ public class Platformer implements GameLogic {
     public Platformer(final Renderer renderer) {
         this.renderer = renderer;
         this.input = renderer.getInput();
-        this.level = new LevelImpl(this.input);
+        this.level = new LevelImpl(renderer);
         this.level.getGameObjects()
                 .stream()
                 .map(GameObject::getSprite)
@@ -48,9 +48,6 @@ public class Platformer implements GameLogic {
     @Override
     public void update(final double deltaTime) {
         this.level.update(deltaTime);
-        this.renderer.getCamera().setPosition(this.level.getPlayerPosition().subtract(
-            new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight()).divide(2.0)
-        ));
     }
 
     @Override

@@ -2,12 +2,14 @@ package com.firesoul.collisiontest.model.impl;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
+import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.*;
 
@@ -21,17 +23,22 @@ public class LevelImpl implements Level {
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final List<GameObject> projectiles = new ArrayList<>();
 
+    private final Renderer renderer;
     private final GameObjectFactory gf;
     private Player player;
 
-    public LevelImpl(final InputController input) {
+    public LevelImpl(final Renderer renderer) {
+        this.renderer = renderer;
         this.gf = new GameObjectFactoryImpl(this);
-        this.addGameObjects(input);
+        this.addGameObjects(renderer.getInput());
     }
 
     @Override
     public void update(final double deltaTime) {
         this.checkCollisions(deltaTime);
+        this.renderer.getCamera().setPosition(this.getPlayerPosition().subtract(
+            new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight()).divide(2.0)
+        ));
         this.gameObjects.forEach(t -> t.update(deltaTime));
         this.gameObjects.addAll(this.projectiles);
         this.projectiles.clear();
@@ -66,12 +73,18 @@ public class LevelImpl implements Level {
         return this.height;
     }
 
+    @Override
     public Vector2 getPlayerPosition() {
         return this.player.getPosition();
     }
 
     @Override
-    public void instanciate(GameObject gameObject) {
+    public Camera getCamera() {
+        return this.renderer.getCamera();
+    }
+
+    @Override
+    public void instanciate(final GameObject gameObject) {
         this.gameObjects.add(gameObject);
     }
 

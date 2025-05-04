@@ -69,6 +69,9 @@ public class SwingRenderer extends JPanel implements Renderer {
     public void update(final List<GameObject> gameObjects) {
         this.gameObjects.clear();
         this.gameObjects.addAll(gameObjects);
+        this.gameObjects.forEach(t -> t.getSprite().ifPresent(s -> s.translate(
+                s.getPosition().add(this.camera.getPosition().invert())
+        )));
         this.repaint();
     }
 
@@ -100,14 +103,13 @@ public class SwingRenderer extends JPanel implements Renderer {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
         g2.scale(this.scale.x(), this.scale.y());
-        g2.translate(-this.camera.getPosition().x(), -this.camera.getPosition().y());
 
-        for (final GameObject go : this.gameObjects.stream().filter(this::isInBounds).toList()) {
+        for (final GameObject go : this.gameObjects.stream().toList()) {
             final Optional<Collider> colliderOpt = go.getCollider();
             final Optional<Drawable> spriteOpt = go.getSprite();
 
-            if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
-                swingSprite.drawSprite(g);
+            if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingDrawable swingDrawable) {
+                swingDrawable.drawComponent(g);
             } else if (colliderOpt.isPresent()) {
                 final Collider collider = colliderOpt.get();
                 boolean red = false;
@@ -117,13 +119,15 @@ public class SwingRenderer extends JPanel implements Renderer {
                     final boolean bothSolid = collider.isSolid() && c.isSolid();
                     red |= bothSolid && collider.isCollided();
                 }
-//                g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
-                g2.setColor(Color.WHITE);
+                g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
+//                g2.setColor(Color.WHITE);
 
                 if (collider instanceof BoxCollider bc) {
                     g2.drawRect(
-                            (int) bc.getPosition().x(), (int) bc.getPosition().y(),
-                            (int) bc.getWidth(), (int) bc.getHeight()
+                        (int) (bc.getPosition().x() - this.camera.getPosition().x()),
+                        (int) (bc.getPosition().y() - this.camera.getPosition().y()),
+                        (int) bc.getWidth(),
+                        (int) bc.getHeight()
                     );
                 } else if (collider instanceof MeshCollider mc) {
                     final Polygon polygon = new Polygon();

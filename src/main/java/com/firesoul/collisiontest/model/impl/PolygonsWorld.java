@@ -5,8 +5,10 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.api.Level;
+import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import java.util.List;
 public class PolygonsWorld implements Level {
 
     private final List<GameObject> gameObjects = new ArrayList<>();
+    private final Renderer renderer;
     private final InputController input;
 
     private final double speed = 1.0;
@@ -22,8 +25,9 @@ public class PolygonsWorld implements Level {
 
     private GameObject player;
 
-    public PolygonsWorld(final InputController input) {
-        this.input = input;
+    public PolygonsWorld(final Renderer renderer) {
+        this.renderer = renderer;
+        this.input = renderer.getInput();
         this.addGameObjects();
     }
 
@@ -51,6 +55,11 @@ public class PolygonsWorld implements Level {
     @Override
     public Vector2 getPlayerPosition() {
         return this.player.getPosition();
+    }
+
+    @Override
+    public Camera getCamera() {
+        return this.renderer.getCamera();
     }
 
     @Override

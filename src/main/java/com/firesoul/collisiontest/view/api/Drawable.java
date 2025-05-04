@@ -6,6 +6,8 @@ public interface Drawable {
 
     String RESOURCES_PATH = "src/main/resources/";
 
+    Vector2 getPosition();
+
     void mirrorX(double directionX);
 
     void translate(Vector2 position);

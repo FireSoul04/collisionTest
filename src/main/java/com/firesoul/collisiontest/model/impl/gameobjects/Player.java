@@ -23,6 +23,8 @@ public class Player extends EntityImpl {
     private final InputController input;
     private final Map<String, Drawable> sprites;
 
+    private final LifeBar lifeBar;
+
     // Attack logic
     private final List<Weapon> weapons = new ArrayList<>();
     private int nextWeapon = 0;
@@ -34,7 +36,7 @@ public class Player extends EntityImpl {
     // Jump logic
     private final Vector2 jumpAcceleration = new Vector2(0.0, -0.125);
     private boolean onGround = false;
-    private final int maxJumpHeight = 40;
+    private final int maxJumpHeight = 11;
     private int currentJumpHeight = 0;
 
     public Player(
@@ -42,10 +44,12 @@ public class Player extends EntityImpl {
         final Level world,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
-        final InputController input
+        final InputController input,
+        final LifeBar lifeBar
     ) {
         super(position, true, world, collider, Optional.of(sprites.get("idle")), 250, 12);
 
+        this.lifeBar = lifeBar;
         this.sprites = sprites;
         this.input = input;
     }
@@ -69,6 +73,7 @@ public class Player extends EntityImpl {
             v.translate(this.getPosition());
             v.mirrorX(this.facingDirectionX);
         });
+        this.lifeBar.setCurrentValue(this.getLife());
         this.weapons.forEach(t -> t.setDirectionX(this.facingDirectionX));
 
         if (this.isInvincible()) {
@@ -81,11 +86,17 @@ public class Player extends EntityImpl {
     }
 
     @Override
+    public void destroy() {
+        // DONT DESTROY FOR DEBUG
+        this.onDestroy();
+    }
+
+    @Override
     public void onCollision(final GameObject gameObject, final Vector2 collisionDirection, final double collisionTime) {
         if (gameObject.isStatic() && collisionDirection.equals(Vector2.up())) {
             this.currentJumpHeight = 0;
             this.onGround = true;
-        } else if (gameObject instanceof Enemy) {
+        } else if (gameObject instanceof Enemy && !this.isInvincible()) {
             this.takeDamage(3);
 
             final BoxCollider r1 = CollisionAlgorithms.getBoxCollider(this.getCollider().orElseThrow());
@@ -93,16 +104,19 @@ public class Player extends EntityImpl {
             final double distX = Math.signum(
                     (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
             );
-            this.body.setVelocity(new Vector2(distX * 10.0 * collisionTime, 0.0));
+            this.body.setVelocity(collisionDirection.multiply(collisionTime * 10));
             this.facingDirectionX = -distX;
         }
     }
 
     @Override
     public void onDestroy() {
-        System.out.println("Game over");
-        this.weapons.forEach(GameObject::destroy);
-        this.input.resetEvents();
+//        System.out.println("Game over");
+//        this.weapons.forEach(GameObject::destroy);
+//        this.input.resetEvents();
+
+        this.setLife(12);
+        this.setPosition(new Vector2(this.getWorld().getCamera().getWidth(), this.getWorld().getCamera().getHeight()).divide(2.0));
     }
 
     public void equip(final Weapon weapon) {
@@ -126,7 +140,6 @@ public class Player extends EntityImpl {
             this.inputMove();
             this.jump();
         }
-        this.onGround = false;
     }
 
     private void inputMove() {
@@ -145,10 +158,11 @@ public class Player extends EntityImpl {
     private void jump() {
         if (this.input.getEvent("Jump") && (this.onGround || this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) {
             this.currentJumpHeight++;
-            this.body.setVelocity(new Vector2(
-                this.body.getVelocity().x(),
-                this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight).y())
-            );
+            this.onGround = false;
+            this.body.applyForce(this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight));
+        }
+        if (!this.input.getEvent("Jump")) {
+            this.currentJumpHeight = 0;
         }
     }
 

@@ -18,7 +18,7 @@ public class RegularPolygons implements GameLogic {
     public RegularPolygons(final SwingRenderer renderer) {
         this.renderer = renderer;
         this.input = renderer.getInput();
-        this.world = new LevelImpl(this.input);
+        this.world = new LevelImpl(renderer);
 
         this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
         this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
