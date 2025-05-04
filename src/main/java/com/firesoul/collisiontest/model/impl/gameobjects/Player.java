@@ -7,11 +7,12 @@ import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.api.gameobjects.PhysicsBody;
+import com.firesoul.collisiontest.model.api.physics.PhysicsBody;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
+import com.firesoul.collisiontest.model.impl.physics.EnhancedPhysicsBody;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
@@ -59,6 +60,8 @@ public class Player extends EntityImpl {
     @Override
     public void update(final double deltaTime) {
         this.move(this.getVelocity().multiply(deltaTime));
+        this.body.update();
+        this.setVelocity(this.body.getVelocity());
 
         this.sprites.forEach((k, v) -> {
             v.translate(this.getPosition());
@@ -88,7 +91,7 @@ public class Player extends EntityImpl {
             final double distX = Math.signum(
                     (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
             );
-            this.setVelocity(new Vector2(distX*10, this.getVelocity().y()));
+            this.body.setVelocity(new Vector2(distX*collisionTime, 0.0));
             this.facingDirectionX = -distX;
         }
     }
@@ -121,9 +124,7 @@ public class Player extends EntityImpl {
             this.inputMove();
             this.jump();
         }
-        this.body.update();
         this.onGround = false;
-        this.setVelocity(this.body.getVelocity());
     }
 
     private void inputMove() {

@@ -1,9 +1,14 @@
-package com.firesoul.collisiontest.model.impl.gameobjects;
+package com.firesoul.collisiontest.model.impl.physics;
 
-import com.firesoul.collisiontest.model.api.gameobjects.PhysicsBody;
+import com.firesoul.collisiontest.model.api.physics.PhysicsBody;
 import com.firesoul.collisiontest.model.util.Vector2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnhancedPhysicsBody implements PhysicsBody {
+
+    private final List<Vector2> forces = new ArrayList<>();
 
     private final Vector2 maxFriction = Vector2.one();
     private final Vector2 frictionStep;
@@ -26,7 +31,9 @@ public class EnhancedPhysicsBody implements PhysicsBody {
     @Override
     public void update() {
         this.applyFriction();
-        this.applyVelocity(this.gravity);
+        this.applyForce(this.gravity);
+        this.forces.forEach(this::addForce);
+        this.forces.clear();
     }
 
     @Override
@@ -40,8 +47,8 @@ public class EnhancedPhysicsBody implements PhysicsBody {
     }
 
     @Override
-    public void applyVelocity(final Vector2 velocity) {
-        this.velocity = this.velocity.add(velocity);
+    public void applyForce(Vector2 force) {
+        this.forces.add(force);
     }
 
     @Override
@@ -51,7 +58,7 @@ public class EnhancedPhysicsBody implements PhysicsBody {
         } else if (direction.x() == 0.0) {
             this.currentVelocity = new Vector2(0.0, this.currentVelocity.y());
         }
-        this.applyVelocity(direction);
+        this.applyForce(direction);
     }
 
     private void applyFriction() {
@@ -63,5 +70,9 @@ public class EnhancedPhysicsBody implements PhysicsBody {
             this.friction = this.maxFriction;
         }
         this.velocity = this.velocity.multiply(this.friction);
+    }
+
+    private void addForce(final Vector2 force) {
+        this.velocity = this.velocity.add(force);
     }
 }

@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.model.api.gameobjects;
+package com.firesoul.collisiontest.model.api.physics;
 
 import com.firesoul.collisiontest.model.util.Vector2;
 
@@ -12,5 +12,5 @@ public interface PhysicsBody {
 
     void move(Vector2 direction);
 
-    void applyVelocity(Vector2 velocity);
+    void applyForce(Vector2 force);
 }
