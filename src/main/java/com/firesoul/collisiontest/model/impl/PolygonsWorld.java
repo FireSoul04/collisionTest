@@ -5,7 +5,7 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.api.Level;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
+import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.ArrayList;

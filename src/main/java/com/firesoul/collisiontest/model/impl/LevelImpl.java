@@ -3,6 +3,7 @@ package com.firesoul.collisiontest.model.impl;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;

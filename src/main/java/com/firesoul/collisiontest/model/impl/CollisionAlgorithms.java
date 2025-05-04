@@ -1,9 +1,9 @@
 package com.firesoul.collisiontest.model.impl;
 
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
+import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
+import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.List;

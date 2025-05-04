@@ -3,7 +3,7 @@ package com.firesoul.collisiontest.model.impl.gameobjects;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -68,7 +68,7 @@ public class GameObjectImpl implements GameObject {
     public Vector2 getVelocity() {
         return this.velocity;
     }
-    
+
     @Override
     public void setVelocity(final Vector2 velocity) {
         this.velocity = velocity;

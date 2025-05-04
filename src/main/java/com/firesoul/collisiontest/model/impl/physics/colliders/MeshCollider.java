@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.model.impl.gameobjects.colliders;
+package com.firesoul.collisiontest.model.impl.physics.colliders;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;

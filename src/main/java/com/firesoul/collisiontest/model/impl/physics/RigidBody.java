@@ -6,7 +6,7 @@ import com.firesoul.collisiontest.model.util.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnhancedPhysicsBody implements PhysicsBody {
+public class RigidBody implements PhysicsBody {
 
     private final List<Vector2> forces = new ArrayList<>();
 
@@ -21,11 +21,15 @@ public class EnhancedPhysicsBody implements PhysicsBody {
     private final Vector2 maxVelocity;
     private Vector2 currentVelocity = Vector2.zero();
 
-    public EnhancedPhysicsBody(final Vector2 gravity, final Vector2 frictionStep, final Vector2 maxVelocity) {
-        this.gravity = gravity;
+    public RigidBody(final Vector2 maxVelocity, final Vector2 gravity, final Vector2 frictionStep) {
         this.frictionStep = frictionStep;
         this.friction = this.maxFriction;
         this.maxVelocity = maxVelocity;
+        this.gravity = gravity;
+    }
+
+    public RigidBody(final Vector2 maxVelocity) {
+        this(maxVelocity, new Vector2(0.0, 0.25), new Vector2(0.0625, 0.0));
     }
 
     @Override

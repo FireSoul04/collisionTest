@@ -2,7 +2,7 @@ package com.firesoul.collisiontest.model.impl.gameobjects;
 
 import java.util.Optional;
 
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Entity;
 import com.firesoul.collisiontest.model.util.GameTimer;

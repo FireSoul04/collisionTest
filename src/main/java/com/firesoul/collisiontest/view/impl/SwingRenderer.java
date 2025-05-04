@@ -5,11 +5,11 @@ import javax.swing.JPanel;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
+import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
+import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.api.Renderer;

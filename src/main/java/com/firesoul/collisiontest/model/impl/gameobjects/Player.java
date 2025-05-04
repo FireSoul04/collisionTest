@@ -3,16 +3,16 @@ package com.firesoul.collisiontest.model.impl.gameobjects;
 import java.util.*;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.physics.PhysicsBody;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
+import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
-import com.firesoul.collisiontest.model.impl.physics.EnhancedPhysicsBody;
+import com.firesoul.collisiontest.model.impl.physics.RigidBody;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
@@ -25,11 +25,7 @@ public class Player extends EntityImpl {
 
     private final Map<String, Drawable> sprites;
 
-    private final PhysicsBody body = new EnhancedPhysicsBody(
-            new Vector2(0.0, 0.25),
-            new Vector2(0.012, 0.0),
-            new Vector2(1.0, 0.0)
-    );
+    private final PhysicsBody body = new RigidBody(new Vector2(1.0, 0.0));
 
     // Attack logic
     private final List<Weapon> weapons = new ArrayList<>();
@@ -58,10 +54,20 @@ public class Player extends EntityImpl {
     }
 
     @Override
+    public Vector2 getVelocity() {
+        return this.body.getVelocity();
+    }
+
+    @Override
+    public void setVelocity(final Vector2 velocity) {
+        this.body.setVelocity(velocity);
+    }
+
+    @Override
     public void update(final double deltaTime) {
         this.move(this.getVelocity().multiply(deltaTime));
         this.body.update();
-        this.setVelocity(this.body.getVelocity());
+        System.out.println(this.getVelocity());
 
         this.sprites.forEach((k, v) -> {
             v.translate(this.getPosition());

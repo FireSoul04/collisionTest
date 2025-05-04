@@ -1,6 +1,6 @@
-package com.firesoul.collisiontest.model.impl.gameobjects.colliders;
+package com.firesoul.collisiontest.model.impl.physics.colliders;
 
-import com.firesoul.collisiontest.model.api.Collider;
+import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.util.Vector2;
 
