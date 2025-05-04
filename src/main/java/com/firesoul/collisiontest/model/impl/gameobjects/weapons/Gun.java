@@ -3,7 +3,6 @@ package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
-import com.firesoul.collisiontest.model.impl.gameobjects.Projectile;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;

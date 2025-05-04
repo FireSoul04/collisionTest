@@ -110,7 +110,7 @@ public class LevelImpl implements Level {
         final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
         this.player = this.gf.player(playerPosition, input);
         Objects.requireNonNull(this.player);
-        this.gameObjects.add(this.gf.ballEnemy(playerPosition.add(Vector2.one().multiply(200))));
+        this.gameObjects.add(this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03));
         this.gameObjects.add(this.player);
 
         final WeaponFactory wf = new WeaponFactoryImpl(this);

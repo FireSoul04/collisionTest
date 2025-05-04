@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
+import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.gameobjects.EnemyImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.GameObjectImpl;
@@ -46,13 +47,40 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     }
 
     @Override
-    public GameObject ballEnemy(final Vector2 position) {
+    public GameObject groundEnemy(final Vector2 position) {
         final Collider collider = new MeshCollider(position, GameCore.regularPolygon(8), 17.0, 0);
         final Map<String, Drawable> sprites = Map.of(
                 "idle", new SwingSprite("enemy", position),
                 "damage", new SwingSprite("enemy_damage", position)
         );
-        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites, 200, 10, () -> null);
+        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites, 200, 10,
+                new Vector2(0.0, 0.25), e ->
+        {
+            final Vector2 goTo = this.world.getPlayerPosition().subtract(e.getPosition()).normalize();
+            e.move(new Vector2(goTo.x(), 0.0));
+        });
+    }
+
+    @Override
+    public GameObject flyingEnemy(final Vector2 position, final double range, final double speed) {
+        final Collider collider = new MeshCollider(position, GameCore.regularPolygon(8), 17.0, 0);
+        final Map<String, Drawable> sprites = Map.of(
+                "idle", new SwingSprite("enemy", position),
+                "damage", new SwingSprite("enemy_damage", position)
+        );
+        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites, 200, 10,
+                Vector2.zero(), new EnemyImpl.EnemyBehavior()
+        {
+                final double eRange = range;
+                final double eSpeed = speed;
+                double step = 0.0;
+
+                public void behave(final Enemy e) {
+                    e.move(new Vector2(0.0, Math.sin(this.step)).multiply(this.eRange));
+                    this.step += this.eSpeed;
+                }
+            }
+        );
     }
 
     @Override

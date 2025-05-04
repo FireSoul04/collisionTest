@@ -14,7 +14,7 @@ public class BoxCollider extends AbstractCollider {
     }
 
     @Override
-    public void setPosition(Vector2 position) {
+    public void setPosition(final Vector2 position) {
         super.setPosition(position.subtract(new Vector2(this.width, this.height).divide(2.0)));
     }
 

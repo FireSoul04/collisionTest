@@ -106,7 +106,9 @@ public class SwingRenderer extends JPanel implements Renderer {
             final Optional<Collider> colliderOpt = go.getCollider();
             final Optional<Drawable> spriteOpt = go.getSprite();
 
-            if (colliderOpt.isPresent()) {
+            if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
+                swingSprite.drawSprite(g);
+            } else if (colliderOpt.isPresent()) {
                 final Collider collider = colliderOpt.get();
                 boolean red = false;
                 for (final Collider c : collider.getCollidedGameObjects().stream()
@@ -115,7 +117,8 @@ public class SwingRenderer extends JPanel implements Renderer {
                     final boolean bothSolid = collider.isSolid() && c.isSolid();
                     red |= bothSolid && collider.isCollided();
                 }
-                g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
+//                g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
+                g2.setColor(Color.WHITE);
 
                 if (collider instanceof BoxCollider bc) {
                     g2.drawRect(
@@ -127,10 +130,6 @@ public class SwingRenderer extends JPanel implements Renderer {
                     mc.getPoints().forEach(p -> polygon.addPoint((int) p.x(), (int) p.y()));
                     g2.drawPolygon(polygon);
                 }
-            }
-
-            if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingSprite swingSprite) {
-                swingSprite.drawSprite(g);
             }
 
             // DEBUG

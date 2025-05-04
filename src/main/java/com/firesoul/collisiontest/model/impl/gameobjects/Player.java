@@ -19,13 +19,9 @@ import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Player extends EntityImpl {
 
-    private final double speed = 0.1;
-
-    private final InputController input;
-
-    private final Map<String, Drawable> sprites;
-
     private final PhysicsBody body = new RigidBody(new Vector2(1.0, 0.0));
+    private final InputController input;
+    private final Map<String, Drawable> sprites;
 
     // Attack logic
     private final List<Weapon> weapons = new ArrayList<>();
@@ -33,6 +29,7 @@ public class Player extends EntityImpl {
     private Optional<Weapon> equippedWeapon = Optional.empty();
     private final GameTimer weaponCooldown = new GameTimer(1000);
     // Movement logic
+    private final double speed = 0.1;
     private double facingDirectionX = 1.0;
     // Jump logic
     private final Vector2 jumpAcceleration = new Vector2(0.0, -0.125);
@@ -67,7 +64,6 @@ public class Player extends EntityImpl {
     public void update(final double deltaTime) {
         this.move(this.getVelocity().multiply(deltaTime));
         this.body.update();
-        System.out.println(this.getVelocity());
 
         this.sprites.forEach((k, v) -> {
             v.translate(this.getPosition());
@@ -97,7 +93,7 @@ public class Player extends EntityImpl {
             final double distX = Math.signum(
                     (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
             );
-            this.body.setVelocity(new Vector2(distX*collisionTime, 0.0));
+            this.body.setVelocity(new Vector2(distX * 10.0 * collisionTime, 0.0));
             this.facingDirectionX = -distX;
         }
     }

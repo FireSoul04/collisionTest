@@ -38,6 +38,8 @@ public class Sword extends WeaponImpl {
         this.swingTimer = new GameTimer(() -> {
             this.setSolid(false);
             this.setSprite(this.sprites.get("idle"));
+            this.angle = 0.0;
+            this.update = Vector2.zero();
         }, 150);
         this.swingCooldown = new GameTimer(400);
         this.getCollider().ifPresent(t -> t.setSolid(false));
@@ -77,9 +79,6 @@ public class Sword extends WeaponImpl {
         if (this.swingTimer.isRunning()) {
             this.update = this.update.add(new Vector2(Math.cos(this.angle), Math.sin(this.angle)).multiply(this.range));
             this.angle += this.step;
-        } else {
-            this.angle = 0;
-            this.update = Vector2.zero();
         }
     }
 

@@ -10,7 +10,9 @@ public interface GameObjectFactory {
 
     GameObject projectile(Vector2 position, double speed);
 
-    GameObject ballEnemy(Vector2 position);
+    GameObject groundEnemy(Vector2 position);
+
+    GameObject flyingEnemy(Vector2 position, double range, double speed);
 
     GameObject block(Vector2 position);
 }

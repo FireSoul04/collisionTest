@@ -16,15 +16,17 @@ public class GameTimer {
     private final int duration;
 
     private Timer timer;
-    private int currentTime;
+    private int remainingTime;
     private boolean running;
+    private boolean pause;
 
     public GameTimer(final TimerAction onStop, final int delay, final int duration) {
         this.onStop = onStop;
         this.delay = delay;
         this.duration = duration;
-        this.currentTime = duration;
+        this.remainingTime = duration;
         this.running = false;
+        this.pause = false;
     }
 
     public GameTimer(final TimerAction onStop, final int duration) {
@@ -41,11 +43,13 @@ public class GameTimer {
             this.timer.schedule(
                 new TimerTask() {
                     public void run() {
-                    currentTime--;
-                    if (currentTime < 0) {
-                        onStop.get();
-                        stop();
-                    }
+                        if (!pause) {
+                            remainingTime--;
+                        }
+                        if (remainingTime <= 0) {
+                            onStop.get();
+                            stop();
+                        }
                     }
                 },
                 this.delay,
@@ -56,9 +60,17 @@ public class GameTimer {
     }
 
     public void stop() {
-        this.currentTime = this.duration;
+        this.remainingTime = this.duration;
         this.running = false;
         this.timer.cancel();
+    }
+
+    public void pause() {
+        this.pause = true;
+    }
+
+    public void unPause() {
+        this.pause = false;
     }
 
     public boolean isRunning() {
