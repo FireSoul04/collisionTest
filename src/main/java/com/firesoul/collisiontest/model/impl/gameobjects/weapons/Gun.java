@@ -29,10 +29,10 @@ public class Gun extends WeaponImpl {
         final int maxProjectiles
     ) {
         super(holder, offset, offset, world, Optional.empty(), sprite);
-        this.shootCooldown = new GameTimer(() -> {}, 0, 400);
+        this.shootCooldown = new GameTimer(400);
         this.projectileOffset = projectileOffset;
         this.maxProjectiles = maxProjectiles;
-        this.reloadTimer = new GameTimer(() -> this.projectiles = this.maxProjectiles, 0, 2000);
+        this.reloadTimer = new GameTimer(2000);
         this.projectiles = this.maxProjectiles;
         this.projectileVelocity = Vector2.right().multiply(10.0);
     }

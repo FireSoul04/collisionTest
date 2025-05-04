@@ -1,12 +1,10 @@
 package com.firesoul.collisiontest.model.impl.factories;
 
-import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.WeaponFactory;
 import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
-import com.firesoul.collisiontest.model.impl.gameobjects.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Sword;

@@ -20,7 +20,7 @@ public class EntityImpl extends GameObjectImpl implements Entity {
           final Optional<Collider> collider, final Optional<Drawable> sprite, final int iframes, final int life
     ) {
         super(position, dynamic, world, collider, sprite);
-        this.iframes = new GameTimer(() -> this.invincible = false, 0, iframes);
+        this.iframes = new GameTimer(() -> this.invincible = false, iframes);
         this.invincible = false;
         this.life = life;
     }

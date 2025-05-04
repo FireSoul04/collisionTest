@@ -7,6 +7,7 @@ import com.firesoul.collisiontest.model.api.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
+import com.firesoul.collisiontest.model.api.gameobjects.PhysicsBody;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.gameobjects.colliders.BoxCollider;
@@ -17,28 +18,29 @@ import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Player extends EntityImpl {
 
-    private final double speed = 0.03;
+    private final double speed = 0.10;
 
     private final InputController input;
 
     private final Map<String, Drawable> sprites;
 
+    private final PhysicsBody body = new EnhancedPhysicsBody(
+            new Vector2(0.0, 0.25),
+            new Vector2(0.012, 0.0),
+            new Vector2(1.0, 0.0)
+    );
+
     // Attack logic
     private final List<Weapon> weapons = new ArrayList<>();
     private int nextWeapon = 0;
     private Optional<Weapon> equippedWeapon = Optional.empty();
-    private final GameTimer weaponCooldown = new GameTimer(() -> {}, 0, 1000);
+    private final GameTimer weaponCooldown = new GameTimer(1000);
     // Movement logic
     private double facingDirectionX = 1.0;
-    private double friction = 1.0;
-    private int currentVelocity = 1;
-    private final int maxVelocity = 5;
-    // Gravity logic
-    private final Vector2 gravityAcceleration = new Vector2(0.0, 0.25);
     // Jump logic
-    private final Vector2 jumpAcceleration = new Vector2(0.0, -0.06);
+    private final Vector2 jumpAcceleration = new Vector2(0.0, -0.125);
     private boolean onGround = false;
-    private final int maxJumpHeight = 16;
+    private final int maxJumpHeight = 40;
     private int currentJumpHeight = 0;
 
     public Player(
@@ -110,67 +112,41 @@ public class Player extends EntityImpl {
         return this.equippedWeapon;
     }
 
-    public double getSpeed() {
-        return this.speed;
-    }
-
     public void readInput() {
-        Vector2 velocity = Vector2.zero();
         if (!this.isInvincible()) {
             this.equippedWeapon.ifPresent(t -> {
                 this.useWeapon(t);
                 this.changeWeapon(t);
             });
-            velocity = this.inputMove();
-            velocity = this.jump(velocity);
+            this.inputMove();
+            this.jump();
         }
-        velocity = this.applyFriction(velocity);
-        velocity = this.applyGravity(velocity);
+        this.body.update();
         this.onGround = false;
-        this.setVelocity(velocity);
+        this.setVelocity(this.body.getVelocity());
     }
 
-    private Vector2 inputMove() {
+    private void inputMove() {
         Vector2 velocity = Vector2.zero();
         if (this.input.getEvent("MoveLeft")) {
-            velocity = velocity.add(Vector2.left().multiply(this.currentVelocity));
+            velocity = velocity.add(Vector2.left());
             this.facingDirectionX = -1.0;
         }
         if (this.input.getEvent("MoveRight")) {
-            velocity = velocity.add(Vector2.right().multiply(this.currentVelocity));
+            velocity = velocity.add(Vector2.right());
             this.facingDirectionX = 1.0;
         }
-        if (velocity.x() != 0.0 && this.currentVelocity < this.maxVelocity) {
-            this.currentVelocity++;
-        } else if (velocity.x() == 0.0) {
-            this.currentVelocity = 1;
-        }
-        velocity = velocity.multiply(this.speed);
-        return velocity;
+        this.body.move(velocity.multiply(this.speed));
     }
 
-    private Vector2 jump(final Vector2 velocity) {
-        Vector2 newVelocity = velocity;
+    private void jump() {
         if (this.input.getEvent("Jump") && (this.onGround || this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) {
             this.currentJumpHeight++;
-            newVelocity = velocity.add(this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight));
+            this.body.setVelocity(new Vector2(
+                this.body.getVelocity().x(),
+                this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight).y())
+            );
         }
-        return newVelocity;
-    }
-
-    private Vector2 applyFriction(final Vector2 velocity) {
-        if (this.getVelocity().x() != 0.0 && velocity.norm() == 0.0) {
-            if (this.friction > 0.0) {
-                this.friction -= 0.03125;
-            }
-        } else {
-            this.friction = 1.0;
-        }
-        return velocity.add(this.getVelocity().multiply(new Vector2(this.friction, 1.0)));
-    }
-
-    private Vector2 applyGravity(final Vector2 velocity) {
-        return velocity.add(this.gravityAcceleration);
     }
 
     private void useWeapon(final Weapon equippedWeapon) {

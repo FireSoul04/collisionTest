@@ -38,8 +38,8 @@ public class Sword extends WeaponImpl {
         this.swingTimer = new GameTimer(() -> {
             this.setSolid(false);
             this.setSprite(this.sprites.get("idle"));
-        }, 0, 150);
-        this.swingCooldown = new GameTimer(() -> {}, 0, 400);
+        }, 150);
+        this.swingCooldown = new GameTimer(400);
         this.getCollider().ifPresent(t -> t.setSolid(false));
     }
 

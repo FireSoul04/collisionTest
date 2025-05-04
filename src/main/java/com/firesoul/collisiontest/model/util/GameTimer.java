@@ -27,6 +27,14 @@ public class GameTimer {
         this.running = false;
     }
 
+    public GameTimer(final TimerAction onStop, final int duration) {
+        this(onStop, 0, duration);
+    }
+
+    public GameTimer(final int duration) {
+        this(() -> {}, duration);
+    }
+
     public void start() {
         if (!this.running) {
             this.timer = new Timer();

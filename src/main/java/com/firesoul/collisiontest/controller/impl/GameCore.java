@@ -4,7 +4,6 @@ import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.impl.gameobjects.CameraImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 import java.awt.*;
