@@ -6,20 +6,20 @@ import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.api.physics.PhysicsBody;
-import com.firesoul.collisiontest.model.impl.physics.RigidBody;
+import com.firesoul.collisiontest.model.api.physics.RigidBody;
+import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Projectile extends GameObjectImpl {
 
-    private final PhysicsBody body;
+    private final RigidBody body;
 
     public Projectile(final Vector2 position, final Level world, final Optional<Collider> collider,
                       final Optional<Drawable> sprite, final double speed
     ) {
         super(position, true, world, collider, sprite);
-        this.body = new RigidBody(Vector2.zero(), Vector2.zero(), Vector2.zero());
+        this.body = new EnhancedRigidBody(Vector2.zero(), Vector2.zero(), Vector2.zero());
         this.setVelocity(new Vector2(speed, 0.0));
     }
 

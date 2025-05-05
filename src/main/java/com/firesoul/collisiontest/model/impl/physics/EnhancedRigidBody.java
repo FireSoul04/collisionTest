@@ -1,30 +1,31 @@
 package com.firesoul.collisiontest.model.impl.physics;
 
-import com.firesoul.collisiontest.model.api.physics.PhysicsBody;
+import com.firesoul.collisiontest.model.api.physics.RigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class RigidBody implements PhysicsBody {
+public class EnhancedRigidBody implements RigidBody {
+
+    private static final double EPSILON = 1e-1;
 
     private final List<Vector2> forces = new ArrayList<>();
 
     private final Vector2 friction;
     private final Vector2 gravity;
+    private final Vector2 maxVelocity;
 
     private Vector2 velocity = Vector2.zero();
 
-    private final Vector2 maxVelocity;
-
-    public RigidBody(final Vector2 maxVelocity, final Vector2 gravity, final Vector2 friction) {
+    public EnhancedRigidBody(final Vector2 maxVelocity, final Vector2 gravity, final Vector2 friction) {
         this.friction = friction;
-        this.maxVelocity = maxVelocity;
         this.gravity = gravity;
+        this.maxVelocity = maxVelocity;
     }
 
-    public RigidBody(final Vector2 maxVelocity) {
+    public EnhancedRigidBody(final Vector2 maxVelocity) {
         this(maxVelocity, new Vector2(0.0, 0.25), new Vector2(0.0625, 0.0));
     }
 
@@ -58,13 +59,19 @@ public class RigidBody implements PhysicsBody {
 
     @Override
     public void move(final Vector2 direction) {
-        if (this.velocity.norm() <= this.maxVelocity.norm()) {
-            this.applyForce(direction);
-        }
+        this.applyForce(direction);
     }
 
     private void applyFriction() {
-        this.applyForce(this.friction.multiply(this.velocity.invert().normalize()));
+        if (this.velocity.norm() > EPSILON) {
+            this.applyForce(this.friction.multiply(this.velocity.invert().normalize()));
+        } else {
+            this.applyForce(this.velocity.invert());
+        }
+
+        if (Math.abs(this.velocity.x()) <= this.maxVelocity.x()) {
+            this.applyForce(this.velocity.invert().multiply(this.friction));
+        }
     }
 
     private void addForce(final Vector2 force) {

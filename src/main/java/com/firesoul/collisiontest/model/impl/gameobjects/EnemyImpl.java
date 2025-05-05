@@ -6,8 +6,8 @@ import java.util.Optional;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
-import com.firesoul.collisiontest.model.api.physics.PhysicsBody;
-import com.firesoul.collisiontest.model.impl.physics.RigidBody;
+import com.firesoul.collisiontest.model.api.physics.RigidBody;
+import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
 
@@ -18,7 +18,7 @@ public class EnemyImpl extends EntityImpl implements Enemy {
         void behave(Enemy enemy);
     }
 
-    private final PhysicsBody body;
+    private final RigidBody body;
     private final EnemyBehavior behavior;
     private final Map<String, Drawable> sprites;
 
@@ -27,7 +27,7 @@ public class EnemyImpl extends EntityImpl implements Enemy {
                      final int iframes, final int life, final Vector2 gravity, final EnemyBehavior behavior
     ) {
         super(position, dynamic, world, collider, Optional.of(sprites.get("idle")), iframes, life);
-        this.body = new RigidBody(new Vector2(1.0, 0.0), gravity, Vector2.zero());
+        this.body = new EnhancedRigidBody(new Vector2(1.0, 0.0), gravity, Vector2.zero());
         this.sprites = sprites;
         this.behavior = behavior;
     }

@@ -8,6 +8,7 @@ import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
+import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderer;
 
@@ -99,23 +100,27 @@ public class LevelImpl implements Level {
             final Map<GameObject, Double> collidersByCollisionTime = new HashMap<>();
             for (final GameObject g2 : gameObjects.stream().filter(t -> !t.equals(g1)).toList()) {
                 final Collider c = g1.getCollider().orElseThrow();
-                final CollisionAlgorithms.Collision sw = CollisionAlgorithms.sweptAABB(g1, g2, deltaTime);
-                boolean collided = sw != null;
+                final CollisionAlgorithms.Collision collision = CollisionAlgorithms.sweptAABB(g1, g2, deltaTime);
+                boolean collided = collision != null;
                 if (collided) {
-                    collidersByCollisionTime.put(g2, sw.time());
+                    collidersByCollisionTime.put(g2, collision.time());
                     c.addCollided(g2);
                 } else {
                     c.removeCollided(g2);
                 }
             }
-            for (var x : collidersByCollisionTime
+            this.resolveCollisions(g1, collidersByCollisionTime, deltaTime);
+        }
+    }
+
+    private void resolveCollisions(final GameObject g, final Map<GameObject, Double> collisions, final double deltaTime) {
+        for (final Map.Entry<GameObject, Double> collision : collisions
                 .entrySet()
                 .stream()
                 .sorted(Comparator.comparingDouble(Map.Entry::getValue))
                 .toList()
-            ) {
-                CollisionAlgorithms.resolveSweptAABB(g1, x.getKey(), deltaTime);
-            }
+        ) {
+            CollisionAlgorithms.resolveSweptAABB(g, collision.getKey(), deltaTime);
         }
     }
 
@@ -123,7 +128,7 @@ public class LevelImpl implements Level {
         final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
         this.player = this.gf.player(playerPosition, input);
         Objects.requireNonNull(this.player);
-        this.gameObjects.add(this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03));
+//        this.gameObjects.add(this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03));
         this.gameObjects.add(this.player);
 
         final WeaponFactory wf = new WeaponFactoryImpl(this);
@@ -134,8 +139,18 @@ public class LevelImpl implements Level {
         this.player.equip(sword);
         this.player.equip(gun);
 
-        for (int x = 1; x < 50; x++) {
+        this.addBlocks();
+    }
+
+    private void addBlocks() {
+        for (int x = 1; x < 100; x++) {
             this.gameObjects.add(this.gf.block(new Vector2(x * TILE_SIZE, 600)));
+        }
+        for (int y = 1; y < 3; y++) {
+            this.gameObjects.add(this.gf.block(new Vector2(TILE_SIZE, 600 - y * TILE_SIZE)));
+        }
+        for (int y = 1; y < 3; y++) {
+            this.gameObjects.add(this.gf.block(new Vector2(99 * TILE_SIZE, 600 - y * TILE_SIZE)));
         }
     }
 }

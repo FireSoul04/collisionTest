@@ -2,7 +2,7 @@ package com.firesoul.collisiontest.model.api.physics;
 
 import com.firesoul.collisiontest.model.util.Vector2;
 
-public interface PhysicsBody {
+public interface RigidBody {
 
     void update();
 

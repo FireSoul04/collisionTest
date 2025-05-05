@@ -137,7 +137,7 @@ public final class CollisionAlgorithms {
                 g1.setVelocity(g1.getVelocity()
                     .add(sw.normal()
                         .multiply(new Vector2(Math.abs(g1.getVelocity().x()), Math.abs(g1.getVelocity().y()))
-                        .multiply(1.0 - sw.time())))
+                            .multiply(1.0 - sw.time())))
                 );
             }
         }

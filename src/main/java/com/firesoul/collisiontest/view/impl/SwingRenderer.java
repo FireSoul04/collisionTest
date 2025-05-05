@@ -9,7 +9,7 @@ import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
-import com.firesoul.collisiontest.model.impl.physics.RigidBody;
+import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -152,16 +152,42 @@ public class SwingRenderer extends JPanel implements Renderer {
             //     g2.drawRect((int) x.x(), (int) x.y(), (int) x.w()*100, (int) x.h()*100);
             // }
 
+            // Draw forces as arrows
             if (go instanceof Player p) {
+                final List<Vector2> forces = ((EnhancedRigidBody) p.body).forcesDebug;
                 g2.setColor(Color.MAGENTA);
-                for (var x : ((RigidBody) p.body).forcesDebug) {
+                for (var force : forces) {
                     final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
-                    final Vector2 end = start.add(x.multiply(100));
-                    System.out.println(start + " -> " + end);
+                    final Vector2 end = start.add(force.multiply(200.0));
+                    final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
+                    final Vector2 arrow = end.add(arrowDirection);
                     g2.drawLine((int) start.x(), (int) start.y(),
                         (int) end.x(), (int) end.y());
+                    g2.drawLine((int) end.x(), (int) end.y(),
+                        (int) (arrow.x() + arrowDirection.y()),
+                        (int) (arrow.y() + arrowDirection.x()));
+                    g2.drawLine((int) end.x(), (int) end.y(),
+                        (int) (arrow.x() - arrowDirection.y()),
+                        (int) (arrow.y() - arrowDirection.x()));
                 }
-                ((RigidBody) p.body).forcesDebug.clear();
+                System.out.println(((EnhancedRigidBody) p.body).forcesDebug);
+                System.out.println(p.getVelocity());
+
+                g2.setColor(Color.RED);
+                final Vector2 force = p.getVelocity();
+                final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
+                final Vector2 end = start.add(force.multiply(20.0));
+                final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
+                final Vector2 arrow = end.add(arrowDirection);
+                g2.drawLine((int) start.x(), (int) start.y(),
+                        (int) end.x(), (int) end.y());
+                g2.drawLine((int) end.x(), (int) end.y(),
+                        (int) (arrow.x() + arrowDirection.y()),
+                        (int) (arrow.y() + arrowDirection.x()));
+                g2.drawLine((int) end.x(), (int) end.y(),
+                        (int) (arrow.x() - arrowDirection.y()),
+                        (int) (arrow.y() - arrowDirection.x()));
+                forces.clear();
             }
             // DEBUG
         }
