@@ -8,6 +8,8 @@ import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
+import com.firesoul.collisiontest.model.impl.gameobjects.Player;
+import com.firesoul.collisiontest.model.impl.physics.RigidBody;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -104,7 +106,7 @@ public class SwingRenderer extends JPanel implements Renderer {
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
         g2.scale(this.scale.x(), this.scale.y());
 
-        for (final GameObject go : this.gameObjects.stream().toList()) {
+        for (final GameObject go : this.gameObjects.stream().filter(this::isInBounds).toList()) {
             final Optional<Collider> colliderOpt = go.getCollider();
             final Optional<Drawable> spriteOpt = go.getSprite();
 
@@ -149,6 +151,18 @@ public class SwingRenderer extends JPanel implements Renderer {
             // for (var x : CollisionAlgorithms.debugNormal) {
             //     g2.drawRect((int) x.x(), (int) x.y(), (int) x.w()*100, (int) x.h()*100);
             // }
+
+            if (go instanceof Player p) {
+                g2.setColor(Color.MAGENTA);
+                for (var x : ((RigidBody) p.body).forcesDebug) {
+                    final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
+                    final Vector2 end = start.add(x.multiply(100));
+                    System.out.println(start + " -> " + end);
+                    g2.drawLine((int) start.x(), (int) start.y(),
+                        (int) end.x(), (int) end.y());
+                }
+                ((RigidBody) p.body).forcesDebug.clear();
+            }
             // DEBUG
         }
         g2.dispose();

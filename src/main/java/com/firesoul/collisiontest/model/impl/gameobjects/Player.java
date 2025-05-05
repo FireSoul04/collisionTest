@@ -19,7 +19,7 @@ import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Player extends EntityImpl {
 
-    private final PhysicsBody body = new RigidBody(new Vector2(1.0, 0.0));
+    public final PhysicsBody body = new RigidBody(new Vector2(3.0, 0.0));
     private final InputController input;
     private final Map<String, Drawable> sprites;
 
@@ -31,7 +31,7 @@ public class Player extends EntityImpl {
     private Optional<Weapon> equippedWeapon = Optional.empty();
     private final GameTimer weaponCooldown = new GameTimer(1000);
     // Movement logic
-    private final double speed = 0.1;
+    private final double speed = 0.2;
     private double facingDirectionX = 1.0;
     // Jump logic
     private final Vector2 jumpAcceleration = new Vector2(0.0, -0.125);

@@ -5,25 +5,21 @@ import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RigidBody implements PhysicsBody {
 
     private final List<Vector2> forces = new ArrayList<>();
 
-    private final Vector2 maxFriction = Vector2.one();
-    private final Vector2 frictionStep;
+    private final Vector2 friction;
     private final Vector2 gravity;
-
-    private Vector2 friction;
 
     private Vector2 velocity = Vector2.zero();
 
     private final Vector2 maxVelocity;
-    private Vector2 currentVelocity = Vector2.zero();
 
-    public RigidBody(final Vector2 maxVelocity, final Vector2 gravity, final Vector2 frictionStep) {
-        this.frictionStep = frictionStep;
-        this.friction = this.maxFriction;
+    public RigidBody(final Vector2 maxVelocity, final Vector2 gravity, final Vector2 friction) {
+        this.friction = friction;
         this.maxVelocity = maxVelocity;
         this.gravity = gravity;
     }
@@ -32,11 +28,16 @@ public class RigidBody implements PhysicsBody {
         this(maxVelocity, new Vector2(0.0, 0.25), new Vector2(0.0625, 0.0));
     }
 
+    public List<Vector2> forcesDebug = new CopyOnWriteArrayList<>();
+
     @Override
     public void update() {
         this.applyFriction();
         this.applyForce(this.gravity);
         this.forces.forEach(this::addForce);
+        
+        forcesDebug.addAll(forces);
+        
         this.forces.clear();
     }
 
@@ -57,23 +58,13 @@ public class RigidBody implements PhysicsBody {
 
     @Override
     public void move(final Vector2 direction) {
-        if (direction.x() != 0.0 && this.currentVelocity.x() < this.maxVelocity.x()) {
-            this.currentVelocity = this.currentVelocity.add(direction.normalize());
-        } else if (direction.x() == 0.0) {
-            this.currentVelocity = new Vector2(0.0, this.currentVelocity.y());
+        if (this.velocity.norm() <= this.maxVelocity.norm()) {
+            this.applyForce(direction);
         }
-        this.applyForce(direction);
     }
 
     private void applyFriction() {
-        if (this.velocity.norm() > 0.0 && this.currentVelocity.norm() == 0.0) {
-            if (this.friction.norm() > 0.0) {
-                this.friction = this.friction.subtract(this.frictionStep);
-            }
-        } else {
-            this.friction = this.maxFriction;
-        }
-        this.velocity = this.velocity.multiply(this.friction);
+        this.applyForce(this.friction.multiply(this.velocity.invert().normalize()));
     }
 
     private void addForce(final Vector2 force) {
