@@ -2,7 +2,6 @@ package com.firesoul.collisiontest.model.impl.gameobjects.bars;
 
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
-import com.firesoul.collisiontest.model.impl.gameobjects.DynamicGameBar;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Bar;
 
