@@ -19,7 +19,7 @@ import com.firesoul.collisiontest.view.api.Drawable;
 
 public class Player extends EntityImpl {
 
-    public final RigidBody body = new EnhancedRigidBody(new Vector2(3.0, 0.0));
+    public final RigidBody body = new EnhancedRigidBody(new Vector2(5.0, 0.0));
     private final InputController input;
     private final Map<String, Drawable> sprites;
 

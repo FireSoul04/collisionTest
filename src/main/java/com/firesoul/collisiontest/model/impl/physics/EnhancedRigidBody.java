@@ -33,7 +33,6 @@ public class EnhancedRigidBody implements RigidBody {
 
     @Override
     public void update() {
-        this.applyFriction();
         this.applyForce(this.gravity);
         this.forces.forEach(this::addForce);
         
@@ -59,7 +58,10 @@ public class EnhancedRigidBody implements RigidBody {
 
     @Override
     public void move(final Vector2 direction) {
-        this.applyForce(direction);
+        if (this.velocity.add(direction).norm() <= this.maxVelocity.norm()) {
+            this.applyForce(direction);
+            this.applyFriction();
+        }
     }
 
     private void applyFriction() {
@@ -67,10 +69,6 @@ public class EnhancedRigidBody implements RigidBody {
             this.applyForce(this.friction.multiply(this.velocity.invert().normalize()));
         } else {
             this.applyForce(this.velocity.invert());
-        }
-
-        if (Math.abs(this.velocity.x()) <= this.maxVelocity.x()) {
-            this.applyForce(this.velocity.invert().multiply(this.friction));
         }
     }
 
