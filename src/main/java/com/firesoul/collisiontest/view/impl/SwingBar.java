@@ -7,14 +7,21 @@ import java.awt.*;
 
 public class SwingBar extends SwingDrawable implements Bar {
 
+    private final boolean staticc;
     private final Color color;
     private double currentPercentage;
 
-    public SwingBar(final Vector2 position, final int width, final int height, final Color color, final boolean visible) {
-        super(position, visible);
+    public SwingBar(final int width, final int height, final Color color, final boolean visible, final boolean staticc) {
+        super(Vector2.zero(), visible);
         this.setSize(width, height);
         this.color = color;
         this.currentPercentage = 1.0;
+        this.staticc = staticc;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return this.staticc;
     }
 
     @Override

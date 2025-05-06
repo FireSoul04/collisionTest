@@ -33,8 +33,8 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", new SwingSprite("player", position),
             "damage", new SwingSprite("player_damage", position)
         );
-        final GameBar lifeBar = new GameBar(Vector2.one(), this.world,
-            new SwingBar(Vector2.zero(), 20, 10, Color.RED, true), 12
+        final GameBar lifeBar = new StaticGameBar(Vector2.one(), this.world,
+            new SwingBar(20, 10, Color.RED, true, true), 12
         );
         this.world.instanciate(lifeBar);
         return new Player(position, this.world, Optional.of(collider), sprites, input, lifeBar);
@@ -56,12 +56,13 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
                 "idle", new SwingSprite("enemy", position),
                 "damage", new SwingSprite("enemy_damage", position)
         );
-        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites, 200, 10,
-                new Vector2(0.0, 0.25), e ->
-        {
-            final Vector2 goTo = this.world.getPlayerPosition().subtract(e.getPosition()).normalize();
-            e.move(new Vector2(goTo.x(), 0.0));
-        });
+        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites,
+            200, 10, new Vector2(0.0, 0.25),
+            e -> {
+                final Vector2 goTo = this.world.getPlayerPosition().subtract(e.getPosition()).normalize();
+                e.move(new Vector2(goTo.x(), 0.0));
+            }
+        );
     }
 
     @Override
@@ -71,9 +72,9 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
                 "idle", new SwingSprite("enemy", position),
                 "damage", new SwingSprite("enemy_damage", position)
         );
-        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites, 200, 10,
-                Vector2.zero(), new EnemyImpl.EnemyBehavior()
-        {
+        return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites,
+            200, 10, Vector2.zero(),
+            new EnemyImpl.EnemyBehavior() {
                 final double eRange = range;
                 final double eSpeed = speed;
                 double step = 0.0;

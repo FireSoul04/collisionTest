@@ -36,8 +36,11 @@ public class Gun extends WeaponImpl {
         this.projectileOffset = projectileOffset;
         this.maxProjectiles = maxProjectiles;
         this.reloadTimer = new GameTimer (
-            () -> this.projectiles = this.maxProjectiles,
-            (r, d) -> reloadBar.setCurrentPercentage(r/(double) d),
+            () -> {
+                this.projectiles = this.maxProjectiles;
+                reloadBar.getSprite().ifPresent(s -> s.setVisible(false));
+            },
+            (r, d) -> reloadBar.setCurrentPercentage(r / (double) d),
             1500
         );
         this.projectiles = this.maxProjectiles;
@@ -66,6 +69,7 @@ public class Gun extends WeaponImpl {
     public void reload() {
         if (this.projectiles < this.maxProjectiles && !this.reloadTimer.isRunning()) {
             this.reloadTimer.start();
+            this.reloadBar.getSprite().ifPresent(s -> s.setVisible(true));
         }
     }
 }

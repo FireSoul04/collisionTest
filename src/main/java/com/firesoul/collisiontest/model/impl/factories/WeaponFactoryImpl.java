@@ -4,6 +4,8 @@ import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.WeaponFactory;
+import com.firesoul.collisiontest.model.impl.gameobjects.AttachedBar;
+import com.firesoul.collisiontest.model.impl.gameobjects.DynamicGameBar;
 import com.firesoul.collisiontest.model.impl.gameobjects.GameBar;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
@@ -43,9 +45,11 @@ public class WeaponFactoryImpl implements WeaponFactory {
 
     @Override
     public Weapon gun(final Player holder) {
-        final GameBar reloadBar = new GameBar(new Vector2(1.0, 20.0), this.world,
-            new SwingBar(new Vector2(1.0, 20.0), 20, 10, Color.WHITE, true),
-            1, true
+        final GameBar reloadBar = new AttachedBar(
+            holder, g -> g.getSprite()
+                .map(t -> new Vector2(0.0, -t.getHeight() * 0.75))
+                .orElse(Vector2.zero()), this.world,
+            new SwingBar(20, 10, Color.WHITE, false, false), 1, true
         );
         final SwingSprite sprite = new SwingSprite("gun", Vector2.zero());
         final Vector2 offset = new Vector2(12.0, 0.0);

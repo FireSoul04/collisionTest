@@ -77,7 +77,12 @@ public class SwingRenderer extends JPanel implements Renderer {
             .map(GameObject::getSprite)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .filter(t -> !(t instanceof UI))
+            .filter(t -> {
+                if (t instanceof UI ui) {
+                    return !ui.isStatic();
+                }
+                return true;
+            })
             .forEach(t -> t.translate(t.getPosition().add(this.camera.getPosition().invert()))
         );
         this.repaint();
@@ -144,76 +149,58 @@ public class SwingRenderer extends JPanel implements Renderer {
                 }
             }
 
-            debug(g2, go);
+//            debug(g2, go);
         }
         g2.dispose();
     }
 
     private void debug(final Graphics2D g2, final GameObject go) {
-        // DEBUG
-        // g2.setColor(Color.MAGENTA);
-        // for (var x : CollisionAlgorithms.debugRect) {
-        //     g2.drawRect((int) x.x(), (int) x.y(), (int) x.w(), (int) x.h());
-        // }
-        // g2.setColor(Color.CYAN);
-        // for (var x : CollisionAlgorithms.debugPoint) {
-        //     g2.fillOval((int) x.x()-5, (int) x.y()-5, 10, 10);
-        // }
-        // g2.setColor(Color.ORANGE);
-        // for (var x : CollisionAlgorithms.debugNormal) {
-        //     g2.drawRect((int) x.x(), (int) x.y(), (int) x.w()*100, (int) x.h()*100);
-        // }
+        if (go instanceof Player p) {
+            final List<Vector2> forces = ((EnhancedRigidBody) p.body).forcesDebug;
+            g2.setColor(Color.MAGENTA);
+            for (var force : forces) {
+                final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
+                final Vector2 end = start.add(force.multiply(200.0));
+                final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
+                final Vector2 arrow = end.add(arrowDirection);
+                g2.drawLine((int) start.x(), (int) start.y(),
+                    (int) end.x(), (int) end.y());
+                g2.drawLine((int) end.x(), (int) end.y(),
+                    (int) (arrow.x() + arrowDirection.y()),
+                    (int) (arrow.y() + arrowDirection.x()));
+                g2.drawLine((int) end.x(), (int) end.y(),
+                    (int) (arrow.x() - arrowDirection.y()),
+                    (int) (arrow.y() - arrowDirection.x()));
+            }
 
-        // Draw forces as arrows
-//        if (go instanceof Player p) {
-//            final List<Vector2> forces = ((EnhancedRigidBody) p.body).forcesDebug;
-//            g2.setColor(Color.MAGENTA);
-//            for (var force : forces) {
-//                final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
-//                final Vector2 end = start.add(force.multiply(200.0));
-//                final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
-//                final Vector2 arrow = end.add(arrowDirection);
-//                g2.drawLine((int) start.x(), (int) start.y(),
-//                    (int) end.x(), (int) end.y());
-//                g2.drawLine((int) end.x(), (int) end.y(),
-//                    (int) (arrow.x() + arrowDirection.y()),
-//                    (int) (arrow.y() + arrowDirection.x()));
-//                g2.drawLine((int) end.x(), (int) end.y(),
-//                    (int) (arrow.x() - arrowDirection.y()),
-//                    (int) (arrow.y() - arrowDirection.x()));
-//            }
-////                System.out.println(((EnhancedRigidBody) p.body).forcesDebug);
-////                System.out.println(p.getVelocity());
-//
-//            g2.setColor(Color.RED);
-//            final Vector2 force = p.getVelocity();
-//            final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
-//            final Vector2 end = start.add(force.multiply(20.0));
-//            final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
-//            final Vector2 arrow = end.add(arrowDirection);
-//            g2.drawLine((int) start.x(), (int) start.y(),
-//                (int) end.x(), (int) end.y());
-//            g2.drawLine((int) end.x(), (int) end.y(),
-//                (int) (arrow.x() + arrowDirection.y()),
-//                (int) (arrow.y() + arrowDirection.x()));
-//            g2.drawLine((int) end.x(), (int) end.y(),
-//                (int) (arrow.x() - arrowDirection.y()),
-//                (int) (arrow.y() - arrowDirection.x()));
-//            forces.clear();
-//        }
-        // DEBUG
+            g2.setColor(Color.RED);
+            final Vector2 force = p.getVelocity();
+            final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
+            final Vector2 end = start.add(force.multiply(20.0));
+            final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
+            final Vector2 arrow = end.add(arrowDirection);
+            g2.drawLine((int) start.x(), (int) start.y(),
+                (int) end.x(), (int) end.y());
+            g2.drawLine((int) end.x(), (int) end.y(),
+                (int) (arrow.x() + arrowDirection.y()),
+                (int) (arrow.y() + arrowDirection.x()));
+            g2.drawLine((int) end.x(), (int) end.y(),
+                (int) (arrow.x() - arrowDirection.y()),
+                (int) (arrow.y() - arrowDirection.x()));
+            forces.clear();
+        }
     }
 
     private boolean isInBounds(final GameObject g) {
-        Vector2 offset = Vector2.zero();
-
+        Vector2 offset;
         if (g.getSprite().isPresent() && g.getSprite().get() instanceof SwingSprite swingSprite) {
             offset = new Vector2(swingSprite.getWidth(), swingSprite.getHeight());
         } else if (g.getCollider().isPresent()) {
             final BoxCollider box = CollisionAlgorithms.getBoxCollider(g.getCollider().get());
             offset = new Vector2(box.getWidth(), box.getHeight());
+        } else {
+            return true;
         }
-
         return g.getPosition().x() - offset.x() < this.camera.getPosition().x() + (this.camera.getWidth())
             && g.getPosition().y() - offset.y() < this.camera.getPosition().y() + (this.camera.getHeight())
             && g.getPosition().x() + offset.x() > this.camera.getPosition().x()
