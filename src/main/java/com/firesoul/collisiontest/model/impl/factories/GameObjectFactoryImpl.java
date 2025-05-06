@@ -10,6 +10,8 @@ import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.gameobjects.*;
+import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
+import com.firesoul.collisiontest.model.impl.gameobjects.bars.StaticGameBar;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;

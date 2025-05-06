@@ -1,6 +1,7 @@
 package com.firesoul.collisiontest.model.impl.gameobjects;
 
 import com.firesoul.collisiontest.model.api.Level;
+import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Bar;
 

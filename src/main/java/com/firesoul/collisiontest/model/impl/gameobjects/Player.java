@@ -10,6 +10,7 @@ import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.physics.RigidBody;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
+import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
