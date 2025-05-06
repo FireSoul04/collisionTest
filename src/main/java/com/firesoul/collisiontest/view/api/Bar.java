@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.view.api;
 
-public interface Bar extends Drawable {
+public interface Bar extends UI {
 
-    void setCurrentValue(int currentValue);
+    void setCurrentPercentage(double currentPercentage);
 }

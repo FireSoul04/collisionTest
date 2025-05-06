@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.impl.factories;
 
+import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,7 +13,6 @@ import com.firesoul.collisiontest.model.impl.gameobjects.*;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Bar;
 import com.firesoul.collisiontest.view.api.Drawable;
 import com.firesoul.collisiontest.view.impl.SwingBar;
 import com.firesoul.collisiontest.view.impl.SwingSprite;
@@ -33,8 +33,8 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", new SwingSprite("player", position),
             "damage", new SwingSprite("player_damage", position)
         );
-        final LifeBar lifeBar = new LifeBar(this.world,
-            new SwingBar(Vector2.zero(), 20, 10, 12, true)
+        final GameBar lifeBar = new GameBar(Vector2.one(), this.world,
+            new SwingBar(Vector2.zero(), 20, 10, Color.RED, true), 12
         );
         this.world.instanciate(lifeBar);
         return new Player(position, this.world, Optional.of(collider), sprites, input, lifeBar);

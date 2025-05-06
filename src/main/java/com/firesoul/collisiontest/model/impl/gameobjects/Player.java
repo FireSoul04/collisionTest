@@ -23,7 +23,7 @@ public class Player extends EntityImpl {
     private final InputController input;
     private final Map<String, Drawable> sprites;
 
-    private final LifeBar lifeBar;
+    private final GameBar lifeBar;
 
     // Attack logic
     private final List<Weapon> weapons = new ArrayList<>();
@@ -45,7 +45,7 @@ public class Player extends EntityImpl {
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
         final InputController input,
-        final LifeBar lifeBar
+        final GameBar lifeBar
     ) {
         super(position, true, world, collider, Optional.of(sprites.get("idle")), 250, 12);
 

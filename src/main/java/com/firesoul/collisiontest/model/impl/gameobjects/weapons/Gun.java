@@ -3,6 +3,7 @@ package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
+import com.firesoul.collisiontest.model.impl.gameobjects.GameBar;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 public class Gun extends WeaponImpl {
 
+    private final GameBar reloadBar;
     private final GameTimer shootCooldown;
     private final Vector2 projectileOffset;
     private final Vector2 projectileVelocity;
@@ -21,6 +23,7 @@ public class Gun extends WeaponImpl {
 
     public Gun(
         final GameObject holder,
+        final GameBar reloadBar,
         final Vector2 offset,
         final Vector2 projectileOffset,
         final Optional<Drawable> sprite,
@@ -28,10 +31,15 @@ public class Gun extends WeaponImpl {
         final int maxProjectiles
     ) {
         super(holder, offset, offset, world, Optional.empty(), sprite);
+        this.reloadBar = reloadBar;
         this.shootCooldown = new GameTimer(400);
         this.projectileOffset = projectileOffset;
         this.maxProjectiles = maxProjectiles;
-        this.reloadTimer = new GameTimer(2000);
+        this.reloadTimer = new GameTimer (
+            () -> this.projectiles = this.maxProjectiles,
+            (r, d) -> reloadBar.setCurrentPercentage(r/(double) d),
+            1500
+        );
         this.projectiles = this.maxProjectiles;
         this.projectileVelocity = Vector2.right().multiply(10.0);
     }
@@ -43,10 +51,10 @@ public class Gun extends WeaponImpl {
             this.projectiles--;
 
             this.getWorld().instanciate(new GameObjectFactoryImpl(this.getWorld()).projectile(
-                    this.getHolder().getPosition().add(
-                            new Vector2(this.projectileOffset.x() * this.getDirectionX(), this.projectileOffset.y())
-                    ),
-                    this.projectileVelocity.x() * this.getDirectionX()
+                this.getHolder().getPosition().add(
+                    this.projectileOffset.multiply(new Vector2(this.getDirectionX(), 0.0))
+                ),
+                this.projectileVelocity.x() * this.getDirectionX()
             ));
         }
 

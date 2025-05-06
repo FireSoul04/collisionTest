@@ -37,12 +37,13 @@ public class LevelImpl implements Level {
     @Override
     public void update(final double deltaTime) {
         this.checkCollisions(deltaTime);
-        this.renderer.getCamera().setPosition(this.getPlayerPosition().subtract(
-            new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight()).divide(2.0)
-        ));
         this.gameObjects.forEach(t -> t.update(deltaTime));
         this.gameObjects.addAll(this.projectiles);
         this.projectiles.clear();
+        this.renderer.getCamera().setPosition(this.getPlayerPosition().subtract(
+            new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight())
+                .divide(2.0)
+        ));
 
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();

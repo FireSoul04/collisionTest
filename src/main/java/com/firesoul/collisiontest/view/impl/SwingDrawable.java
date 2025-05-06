@@ -9,6 +9,7 @@ import java.awt.*;
 public abstract class SwingDrawable extends JComponent implements Drawable {
 
     private Vector2 position;
+    private Vector2 scale;
     private double orientation;
     private double direction;
     private boolean visible;
@@ -17,6 +18,7 @@ public abstract class SwingDrawable extends JComponent implements Drawable {
         super();
         this.position = position;
         this.orientation = orientation;
+        this.scale = Vector2.one();
         this.visible = visible;
         this.direction = 1.0;
     }
@@ -29,6 +31,9 @@ public abstract class SwingDrawable extends JComponent implements Drawable {
     public void mirrorX(double directionX) {
         this.direction = directionX;
     }
+
+    @Override
+    public void scale(final Vector2 scale) { this.scale = scale; }
 
     @Override
     public void translate(final Vector2 position) {
@@ -66,6 +71,10 @@ public abstract class SwingDrawable extends JComponent implements Drawable {
 
     protected double getDirection() {
         return this.direction;
+    }
+
+    protected Vector2 getScale() {
+        return this.scale;
     }
 
     abstract public void drawComponent(final Graphics g);

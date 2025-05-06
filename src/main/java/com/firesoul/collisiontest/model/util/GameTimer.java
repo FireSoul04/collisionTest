@@ -6,22 +6,30 @@ import java.util.TimerTask;
 public class GameTimer {
 
     @FunctionalInterface
-    public interface TimerAction {
+    public interface TimerEndAction {
 
         void get();
     }
 
-    private final TimerAction onStop;
+    @FunctionalInterface
+    public interface TimerTickAction {
+
+        void tick(long remainingTime, long duration);
+    }
+
+    private final TimerEndAction onStop;
+    private final TimerTickAction onTick;
     private final int delay;
     private final int duration;
 
     private Timer timer;
-    private int remainingTime;
+    private long remainingTime;
     private boolean running;
     private boolean pause;
 
-    public GameTimer(final TimerAction onStop, final int delay, final int duration) {
+    public GameTimer(final TimerEndAction onStop, final TimerTickAction onTick, final int delay, final int duration) {
         this.onStop = onStop;
+        this.onTick = onTick;
         this.delay = delay;
         this.duration = duration;
         this.remainingTime = duration;
@@ -29,8 +37,12 @@ public class GameTimer {
         this.pause = false;
     }
 
-    public GameTimer(final TimerAction onStop, final int duration) {
-        this(onStop, 0, duration);
+    public GameTimer(final TimerEndAction onStop, final TimerTickAction onTick, final int duration) {
+        this(onStop, onTick, 0, duration);
+    }
+
+    public GameTimer(final TimerEndAction onStop, final int duration) {
+        this(onStop, (r, d) -> {}, 0, duration);
     }
 
     public GameTimer(final int duration) {
@@ -44,9 +56,11 @@ public class GameTimer {
                 new TimerTask() {
                     public void run() {
                         if (!pause) {
+                            onTick.tick(remainingTime, duration);
                             remainingTime--;
                         }
                         if (remainingTime <= 0) {
+                            onTick.tick(remainingTime, duration);
                             onStop.get();
                             stop();
                         }

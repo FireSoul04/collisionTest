@@ -7,29 +7,30 @@ import java.awt.*;
 
 public class SwingBar extends SwingDrawable implements Bar {
 
-    private final int maxValue;
-    private int currentValue;
+    private final Color color;
+    private double currentPercentage;
 
-    public SwingBar(final Vector2 position, final int width, final int height, final int maxValue, final boolean visible) {
+    public SwingBar(final Vector2 position, final int width, final int height, final Color color, final boolean visible) {
         super(position, visible);
         this.setSize(width, height);
-        this.maxValue = maxValue;
-        this.currentValue = maxValue;
+        this.color = color;
+        this.currentPercentage = 1.0;
     }
 
     @Override
-    public void setCurrentValue(final int currentValue) {
-        this.currentValue = currentValue;
+    public void setCurrentPercentage(final double currentPercentage) {
+        this.currentPercentage = currentPercentage;
     }
 
     @Override
     public void drawComponent(final Graphics g) {
         if (this.isVisible()) {
+            final int currentWidth = (int) (this.getWidth() * currentPercentage);
             final Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(Color.RED);
-            final int currentWidth = this.getWidth() * currentValue / maxValue;
-            g2.fillRect((int) this.getPosition().x(), (int) this.getPosition().y(), currentWidth, this.getHeight());
-            g2.drawRect((int) this.getPosition().x(), (int) this.getPosition().y(), this.getWidth(), this.getHeight());
+            g2.setColor(Color.BLACK);
+            g2.fillRect((int) this.getPosition().x(), (int) this.getPosition().y(), this.getWidth(), this.getHeight());
+            g2.setColor(this.color);
+            g2.fillRect((int) this.getPosition().x() + 1, (int) this.getPosition().y() + 1, currentWidth - 2, this.getHeight() - 2);
         }
     }
 }

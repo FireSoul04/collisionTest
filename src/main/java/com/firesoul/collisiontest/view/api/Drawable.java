@@ -10,6 +10,8 @@ public interface Drawable {
 
     void mirrorX(double directionX);
 
+    void scale(Vector2 scale);
+
     void translate(Vector2 position);
 
     void rotate(double angle);
