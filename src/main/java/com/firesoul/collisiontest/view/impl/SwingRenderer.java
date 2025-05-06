@@ -4,88 +4,68 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
-import com.firesoul.collisiontest.model.api.gameobjects.Camera;
-import com.firesoul.collisiontest.model.api.physics.Collider;
-import com.firesoul.collisiontest.model.api.GameObject;
-import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
-import com.firesoul.collisiontest.model.impl.gameobjects.Player;
-import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
-import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
-import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
-import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
-import com.firesoul.collisiontest.view.api.DrawableFactory;
+import com.firesoul.collisiontest.view.api.Renderable;
 import com.firesoul.collisiontest.view.api.Renderer;
-import com.firesoul.collisiontest.view.api.UI;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SwingRenderer extends JPanel implements Renderer {
 
     private final InputController input = new InputController();
-    private final DrawableFactory df = new SwingDrawableFactory(this);
-    private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
+    private final Set<SwingRenderable> drawables = new HashSet<>();
 
-    private final Camera camera;
     private final int width;
     private final int height;
 
-    private Vector2 scale;
+    private double scaleX;
+    private double scaleY;
 
-    public SwingRenderer(final Camera camera, final Vector2 startPosition, final int width, final int height, final Vector2 scale) {
+    public SwingRenderer(final Point startPosition, final int width, final int height, final double scaleX, final double scaleY) {
         this.width = width;
         this.height = height;
-        this.scale = scale;
-        this.camera = camera;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
 
         final JFrame window = new JFrame("Collision test");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.addKeyListener(this.input.getKeyListener());
 
         window.getContentPane().add(this);
-        window.getContentPane().setPreferredSize(new Dimension((int) (width * scale.x()), (int) (height * scale.y())));
+        window.getContentPane().setPreferredSize(new Dimension((int) (width * scaleX), (int) (height * scaleY)));
 
-        window.setLocation(new Point((int) startPosition.x(), (int) startPosition.y()));
+        window.setLocation(startPosition);
         window.setVisible(true);
         window.pack();
         window.setMinimumSize(window.getSize());
         window.addComponentListener(new ComponentAdapter() {
             public void componentResized(final ComponentEvent e) {
             final Dimension d = ((JFrame) e.getComponent()).getContentPane().getSize();
-            SwingRenderer.this.scale = new Vector2(d.getWidth() / (double) width, d.getHeight() / (double) height);
+            SwingRenderer.this.scaleX = d.getWidth() / (double) width;
+            SwingRenderer.this.scaleY = d.getHeight() / (double) height;
             }
         });
     }
 
     @Override
-    public void add(final Drawable drawable) {
-        if (drawable instanceof SwingSprite swingSprite) {
-            super.add(swingSprite);
+    public void add(final Renderable renderable) {
+        if (renderable instanceof SwingRenderable swingRenderable) {
+            this.drawables.add(swingRenderable);
+        } else {
+            throw new IllegalArgumentException("Invalid type of renderable for Swing view");
         }
     }
 
     @Override
-    public void update(final List<GameObject> gameObjects) {
-        this.gameObjects.clear();
-        this.gameObjects.addAll(gameObjects);
-        this.gameObjects
-            .stream()
-            .map(GameObject::getSprite)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .filter(t -> {
-                if (t instanceof UI ui) {
-                    return !ui.isStatic();
-                }
-                return true;
-            })
-            .forEach(t -> t.translate(t.getPosition().add(this.camera.getPosition().invert()))
-        );
+    public void reset() {
+        this.drawables.clear();
+    }
+
+    @Override
+    public void update() {
         this.repaint();
     }
 
@@ -105,111 +85,16 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
-    public Camera getCamera() {
-        return this.camera;
-    }
-
-    @Override
-    public DrawableFactory getDrawableFactory() {
-        return this.df;
-    }
-
-    @Override
     protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
         final Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.LIGHT_GRAY);
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-        g2.scale(this.scale.x(), this.scale.y());
+        g2.scale(this.scaleX, this.scaleY);
 
-        for (final GameObject go : this.gameObjects.stream().filter(this::isInBounds).toList()) {
-            final Optional<Collider> colliderOpt = go.getCollider();
-            final Optional<Drawable> spriteOpt = go.getSprite();
+        drawables.forEach(t -> t.drawComponent(g));
 
-            if (spriteOpt.isPresent() && spriteOpt.get() instanceof SwingDrawable swingDrawable) {
-                swingDrawable.drawComponent(g);
-            } else if (colliderOpt.isPresent()) {
-                final Collider collider = colliderOpt.get();
-                boolean red = false;
-                for (final Collider c : collider.getCollidedGameObjects().stream()
-                    .map(GameObject::getCollider).map(Optional::orElseThrow).toList()
-                ) {
-                    final boolean bothSolid = collider.isSolid() && c.isSolid();
-                    red |= bothSolid && collider.isCollided();
-                }
-                g2.setColor(red ? Color.RED : spriteOpt.isPresent() ? Color.BLACK : Color.WHITE);
-//                g2.setColor(Color.WHITE);
-
-                if (collider instanceof BoxCollider bc) {
-                    g2.drawRect(
-                        (int) (bc.getPosition().x() - this.camera.getPosition().x()),
-                        (int) (bc.getPosition().y() - this.camera.getPosition().y()),
-                        (int) bc.getWidth(),
-                        (int) bc.getHeight()
-                    );
-                } else if (collider instanceof MeshCollider mc) {
-                    final Polygon polygon = new Polygon();
-                    mc.getPoints().forEach(p -> polygon.addPoint((int) p.x(), (int) p.y()));
-                    g2.drawPolygon(polygon);
-                }
-            }
-
-//            debug(g2, go);
-        }
         g2.dispose();
-    }
-
-    private void debug(final Graphics2D g2, final GameObject go) {
-        if (go instanceof Player p) {
-            final List<Vector2> forces = ((EnhancedRigidBody) p.body).forcesDebug;
-            g2.setColor(Color.MAGENTA);
-            for (var force : forces) {
-                final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
-                final Vector2 end = start.add(force.multiply(200.0));
-                final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
-                final Vector2 arrow = end.add(arrowDirection);
-                g2.drawLine((int) start.x(), (int) start.y(),
-                    (int) end.x(), (int) end.y());
-                g2.drawLine((int) end.x(), (int) end.y(),
-                    (int) (arrow.x() + arrowDirection.y()),
-                    (int) (arrow.y() + arrowDirection.x()));
-                g2.drawLine((int) end.x(), (int) end.y(),
-                    (int) (arrow.x() - arrowDirection.y()),
-                    (int) (arrow.y() - arrowDirection.x()));
-            }
-
-            g2.setColor(Color.RED);
-            final Vector2 force = p.getVelocity();
-            final Vector2 start = p.getPosition().subtract(this.camera.getPosition());
-            final Vector2 end = start.add(force.multiply(20.0));
-            final Vector2 arrowDirection = start.subtract(end).normalize().multiply(2.0);
-            final Vector2 arrow = end.add(arrowDirection);
-            g2.drawLine((int) start.x(), (int) start.y(),
-                (int) end.x(), (int) end.y());
-            g2.drawLine((int) end.x(), (int) end.y(),
-                (int) (arrow.x() + arrowDirection.y()),
-                (int) (arrow.y() + arrowDirection.x()));
-            g2.drawLine((int) end.x(), (int) end.y(),
-                (int) (arrow.x() - arrowDirection.y()),
-                (int) (arrow.y() - arrowDirection.x()));
-            forces.clear();
-        }
-    }
-
-    private boolean isInBounds(final GameObject g) {
-        Vector2 offset;
-        if (g.getSprite().isPresent() && g.getSprite().get() instanceof SwingSprite swingSprite) {
-            offset = new Vector2(swingSprite.getWidth(), swingSprite.getHeight());
-        } else if (g.getCollider().isPresent()) {
-            final BoxCollider box = CollisionAlgorithms.getBoxCollider(g.getCollider().get());
-            offset = new Vector2(box.getWidth(), box.getHeight());
-        } else {
-            return true;
-        }
-        return g.getPosition().x() - offset.x() < this.camera.getPosition().x() + (this.camera.getWidth())
-            && g.getPosition().y() - offset.y() < this.camera.getPosition().y() + (this.camera.getHeight())
-            && g.getPosition().x() + offset.x() > this.camera.getPosition().x()
-            && g.getPosition().y() + offset.y() > this.camera.getPosition().y();
     }
 }

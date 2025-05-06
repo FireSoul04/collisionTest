@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
 
 public interface GameObject {
 

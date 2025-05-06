@@ -1,5 +1,7 @@
 package com.firesoul.collisiontest.model.impl;
 
+import com.firesoul.collisiontest.controller.api.DrawableLoader;
+import com.firesoul.collisiontest.controller.impl.DrawableLoaderImpl;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
@@ -12,8 +14,6 @@ import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.DrawableFactory;
-
 import java.util.*;
 
 public class LevelImpl implements Level {
@@ -31,7 +31,7 @@ public class LevelImpl implements Level {
 
     public LevelImpl(final GameCore controller) {
         this.controller = controller;
-        this.gf = new GameObjectFactoryImpl(this);
+        this.gf = new GameObjectFactoryImpl(controller.getDrawableLoader(), this);
         this.addGameObjects(controller.getInput());
     }
 
@@ -85,11 +85,6 @@ public class LevelImpl implements Level {
     }
 
     @Override
-    public DrawableFactory getDrawableFactory() {
-        return this.controller.getDrawableFactory();
-    }
-
-    @Override
     public void instanciate(final GameObject gameObject) {
         this.gameObjects.add(gameObject);
     }
@@ -136,7 +131,7 @@ public class LevelImpl implements Level {
 //        this.gameObjects.add(this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03));
         this.gameObjects.add(this.player);
 
-        final WeaponFactory wf = new WeaponFactoryImpl(this);
+        final WeaponFactory wf = new WeaponFactoryImpl(controller.getDrawableLoader(), this);
         final Weapon sword = wf.sword(this.player);
         final Weapon gun = wf.gun(this.player);
         this.gameObjects.add(sword);

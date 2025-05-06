@@ -1,18 +1,18 @@
 package com.firesoul.collisiontest.view.api;
 
-import com.firesoul.collisiontest.model.util.Vector2;
+import java.awt.*;
 
-public interface Drawable {
+public interface Renderable {
 
-    String RESOURCES_PATH = "src/main/resources/";
-
-    Vector2 getPosition();
+    Point getPosition();
 
     void mirrorX(double directionX);
 
-    void scale(Vector2 scale);
+    void scale(double scaleX, double scaleY);
 
-    void translate(Vector2 position);
+    void translate(Point position);
+
+    void translate(double x, double y);
 
     void rotate(double angle);
 

@@ -1,29 +1,30 @@
 package com.firesoul.collisiontest.view.impl;
 
-import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.view.api.Renderable;
 
 import javax.swing.*;
 import java.awt.*;
 
-public abstract class SwingDrawable extends JComponent implements Drawable {
+public abstract class SwingRenderable extends JComponent implements Renderable {
 
-    private Vector2 position;
-    private Vector2 scale;
+    private Point position;
+    private double scaleX;
+    private double scaleY;
     private double orientation;
     private double direction;
     private boolean visible;
 
-    public SwingDrawable(final Vector2 position, final double orientation, final boolean visible) {
+    public SwingRenderable(final Point position, final double orientation, final boolean visible) {
         super();
         this.position = position;
         this.orientation = orientation;
-        this.scale = Vector2.one();
+        this.scaleX = 1.0;
+        this.scaleY = 1.0;
         this.visible = visible;
         this.direction = 1.0;
     }
 
-    public SwingDrawable(final Vector2 position, final boolean visible) {
+    public SwingRenderable(final Point position, final boolean visible) {
         this(position, 0.0, visible);
     }
 
@@ -33,11 +34,19 @@ public abstract class SwingDrawable extends JComponent implements Drawable {
     }
 
     @Override
-    public void scale(final Vector2 scale) { this.scale = scale; }
+    public void scale(final double scaleX, final double scaleY) {
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+    }
 
     @Override
-    public void translate(final Vector2 position) {
+    public void translate(final Point position) {
         this.position = position;
+    }
+
+    @Override
+    public void translate(final double x, final double y) {
+        this.position = new Point((int) x, (int) y);
     }
 
     @Override
@@ -61,7 +70,7 @@ public abstract class SwingDrawable extends JComponent implements Drawable {
     }
 
     @Override
-    public Vector2 getPosition() {
+    public Point getPosition() {
         return this.position;
     }
 
@@ -73,8 +82,12 @@ public abstract class SwingDrawable extends JComponent implements Drawable {
         return this.direction;
     }
 
-    protected Vector2 getScale() {
-        return this.scale;
+    protected double getScaleX() {
+        return this.scaleX;
+    }
+
+    protected double getScaleY() {
+        return this.scaleY;
     }
 
     abstract public void drawComponent(final Graphics g);

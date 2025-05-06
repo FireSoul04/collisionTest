@@ -16,7 +16,7 @@ import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.model.api.Drawable;
 
 public class Player extends EntityImpl {
 
@@ -103,7 +103,7 @@ public class Player extends EntityImpl {
             final BoxCollider r1 = CollisionAlgorithms.getBoxCollider(this.getCollider().orElseThrow());
             final BoxCollider r2 = CollisionAlgorithms.getBoxCollider(gameObject.getCollider().orElseThrow());
             final double distX = Math.signum(
-                    (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
+                (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
             );
             this.body.setVelocity(collisionDirection.multiply(collisionTime * 10));
             this.facingDirectionX = -distX;

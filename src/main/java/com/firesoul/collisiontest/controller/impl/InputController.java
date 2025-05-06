@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.controller.impl;
 
-import com.firesoul.collisiontest.controller.api.EventController;
+import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.model.api.Event;
 
 import java.awt.event.KeyEvent;
@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class InputController implements EventController {
+public class InputController implements EventManager {
 
     private static class Key {
         private final int keyCode;

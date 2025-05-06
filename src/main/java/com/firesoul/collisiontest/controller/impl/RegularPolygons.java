@@ -10,15 +10,15 @@ import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 public class RegularPolygons implements GameLogic {
 
-    private final Renderer renderer;
+    private final GameCore controller;
     private final InputController input;
 
     private final Level world;
 
-    public RegularPolygons(final SwingRenderer renderer) {
-        this.renderer = renderer;
-        this.input = renderer.getInput();
-        this.world = new LevelImpl(renderer);
+    public RegularPolygons(final GameCore controller) {
+        this.controller = controller;
+        this.input = controller.getInput();
+        this.world = new LevelImpl(controller);
 
         this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
         this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
@@ -27,11 +27,6 @@ public class RegularPolygons implements GameLogic {
 
         this.input.addEvent("RotateLeft", () -> this.input.isKeyPressed(KeyEvent.VK_Z));
         this.input.addEvent("RotateRight", () -> this.input.isKeyPressed(KeyEvent.VK_X));
-    }
-
-    @Override
-    public void render() {
-        this.renderer.update(this.world.getGameObjects());
     }
 
     @Override

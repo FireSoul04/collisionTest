@@ -2,7 +2,6 @@ package com.firesoul.collisiontest.controller.api;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
-import com.firesoul.collisiontest.view.api.DrawableFactory;
 
 public interface GameController {
 
@@ -16,7 +15,7 @@ public interface GameController {
 
 	InputController getInput();
 
-	Camera getCamera();
+	DrawableLoader getDrawableLoader();
 
-	DrawableFactory getDrawableFactory();
+	Camera getCamera();
 }

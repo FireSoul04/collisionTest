@@ -13,9 +13,6 @@ public class Platformer implements GameLogic {
     public Platformer(final GameCore controller) {
         this.level = new LevelImpl(controller);
 
-        controller.getCamera().setBoundsX(this.level.getHeight());
-        controller.getCamera().setBoundsY(this.level.getHeight());
-
         final InputController input = controller.getInput();
         input.addEvent("Jump", () -> input.isKeyPressed(KeyEvent.VK_SPACE));
         input.addEvent("MoveLeft", () -> input.isKeyPressed(KeyEvent.VK_A));

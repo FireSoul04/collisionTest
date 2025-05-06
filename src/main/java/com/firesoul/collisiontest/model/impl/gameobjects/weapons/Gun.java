@@ -6,7 +6,7 @@ import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.model.api.Drawable;
 
 import java.util.Optional;
 
@@ -53,12 +53,12 @@ public class Gun extends WeaponImpl {
             this.shootCooldown.start();
             this.projectiles--;
 
-            this.getWorld().instanciate(new GameObjectFactoryImpl(this.getWorld()).projectile(
-                this.getHolder().getPosition().add(
-                    this.projectileOffset.multiply(new Vector2(this.getDirectionX(), 0.0))
-                ),
-                this.projectileVelocity.x() * this.getDirectionX()
-            ));
+//            this.getWorld().instanciate(new GameObjectFactoryImpl(this.getWorld()).projectile(
+//                this.getHolder().getPosition().add(
+//                    this.projectileOffset.multiply(new Vector2(this.getDirectionX(), 0.0))
+//                ),
+//                this.projectileVelocity.x() * this.getDirectionX()
+//            ));
         }
 
         if (this.projectiles == 0) {

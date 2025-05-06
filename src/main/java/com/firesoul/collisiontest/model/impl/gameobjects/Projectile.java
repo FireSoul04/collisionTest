@@ -9,7 +9,7 @@ import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.physics.RigidBody;
 import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.model.api.Drawable;
 
 public class Projectile extends GameObjectImpl {
 

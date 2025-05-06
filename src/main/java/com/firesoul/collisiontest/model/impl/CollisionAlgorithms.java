@@ -194,7 +194,7 @@ public final class CollisionAlgorithms {
         return true;
     }
 
-    public static BoxCollider getBoxCollider(final Collider collider) {;
+    public static BoxCollider getBoxCollider(final Collider collider) {
         if (collider instanceof BoxCollider bc) {
             return bc;
         } else if (collider instanceof MeshCollider mc) {

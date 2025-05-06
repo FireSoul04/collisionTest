@@ -9,8 +9,6 @@ import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.DrawableFactory;
-import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,11 +60,6 @@ public class PolygonsWorld implements Level {
     @Override
     public Camera getCamera() {
         return this.controller.getCamera();
-    }
-
-    @Override
-    public DrawableFactory getDrawableFactory() {
-        return this.controller.getDrawableFactory();
     }
 
     @Override
