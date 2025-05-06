@@ -2,6 +2,7 @@ package com.firesoul.collisiontest.model.api;
 
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.DrawableFactory;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ public interface Level {
     Vector2 getPlayerPosition();
 
     Camera getCamera();
+
+    DrawableFactory getDrawableFactory();
 
     void instanciate(GameObject gameObject);
 }

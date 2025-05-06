@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
+import com.firesoul.collisiontest.controller.api.GameController;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.GameObject;
@@ -8,6 +9,7 @@ import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.DrawableFactory;
 import com.firesoul.collisiontest.view.api.Renderer;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.List;
 public class PolygonsWorld implements Level {
 
     private final List<GameObject> gameObjects = new ArrayList<>();
-    private final Renderer renderer;
+    private final GameController controller;
     private final InputController input;
 
     private final double speed = 1.0;
@@ -25,9 +27,9 @@ public class PolygonsWorld implements Level {
 
     private GameObject player;
 
-    public PolygonsWorld(final Renderer renderer) {
-        this.renderer = renderer;
-        this.input = renderer.getInput();
+    public PolygonsWorld(final GameController controller) {
+        this.controller = controller;
+        this.input = controller.getInput();
         this.addGameObjects();
     }
 
@@ -59,7 +61,12 @@ public class PolygonsWorld implements Level {
 
     @Override
     public Camera getCamera() {
-        return this.renderer.getCamera();
+        return this.controller.getCamera();
+    }
+
+    @Override
+    public DrawableFactory getDrawableFactory() {
+        return this.controller.getDrawableFactory();
     }
 
     @Override

@@ -1,33 +1,75 @@
 package com.firesoul.collisiontest.controller.impl;
 
+import com.firesoul.collisiontest.controller.api.GameController;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.impl.gameobjects.CameraImpl;
 import com.firesoul.collisiontest.model.util.Vector2;
+import com.firesoul.collisiontest.view.api.DrawableFactory;
+import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameCore implements Runnable {
+public class GameCore implements Runnable, GameController {
 
     private static final double INITIAL_SCREEN_RATIO = 2.0 / 3.0;
 
+    private static final int WIDTH = 640;
+    private static final int HEIGHT = 360;
+
+    private final Renderer renderer;
     private final GameLogic logic;
 
     public GameCore() {
-        final int width = 640;
-        final int height = 360;
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final Vector2 scale = new Vector2(screenSize.getWidth() / width, screenSize.getHeight() / height)
+        final Vector2 scale = new Vector2(screenSize.getWidth() / WIDTH, screenSize.getHeight() / HEIGHT)
             .multiply(INITIAL_SCREEN_RATIO);
-        final Point startPosition = new Point(
-            (int) ((screenSize.getWidth() - width * scale.x()) / 2),
-            (int) ((screenSize.getHeight() - height * scale.y()) / 2)
+        final Vector2 startPosition = new Vector2(
+            (screenSize.getWidth() - WIDTH * scale.x()) / 2.0,
+            (screenSize.getHeight() - HEIGHT * scale.y()) / 2.0
         );
-        final Camera camera = new CameraImpl(Vector2.zero(), 0.0, width, height, null);
-        this.logic = new Platformer(new SwingRenderer(camera, startPosition, width, height, scale));
+        this.logic = new Platformer(this);
+
+        final Camera camera = new CameraImpl(Vector2.zero(), 0.0, WIDTH, HEIGHT, this.logic.getLevel());
+        this.renderer = new SwingRenderer(camera, startPosition, WIDTH, HEIGHT, scale);
+    }
+
+    @Override
+    public int getWindowWidth() {
+        return this.renderer.getWidth();
+    }
+
+    @Override
+    public int getWindowHeight() {
+        return this.renderer.getHeight();
+    }
+
+    @Override
+    public int getGameWidth() {
+        return this.renderer.getGameWidth();
+    }
+
+    @Override
+    public int getGameHeight() {
+        return this.renderer.getGameHeight();
+    }
+
+    @Override
+    public InputController getInput() {
+        return this.renderer.getInput();
+    }
+
+    @Override
+    public Camera getCamera() {
+        return this.renderer.getCamera();
+    }
+
+    @Override
+    public DrawableFactory getDrawableFactory() {
+        return this.renderer.getDrawableFactory();
     }
 
     @Override
@@ -41,7 +83,7 @@ public class GameCore implements Runnable {
             final long now = System.currentTimeMillis();
             deltaTime = (now - lastTime)/period;
             this.logic.update(deltaTime);
-            this.logic.render();
+            this.renderer.update(this.logic.getLevel().getGameObjects());
             long waitTime = System.currentTimeMillis() - now;
             if (waitTime < period) {
                 try {

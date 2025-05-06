@@ -1,16 +1,18 @@
 package com.firesoul.collisiontest.model.impl;
 
+import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
+import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
+import com.firesoul.collisiontest.model.api.factories.WeaponFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
-import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Renderer;
+import com.firesoul.collisiontest.view.api.DrawableFactory;
 
 import java.util.*;
 
@@ -22,26 +24,23 @@ public class LevelImpl implements Level {
     private final int height = 1200;
 
     private final List<GameObject> gameObjects = new ArrayList<>();
-    private final List<GameObject> projectiles = new ArrayList<>();
 
-    private final Renderer renderer;
+    private final GameCore controller;
     private final GameObjectFactory gf;
     private Player player;
 
-    public LevelImpl(final Renderer renderer) {
-        this.renderer = renderer;
+    public LevelImpl(final GameCore controller) {
+        this.controller = controller;
         this.gf = new GameObjectFactoryImpl(this);
-        this.addGameObjects(renderer.getInput());
+        this.addGameObjects(controller.getInput());
     }
 
     @Override
     public void update(final double deltaTime) {
         this.checkCollisions(deltaTime);
         this.gameObjects.forEach(t -> t.update(deltaTime));
-        this.gameObjects.addAll(this.projectiles);
-        this.projectiles.clear();
-        this.renderer.getCamera().setPosition(this.getPlayerPosition().subtract(
-            new Vector2(this.renderer.getGameWidth(), this.renderer.getGameHeight())
+        this.controller.getCamera().setPosition(this.getPlayerPosition().subtract(
+            new Vector2(this.controller.getGameWidth(), this.controller.getGameHeight())
                 .divide(2.0)
         ));
 
@@ -82,7 +81,12 @@ public class LevelImpl implements Level {
 
     @Override
     public Camera getCamera() {
-        return this.renderer.getCamera();
+        return this.controller.getCamera();
+    }
+
+    @Override
+    public DrawableFactory getDrawableFactory() {
+        return this.controller.getDrawableFactory();
     }
 
     @Override

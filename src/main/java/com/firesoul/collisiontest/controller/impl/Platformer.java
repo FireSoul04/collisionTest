@@ -1,48 +1,31 @@
 package com.firesoul.collisiontest.controller.impl;
 
 import java.awt.event.KeyEvent;
-import java.util.Optional;
 
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.impl.LevelImpl;
-import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Renderer;
 
 public class Platformer implements GameLogic {
 
-    private final Renderer renderer;
-    private final InputController input;
     private final Level level;
 
-    public Platformer(final Renderer renderer) {
-        this.renderer = renderer;
-        this.input = renderer.getInput();
-        this.level = new LevelImpl(renderer);
-        this.level.getGameObjects()
-                .stream()
-                .map(GameObject::getSprite)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(renderer::add);
+    public Platformer(final GameCore controller) {
+        this.level = new LevelImpl(controller);
 
-        this.renderer.getCamera().setBoundsX(this.level.getHeight());
-        this.renderer.getCamera().setBoundsY(this.level.getHeight());
+        controller.getCamera().setBoundsX(this.level.getHeight());
+        controller.getCamera().setBoundsY(this.level.getHeight());
 
-        this.input.addEvent("Jump", () -> this.input.isKeyPressed(KeyEvent.VK_SPACE));
-        this.input.addEvent("MoveLeft", () -> this.input.isKeyPressed(KeyEvent.VK_A));
-        this.input.addEvent("MoveRight", () -> this.input.isKeyPressed(KeyEvent.VK_D));
-        this.input.addEvent("MoveUp", () -> this.input.isKeyPressed(KeyEvent.VK_W));
-        this.input.addEvent("MoveDown", () -> this.input.isKeyPressed(KeyEvent.VK_S));
+        final InputController input = controller.getInput();
+        input.addEvent("Jump", () -> input.isKeyPressed(KeyEvent.VK_SPACE));
+        input.addEvent("MoveLeft", () -> input.isKeyPressed(KeyEvent.VK_A));
+        input.addEvent("MoveRight", () -> input.isKeyPressed(KeyEvent.VK_D));
+        input.addEvent("MoveUp", () -> input.isKeyPressed(KeyEvent.VK_W));
+        input.addEvent("MoveDown", () -> input.isKeyPressed(KeyEvent.VK_S));
 
-        this.input.addEvent("UseWeapon", () -> this.input.isKeyPressedOnce(KeyEvent.VK_E));
-        this.input.addEvent("Reload", () -> this.input.isKeyPressedOnce(KeyEvent.VK_R));
-        this.input.addEvent("ChangeWeapon", () -> this.input.isKeyPressedOnce(KeyEvent.VK_Q));
-    }
-
-    @Override
-    public void render() {
-        this.renderer.update(this.level.getGameObjects());
+        input.addEvent("UseWeapon", () -> input.isKeyPressedOnce(KeyEvent.VK_E));
+        input.addEvent("Reload", () -> input.isKeyPressedOnce(KeyEvent.VK_R));
+        input.addEvent("ChangeWeapon", () -> input.isKeyPressedOnce(KeyEvent.VK_Q));
     }
 
     @Override

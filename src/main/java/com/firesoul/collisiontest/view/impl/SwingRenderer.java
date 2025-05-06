@@ -14,6 +14,7 @@ import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Drawable;
+import com.firesoul.collisiontest.view.api.DrawableFactory;
 import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.api.UI;
 
@@ -27,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SwingRenderer extends JPanel implements Renderer {
 
     private final InputController input = new InputController();
+    private final DrawableFactory df = new SwingDrawableFactory(this);
     private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
     private final Camera camera;
@@ -35,19 +37,20 @@ public class SwingRenderer extends JPanel implements Renderer {
 
     private Vector2 scale;
 
-    public SwingRenderer(final Camera camera, final Point startPosition, final int width, final int height, final Vector2 scale) {
+    public SwingRenderer(final Camera camera, final Vector2 startPosition, final int width, final int height, final Vector2 scale) {
         this.width = width;
         this.height = height;
         this.scale = scale;
+        this.camera = camera;
 
-        JFrame window = new JFrame("Collision test");
+        final JFrame window = new JFrame("Collision test");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.addKeyListener(this.input.getKeyListener());
 
         window.getContentPane().add(this);
         window.getContentPane().setPreferredSize(new Dimension((int) (width * scale.x()), (int) (height * scale.y())));
 
-        window.setLocation(startPosition);
+        window.setLocation(new Point((int) startPosition.x(), (int) startPosition.y()));
         window.setVisible(true);
         window.pack();
         window.setMinimumSize(window.getSize());
@@ -57,8 +60,6 @@ public class SwingRenderer extends JPanel implements Renderer {
             SwingRenderer.this.scale = new Vector2(d.getWidth() / (double) width, d.getHeight() / (double) height);
             }
         });
-
-        this.camera = camera;
     }
 
     @Override
@@ -106,6 +107,11 @@ public class SwingRenderer extends JPanel implements Renderer {
     @Override
     public Camera getCamera() {
         return this.camera;
+    }
+
+    @Override
+    public DrawableFactory getDrawableFactory() {
+        return this.df;
     }
 
     @Override

@@ -23,4 +23,6 @@ public interface Renderer {
     InputController getInput();
 
     Camera getCamera();
+
+    DrawableFactory getDrawableFactory();
 }

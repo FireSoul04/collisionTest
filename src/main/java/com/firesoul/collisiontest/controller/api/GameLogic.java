@@ -4,8 +4,6 @@ import com.firesoul.collisiontest.model.api.Level;
 
 public interface GameLogic {
 
-    void render();
-
     void update(double deltaTime);
 
     Level getLevel();

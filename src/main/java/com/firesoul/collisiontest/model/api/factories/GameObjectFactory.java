@@ -1,6 +1,7 @@
-package com.firesoul.collisiontest.model.api;
+package com.firesoul.collisiontest.model.api.factories;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
 

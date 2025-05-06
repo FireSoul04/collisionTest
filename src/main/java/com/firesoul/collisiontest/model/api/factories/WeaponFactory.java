@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.model.api;
+package com.firesoul.collisiontest.model.api.factories;
 
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
