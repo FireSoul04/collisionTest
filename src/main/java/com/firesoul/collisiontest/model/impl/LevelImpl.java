@@ -115,10 +115,10 @@ public class LevelImpl implements Level {
 
     private void resolveCollisions(final GameObject g, final Map<GameObject, Double> collisions, final double deltaTime) {
         for (final Map.Entry<GameObject, Double> collision : collisions
-                .entrySet()
-                .stream()
-                .sorted(Comparator.comparingDouble(Map.Entry::getValue))
-                .toList()
+            .entrySet()
+            .stream()
+            .sorted(Comparator.comparingDouble(Map.Entry::getValue))
+            .toList()
         ) {
             CollisionAlgorithms.resolveSweptAABB(g, collision.getKey(), deltaTime);
         }
@@ -128,14 +128,11 @@ public class LevelImpl implements Level {
         final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
         this.player = this.gf.player(playerPosition, input);
         Objects.requireNonNull(this.player);
-//        this.gameObjects.add(this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03));
-        this.gameObjects.add(this.player);
+//        this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03);
 
         final WeaponFactory wf = new WeaponFactoryImpl(controller.getDrawableLoader(), this);
         final Weapon sword = wf.sword(this.player);
         final Weapon gun = wf.gun(this.player);
-        this.gameObjects.add(sword);
-        this.gameObjects.add(gun);
         this.player.equip(sword);
         this.player.equip(gun);
 

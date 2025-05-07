@@ -60,6 +60,15 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
+    public void remove(final Renderable renderable) {
+        if (renderable instanceof SwingRenderable swingRenderable) {
+            this.drawables.remove(swingRenderable);
+        } else {
+            throw new IllegalArgumentException("Invalid type of renderable for Swing view");
+        }
+    }
+
+    @Override
     public void reset() {
         this.drawables.clear();
     }

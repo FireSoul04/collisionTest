@@ -38,9 +38,8 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "damage", this.dl.loadSpriteFromSystem("player_damage")
         );
         final GameBar lifeBar = new StaticGameBar(Vector2.one(), this.world,
-            this.dl.loadStaticBar(20, 10, Color.RED.getRGB()), 12, false
+            this.dl.loadStaticBar(Vector2.one(), 20, 10, Color.RED.getRGB()), 12, false
         );
-        this.world.instanciate(lifeBar);
         return new Player(position, this.world, Optional.of(collider), sprites, input, lifeBar);
     }
 

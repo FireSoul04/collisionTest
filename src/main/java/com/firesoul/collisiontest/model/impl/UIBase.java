@@ -1,21 +1,22 @@
 package com.firesoul.collisiontest.model.impl;
 
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.UI;
 import com.firesoul.collisiontest.model.util.Vector2;
 
-public class Sprite implements Drawable {
+public class UIBase implements UI {
 
 	private final int width;
 	private final int height;
+	private final Vector2 position;
 
-	private Vector2 position = Vector2.zero();
 	private double orientation = 0.0;
-	private double directionX = 1.0;
-	private boolean visible = true;
+	private boolean visible;
 
-	public Sprite(final int width, final int height) {
+	public UIBase(final Vector2 position, final int width, final int height) {
+		this.position = position;
 		this.width = width;
 		this.height = height;
+		this.visible = true;
 	}
 
 	@Override
@@ -25,17 +26,17 @@ public class Sprite implements Drawable {
 
 	@Override
 	public void mirrorX(final double directionX) {
-		this.directionX = directionX;
+
 	}
 
 	@Override
 	public double getDirectionX() {
-		return this.directionX;
+		return 1.0;
 	}
 
 	@Override
 	public void translate(final Vector2 position) {
-		this.position = position;
+
 	}
 
 	@Override

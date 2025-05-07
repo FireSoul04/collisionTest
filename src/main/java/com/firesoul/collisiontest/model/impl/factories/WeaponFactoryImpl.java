@@ -50,12 +50,12 @@ public class WeaponFactoryImpl implements WeaponFactory {
                 .map(t -> new Vector2(0.0, -t.getHeight() * 0.75))
                 .orElse(Vector2.zero()), this.world,
 //            this.dl.invisibleDynamicBar(20, 10, Color.WHITE.getRGB()), 1, true
-            this.dl.loadStaticBar(20, 10, Color.WHITE.getRGB()), 1, true
+            this.dl.loadStaticBar(Vector2.one().add(Vector2.down().multiply(30.0)), 20, 10, Color.WHITE.getRGB()), 1, true
         );
         final Drawable sprite = this.dl.loadSpriteFromSystem("gun");
         final Vector2 offset = new Vector2(12.0, 0.0);
         final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 1.2, -2.5);
-        this.world.instanciate(reloadBar);
-        return new Gun(holder, reloadBar, offset, projectileOffset, Optional.of(sprite), this.world, 6);
+        return new Gun(holder, reloadBar, offset, projectileOffset, Optional.of(sprite),
+            this.world, new GameObjectFactoryImpl(this.dl, this.world), 6);
     }
 }

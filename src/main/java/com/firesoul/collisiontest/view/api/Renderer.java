@@ -4,7 +4,9 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 
 public interface Renderer {
 
-    void add(Renderable drawable);
+    void add(Renderable renderable);
+
+    void remove(Renderable renderable);
 
     void reset();
 

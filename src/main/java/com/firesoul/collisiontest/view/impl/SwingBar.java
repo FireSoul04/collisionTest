@@ -1,26 +1,19 @@
 package com.firesoul.collisiontest.view.impl;
 
-import com.firesoul.collisiontest.view.api.Bar;
+import com.firesoul.collisiontest.view.api.RenderableBar;
 
 import java.awt.*;
 
-public class SwingBar extends SwingRenderable implements Bar {
+public class SwingBar extends SwingRenderable implements RenderableBar {
 
-    private final boolean staticc;
     private final Color color;
     private double currentPercentage;
 
-    public SwingBar(final int width, final int height, final Color color, final boolean visible, final boolean staticc) {
+    public SwingBar(final int width, final int height, final Color color, final boolean visible) {
         super(new Point(0, 0), visible);
         this.setSize(width, height);
         this.color = color;
         this.currentPercentage = 1.0;
-        this.staticc = staticc;
-    }
-
-    @Override
-    public boolean isStatic() {
-        return this.staticc;
     }
 
     @Override

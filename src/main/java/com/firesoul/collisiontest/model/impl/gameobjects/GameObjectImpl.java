@@ -31,6 +31,7 @@ public class GameObjectImpl implements GameObject {
         this.collider = collider;
         this.velocity = Vector2.zero();
         this.active = true;
+        this.world.instanciate(this);
     }
 
     @Override

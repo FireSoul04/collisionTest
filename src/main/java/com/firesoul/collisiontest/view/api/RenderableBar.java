@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.view.api;
 
-public interface Bar extends UI {
+public interface RenderableBar {
 
     void setCurrentPercentage(double currentPercentage);
 }

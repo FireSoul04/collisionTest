@@ -12,7 +12,6 @@ import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderable;
 import com.firesoul.collisiontest.view.api.Renderer;
-import com.firesoul.collisiontest.view.api.UI;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
 import com.firesoul.collisiontest.view.impl.SwingSprite;
 
@@ -114,27 +113,9 @@ public class GameCore implements Runnable, GameController {
     public void render() {
         final List<GameObject> gameObjects = this.logic.getLevel().getGameObjects();
 
-        gameObjects.stream()
-            .map(GameObject::getSprite)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .filter(t -> {
-                if (t instanceof UI ui) {
-                    return !ui.isStatic();
-                }
-                return true;
-            })
-            .forEach(t -> t.translate(t.getPosition().subtract(this.camera.getPosition().invert())));
-
+        this.renderer.reset();
         gameObjects.stream().filter(this::isInBounds).forEach(t -> {
-            final Optional<Drawable> spropt = t.getSprite();
-            if (spropt.isPresent()) {
-                final Drawable sprite = spropt.get();
-                final Renderable r = dl.getFromDrawable(sprite);
-                r.translate(sprite.getPosition().x(), sprite.getPosition().y());
-                r.translate(t.getPosition().x(), t.getPosition().y());
-                this.renderer.add(r);
-            }
+            t.getSprite().ifPresent(d -> this.renderer.add(dl.getFromDrawable(d, camera)));
         });
         this.renderer.update();
 
