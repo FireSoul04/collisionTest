@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.model.api;
 
-public interface Bar extends UI {
+public interface Bar extends Drawable {
 
 	double getCurrentPercentage();
 

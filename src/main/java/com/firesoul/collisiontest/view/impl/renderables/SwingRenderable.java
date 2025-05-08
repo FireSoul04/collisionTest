@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.view.impl;
+package com.firesoul.collisiontest.view.impl.renderables;
 
 import com.firesoul.collisiontest.view.api.Renderable;
 

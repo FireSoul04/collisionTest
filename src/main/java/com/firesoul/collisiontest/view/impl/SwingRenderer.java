@@ -6,17 +6,18 @@ import javax.swing.JPanel;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.view.api.Renderable;
 import com.firesoul.collisiontest.view.api.Renderer;
+import com.firesoul.collisiontest.view.impl.renderables.SwingRenderable;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SwingRenderer extends JPanel implements Renderer {
 
     private final InputController input = new InputController();
-    private final Set<SwingRenderable> drawables = new HashSet<>();
+    private final List<SwingRenderable> drawables = new ArrayList<>();
 
     private final int width;
     private final int height;
@@ -102,7 +103,7 @@ public class SwingRenderer extends JPanel implements Renderer {
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
         g2.scale(this.scaleX, this.scaleY);
 
-        drawables.forEach(t -> t.drawComponent(g));
+        this.drawables.forEach(t -> t.drawComponent(g));
 
         g2.dispose();
     }

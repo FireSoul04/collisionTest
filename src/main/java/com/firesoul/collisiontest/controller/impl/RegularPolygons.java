@@ -5,18 +5,14 @@ import java.awt.event.KeyEvent;
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.impl.LevelImpl;
-import com.firesoul.collisiontest.view.api.Renderer;
-import com.firesoul.collisiontest.view.impl.SwingRenderer;
 
 public class RegularPolygons implements GameLogic {
 
-    private final GameCore controller;
     private final InputController input;
 
     private final Level world;
 
     public RegularPolygons(final GameCore controller) {
-        this.controller = controller;
         this.input = controller.getInput();
         this.world = new LevelImpl(controller);
 

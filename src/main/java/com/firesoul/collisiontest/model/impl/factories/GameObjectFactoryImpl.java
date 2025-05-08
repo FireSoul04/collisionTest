@@ -38,7 +38,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "damage", this.dl.loadSpriteFromSystem("player_damage")
         );
         final GameBar lifeBar = new StaticGameBar(Vector2.one(), this.world,
-            this.dl.loadStaticBar(Vector2.one(), 20, 10, Color.RED.getRGB()), 12, false
+            this.dl.loadStaticBar(Vector2.one(), 40, 10, Color.GREEN.getRGB()), 12, false
         );
         return new Player(position, this.world, Optional.of(collider), sprites, input, lifeBar);
     }
@@ -94,7 +94,9 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     public GameObject block(final Vector2 position) {
         final Vector2 size = new Vector2(20.0, 20.0);
         final Collider collider = new BoxCollider(position.subtract(size.divide(2.0)), size.x(), size.y());
-        // final Drawable sprite = null;
-        return new GameObjectImpl(position, false, this.world, Optional.of(collider), Optional.empty());
+        final Drawable sprite = this.dl.loadRectangleBorder(position.subtract(size.divide(2.0)), (int) size.x(), (int) size.y(), Color.BLACK.getRGB());
+        // final Drawable sprite = this.dl.loadSpriteFromSystem("gun");
+        // sprite.translate(position);
+        return new GameObjectImpl(position, false, this.world, Optional.of(collider), Optional.of(sprite));
     }
 }

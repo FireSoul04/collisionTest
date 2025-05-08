@@ -2,7 +2,6 @@ package com.firesoul.collisiontest.controller.impl;
 
 import com.firesoul.collisiontest.controller.api.DrawableLoader;
 import com.firesoul.collisiontest.controller.api.GameController;
-import com.firesoul.collisiontest.model.api.Drawable;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.controller.api.GameLogic;
@@ -10,15 +9,13 @@ import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.gameobjects.CameraImpl;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.view.api.Renderable;
 import com.firesoul.collisiontest.view.api.Renderer;
 import com.firesoul.collisiontest.view.impl.SwingRenderer;
-import com.firesoul.collisiontest.view.impl.SwingSprite;
+import com.firesoul.collisiontest.view.impl.renderables.SwingSprite;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class GameCore implements Runnable, GameController {
 
@@ -87,7 +84,7 @@ public class GameCore implements Runnable, GameController {
         double frames = 0.0;
         long lastTime = System.currentTimeMillis();
         long frameRateStartTime = lastTime;
-        while (true) {
+        while (true) {//piroddi dice spaghetti code
             final long now = System.currentTimeMillis();
             deltaTime = (now - lastTime)/period;
             this.logic.update(deltaTime);
@@ -113,9 +110,10 @@ public class GameCore implements Runnable, GameController {
     public void render() {
         final List<GameObject> gameObjects = this.logic.getLevel().getGameObjects();
 
+        this.dl.update();
         this.renderer.reset();
         gameObjects.stream().filter(this::isInBounds).forEach(t -> {
-            t.getSprite().ifPresent(d -> this.renderer.add(dl.getFromDrawable(d, camera)));
+            t.getSprite().ifPresent(d -> this.renderer.add(this.dl.getFromDrawable(d, this.camera)));
         });
         this.renderer.update();
 

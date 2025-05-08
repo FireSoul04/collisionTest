@@ -1,7 +1,5 @@
 package com.firesoul.collisiontest.model.impl;
 
-import com.firesoul.collisiontest.controller.api.DrawableLoader;
-import com.firesoul.collisiontest.controller.impl.DrawableLoaderImpl;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
@@ -24,6 +22,7 @@ public class LevelImpl implements Level {
     private final int height = 1200;
 
     private final List<GameObject> gameObjects = new ArrayList<>();
+    private final Queue<GameObject> gameObjectsQ = new ArrayDeque<>();
 
     private final GameCore controller;
     private final GameObjectFactory gf;
@@ -39,6 +38,8 @@ public class LevelImpl implements Level {
     public void update(final double deltaTime) {
         this.checkCollisions(deltaTime);
         this.gameObjects.forEach(t -> t.update(deltaTime));
+        this.gameObjects.addAll(this.gameObjectsQ);
+        this.gameObjectsQ.clear();
         this.controller.getCamera().setPosition(this.getPlayerPosition().subtract(
             new Vector2(this.controller.getGameWidth(), this.controller.getGameHeight())
                 .divide(2.0)
@@ -86,7 +87,7 @@ public class LevelImpl implements Level {
 
     @Override
     public void instanciate(final GameObject gameObject) {
-        this.gameObjects.add(gameObject);
+        this.gameObjectsQ.add(gameObject);
     }
 
     private void checkCollisions(final double deltaTime) {
@@ -141,13 +142,13 @@ public class LevelImpl implements Level {
 
     private void addBlocks() {
         for (int x = 1; x < 100; x++) {
-            this.gameObjects.add(this.gf.block(new Vector2(x * TILE_SIZE, 600)));
+            this.gf.block(new Vector2(x * TILE_SIZE, 600));
         }
         for (int y = 1; y < 3; y++) {
-            this.gameObjects.add(this.gf.block(new Vector2(TILE_SIZE, 600 - y * TILE_SIZE)));
+            this.gf.block(new Vector2(TILE_SIZE, 600 - y * TILE_SIZE));
         }
         for (int y = 1; y < 3; y++) {
-            this.gameObjects.add(this.gf.block(new Vector2(99 * TILE_SIZE, 600 - y * TILE_SIZE)));
+            this.gf.block(new Vector2(99 * TILE_SIZE, 600 - y * TILE_SIZE));
         }
     }
 }

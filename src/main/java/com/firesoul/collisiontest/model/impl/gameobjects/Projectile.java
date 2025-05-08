@@ -43,7 +43,7 @@ public class Projectile extends GameObjectImpl {
     public void onCollision(final GameObject gameObject, final Vector2 collisionDirection, final double collisionTime) {
         if (gameObject instanceof Enemy e) {
             e.takeDamage(3);
-            this.destroy();
         }
+        this.destroy();
     }
 }
