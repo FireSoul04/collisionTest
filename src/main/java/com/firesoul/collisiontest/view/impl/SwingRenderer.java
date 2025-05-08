@@ -2,6 +2,7 @@ package com.firesoul.collisiontest.view.impl;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.view.api.Renderable;
@@ -11,13 +12,16 @@ import com.firesoul.collisiontest.view.impl.renderables.SwingRenderable;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 public class SwingRenderer extends JPanel implements Renderer {
 
     private final InputController input = new InputController();
     private final List<SwingRenderable> drawables = new ArrayList<>();
+    private final Queue<SwingRenderable> drawablesQ = new ArrayDeque<>();
 
     private final int width;
     private final int height;
@@ -54,16 +58,7 @@ public class SwingRenderer extends JPanel implements Renderer {
     @Override
     public void add(final Renderable renderable) {
         if (renderable instanceof SwingRenderable swingRenderable) {
-            this.drawables.add(swingRenderable);
-        } else {
-            throw new IllegalArgumentException("Invalid type of renderable for Swing view");
-        }
-    }
-
-    @Override
-    public void remove(final Renderable renderable) {
-        if (renderable instanceof SwingRenderable swingRenderable) {
-            this.drawables.remove(swingRenderable);
+            this.drawablesQ.add(swingRenderable);
         } else {
             throw new IllegalArgumentException("Invalid type of renderable for Swing view");
         }
@@ -76,6 +71,8 @@ public class SwingRenderer extends JPanel implements Renderer {
 
     @Override
     public void update() {
+        this.drawables.addAll(this.drawablesQ);
+        this.drawablesQ.clear();
         this.repaint();
     }
 
@@ -103,7 +100,7 @@ public class SwingRenderer extends JPanel implements Renderer {
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
         g2.scale(this.scaleX, this.scaleY);
 
-        this.drawables.forEach(t -> t.drawComponent(g));
+        SwingUtilities.invokeLater(() -> this.drawables.forEach(t -> t.drawComponent(g)));
 
         g2.dispose();
     }

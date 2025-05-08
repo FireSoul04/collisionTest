@@ -9,12 +9,14 @@ public class Rectangle implements Drawable {
     private int width;
     private int height;
     private boolean visible;
+    private int color;
 
-    public Rectangle(final Vector2 position, final int width, final int height) {
+    public Rectangle(final Vector2 position, final int width, final int height, final int rgba) {
         this.position = position;
         this.width = width;
         this.height = height;
         this.visible = true;
+        this.color = rgba;
     }
 
     @Override
@@ -60,5 +62,9 @@ public class Rectangle implements Drawable {
     @Override
     public void setVisible(final boolean visible) {
         this.visible = visible;
+    }
+
+    public int getColor() {
+        return this.color;
     }
 }

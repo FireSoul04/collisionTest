@@ -6,8 +6,6 @@ public interface Renderer {
 
     void add(Renderable renderable);
 
-    void remove(Renderable renderable);
-
     void reset();
 
     void update();

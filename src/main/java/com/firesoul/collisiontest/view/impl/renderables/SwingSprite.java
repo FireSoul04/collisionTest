@@ -10,7 +10,7 @@ public class SwingSprite extends SwingRenderable {
     public SwingSprite(final Image sprite, final Point position, final double orientation, final boolean visible) {
         super(position, orientation, visible);
         this.sprite = sprite;
-        this.setSize(this.sprite.getWidth(null), this.sprite.getHeight(null));
+        this.resize(this.sprite.getWidth(null), this.sprite.getHeight(null));
     }
 
     public SwingSprite(final Image sprite) {

@@ -49,8 +49,7 @@ public class WeaponFactoryImpl implements WeaponFactory {
             holder, g -> g.getSprite()
                 .map(t -> new Vector2(0.0, -t.getHeight() * 0.75))
                 .orElse(Vector2.zero()), this.world,
-//            this.dl.invisibleDynamicBar(20, 10, Color.WHITE.getRGB()), 1, true
-            this.dl.loadDynamicBar(20, 10, Color.WHITE.getRGB()), 1, true
+            this.dl.loadDynamicBar(20, 5, Color.WHITE.getRGB()), 1, true
         );
         final Drawable sprite = this.dl.loadSpriteFromSystem("gun");
         final Vector2 offset = new Vector2(12.0, 0.0);

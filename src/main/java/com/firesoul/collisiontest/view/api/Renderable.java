@@ -22,6 +22,8 @@ public interface Renderable {
 
     int getHeight();
 
+    void resize(int width, int height);
+
     boolean isVisible();
 
     void setVisible(boolean visible);

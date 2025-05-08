@@ -2,12 +2,13 @@ package com.firesoul.collisiontest.view.impl.renderables;
 
 import com.firesoul.collisiontest.view.api.Renderable;
 
-import javax.swing.*;
 import java.awt.*;
 
-public abstract class SwingRenderable extends JComponent implements Renderable {
+public abstract class SwingRenderable implements Renderable {
 
     private Point position;
+    private int width;
+    private int height;
     private double scaleX;
     private double scaleY;
     private double orientation;
@@ -15,7 +16,6 @@ public abstract class SwingRenderable extends JComponent implements Renderable {
     private boolean visible;
 
     public SwingRenderable(final Point position, final double orientation, final boolean visible) {
-        super();
         this.position = position;
         this.orientation = orientation;
         this.scaleX = 1.0;
@@ -57,6 +57,22 @@ public abstract class SwingRenderable extends JComponent implements Renderable {
     @Override
     public void draw() {
 
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public void resize(final int width, final int height) {
+        this.width = width;
+        this.height = height;
     }
 
     @Override
