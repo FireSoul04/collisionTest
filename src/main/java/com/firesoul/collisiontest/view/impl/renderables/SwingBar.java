@@ -27,15 +27,17 @@ public class SwingBar extends SwingRenderable implements RenderableBar {
 
     @Override
     public void drawComponent(final Graphics g) {
-        // if (this.isVisible()) {
+        if (this.isVisible()) {
             final Point start = new Point(this.getPosition().x + 1, this.getPosition().y + 1);
-            final int currentWidth = (int) ((this.getWidth() - 2) * currentPercentage);
+            final int currentWidth = (int) ((this.getWidth() - 2) * this.currentPercentage);
             final Graphics2D g2 = (Graphics2D) g;
             this.base.translate(this.getPosition());
+            this.base.setVisible(this.isVisible());
             this.base.drawComponent(g2);
             this.loading.translate(start);
+            this.loading.setVisible(this.isVisible());
             this.loading.resize(currentWidth, this.getHeight() - 2);
             this.loading.drawComponent(g2);
-        // }
+        }
     }
 }

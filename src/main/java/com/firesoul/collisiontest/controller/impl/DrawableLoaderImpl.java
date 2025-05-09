@@ -3,6 +3,7 @@ package com.firesoul.collisiontest.controller.impl;
 import com.firesoul.collisiontest.controller.api.DrawableLoader;
 import com.firesoul.collisiontest.controller.api.RenderableWrapper;
 import com.firesoul.collisiontest.controller.impl.wrappers.DynamicBarWrapper;
+import com.firesoul.collisiontest.controller.impl.wrappers.RectangleBorderWrapper;
 import com.firesoul.collisiontest.controller.impl.wrappers.RectangleWrapper;
 import com.firesoul.collisiontest.controller.impl.wrappers.SpriteWrapper;
 import com.firesoul.collisiontest.controller.impl.wrappers.StaticBarWrapper;
@@ -65,7 +66,7 @@ public class DrawableLoaderImpl implements DrawableLoader {
 	@Override
 	public Drawable loadRectangleBorder(final Vector2 position, final int width, final int height, final int rgba) {
 		final Rectangle rect = new Rectangle(position, width, height, rgba);
-		this.wrapperQ.put(rect, new RectangleWrapper(rect));
+		this.wrapperQ.put(rect, new RectangleBorderWrapper(rect));
 		return rect;
 	}
 

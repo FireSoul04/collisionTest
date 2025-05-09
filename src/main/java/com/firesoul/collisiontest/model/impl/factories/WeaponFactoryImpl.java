@@ -6,7 +6,6 @@ import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.factories.WeaponFactory;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.AttachedBar;
-import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
@@ -45,12 +44,13 @@ public class WeaponFactoryImpl implements WeaponFactory {
 
     @Override
     public Weapon gun(final Player holder) {
-        final GameBar reloadBar = new AttachedBar(
-            holder, g -> g.getSprite()
+        final AttachedBar reloadBar = new AttachedBar(
+            g -> g.getSprite()
                 .map(t -> new Vector2(0.0, -t.getHeight() * 0.75))
                 .orElse(Vector2.zero()), this.world,
             this.dl.loadDynamicBar(20, 5, Color.WHITE.getRGB()), 1, true
         );
+        reloadBar.attachedGameObject(holder);
         final Drawable sprite = this.dl.loadSpriteFromSystem("gun");
         final Vector2 offset = new Vector2(12.0, 0.0);
         final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 1.2, -2.5);

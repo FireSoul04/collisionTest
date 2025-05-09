@@ -12,12 +12,12 @@ import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.gameobjects.*;
+import com.firesoul.collisiontest.model.impl.gameobjects.bars.AttachedBar;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.StaticGameBar;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.model.api.Drawable;
 
 public class GameObjectFactoryImpl implements GameObjectFactory {
 
@@ -37,8 +37,9 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", this.dl.loadSpriteFromSystem("player"),
             "damage", this.dl.loadSpriteFromSystem("player_damage")
         );
+        final int life = 12;
         final GameBar lifeBar = new StaticGameBar(Vector2.one(), this.world,
-            this.dl.loadStaticBar(Vector2.one(), 40, 10, Color.GREEN.getRGB()), 12, false
+            this.dl.loadStaticBar(Vector2.one(), 40, 10, Color.GREEN.getRGB()), life, false
         );
         return new Player(position, this.world, Optional.of(collider), sprites, input, lifeBar);
     }
@@ -59,12 +60,15 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", this.dl.loadSpriteFromSystem("enemy"),
             "damage", this.dl.loadSpriteFromSystem("enemy_damage")
         );
+        final int life = 10;
         return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites,
-            200, 10, new Vector2(0.0, 0.25),
+            200, life, new Vector2(0.0, 0.25),
             e -> {
                 final Vector2 goTo = this.world.getPlayerPosition().subtract(e.getPosition()).normalize();
                 e.move(new Vector2(goTo.x(), 0.0));
-            }
+            }, new AttachedBar(g -> g.getSprite()
+                .map(t -> new Vector2(0.0, -t.getHeight() * 0.75))
+                .orElse(Vector2.zero()), this.world, this.dl.loadDynamicBar(30, 5, Color.RED.getRGB()), life, false)
         );
     }
 
@@ -75,8 +79,9 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
             "idle", this.dl.loadSpriteFromSystem("enemy"),
             "damage", this.dl.loadSpriteFromSystem("enemy_damage")
         );
+        final int life = 10;
         return new EnemyImpl(position, true, this.world, Optional.of(collider), sprites,
-            200, 10, Vector2.zero(),
+            200, life, Vector2.zero(),
             new EnemyImpl.EnemyBehavior() {
                 final double eRange = range;
                 final double eSpeed = speed;
@@ -86,7 +91,9 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
                     e.move(new Vector2(0.0, Math.sin(this.step)).multiply(this.eRange));
                     this.step += this.eSpeed;
                 }
-            }
+            }, new AttachedBar(g -> g.getSprite()
+                .map(t -> new Vector2(0.0, -t.getHeight() * 0.75))
+                .orElse(Vector2.zero()), this.world, this.dl.loadDynamicBar(30, 5, Color.RED.getRGB()), life, false)
         );
     }
 
@@ -95,8 +102,6 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
         final Vector2 size = new Vector2(20.0, 20.0);
         final Collider collider = new BoxCollider(position.subtract(size.divide(2.0)), size.x(), size.y());
         final Drawable sprite = this.dl.loadRectangleBorder(position.subtract(size.divide(2.0)), (int) size.x(), (int) size.y(), Color.BLACK.getRGB());
-        // final Drawable sprite = this.dl.loadSpriteFromSystem("gun");
-        // sprite.translate(position);
         return new GameObjectImpl(position, false, this.world, Optional.of(collider), Optional.of(sprite));
     }
 }

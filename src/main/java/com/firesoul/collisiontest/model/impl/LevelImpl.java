@@ -129,7 +129,8 @@ public class LevelImpl implements Level {
         final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
         this.player = this.gf.player(playerPosition, input);
         Objects.requireNonNull(this.player);
-//        this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03);
+       this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03);
+       this.gf.groundEnemy(playerPosition.add(Vector2.one().multiply(100)));
 
         final WeaponFactory wf = new WeaponFactoryImpl(controller.getDrawableLoader(), this);
         final Weapon sword = wf.sword(this.player);

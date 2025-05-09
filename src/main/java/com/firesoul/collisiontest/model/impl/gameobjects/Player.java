@@ -105,7 +105,7 @@ public class Player extends EntityImpl {
             final double distX = Math.signum(
                 (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
             );
-            this.body.setVelocity(collisionDirection.multiply(collisionTime * 10));
+            this.body.applyForce(collisionDirection.multiply(collisionTime * 3).invert());
             this.facingDirectionX = -distX;
         }
     }

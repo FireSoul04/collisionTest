@@ -55,7 +55,7 @@ public class Sword extends WeaponImpl {
             final double distX = Math.signum(
                     (this.getPosition().x() + r1.getWidth()/2.0) - (gameObject.getPosition().x() + r2.getWidth()/2.0)
             );
-            this.getHolder().setVelocity(new Vector2(distX*5, this.getVelocity().y()));
+            // this.getHolder().setVelocity(new Vector2(distX*5, this.getVelocity().y()));
         }
     }
 
