@@ -2,6 +2,7 @@ package com.firesoul.collisiontest.model.impl.gameobjects;
 
 import java.util.*;
 
+import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
@@ -16,12 +17,12 @@ import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 
 public class Player extends EntityImpl {
 
     public final RigidBody body = new EnhancedRigidBody(new Vector2(5.0, 0.0));
-    private final InputController input;
+    private final EventManager input;
     private final Map<String, Drawable> sprites;
 
     private final GameBar lifeBar;
@@ -45,7 +46,7 @@ public class Player extends EntityImpl {
         final Level world,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
-        final InputController input,
+        final EventManager input,
         final GameBar lifeBar
     ) {
         super(position, true, world, collider, Optional.of(sprites.get("idle")), 250, 12);

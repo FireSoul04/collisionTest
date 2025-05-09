@@ -1,6 +1,6 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.drawable.ui;
 
-import com.firesoul.collisiontest.model.api.UI;
+import com.firesoul.collisiontest.model.api.drawable.ui.UI;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 public class UIBase implements UI {

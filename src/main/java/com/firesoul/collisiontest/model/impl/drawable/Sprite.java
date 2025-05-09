@@ -1,6 +1,6 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.drawable;
 
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 public class Sprite implements Drawable {

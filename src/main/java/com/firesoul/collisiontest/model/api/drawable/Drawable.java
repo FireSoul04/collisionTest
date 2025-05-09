@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.model.api;
+package com.firesoul.collisiontest.model.api.drawable;
 
 import com.firesoul.collisiontest.model.util.Vector2;
 

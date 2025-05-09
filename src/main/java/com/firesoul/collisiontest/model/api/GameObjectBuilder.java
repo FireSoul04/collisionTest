@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.api;
 
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 
 public interface GameObjectBuilder {

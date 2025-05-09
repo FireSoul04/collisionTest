@@ -4,10 +4,11 @@ import java.awt.Color;
 import java.util.Map;
 import java.util.Optional;
 
-import com.firesoul.collisiontest.controller.api.DrawableLoader;
+import com.firesoul.collisiontest.controller.api.EventManager;
+import com.firesoul.collisiontest.controller.api.loader.DrawableLoader;
 import com.firesoul.collisiontest.controller.impl.GameCore;
-import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.physics.Collider;
@@ -30,7 +31,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     }
 
     @Override
-    public Player player(final Vector2 position, final InputController input) {
+    public Player player(final Vector2 position, final EventManager input) {
         final Vector2 size = new Vector2(20.0, 50.0);
         final Collider collider = new BoxCollider(position.subtract(size.divide(2.0)), size.x(), size.y());
         final Map<String, Drawable> sprites = Map.of(

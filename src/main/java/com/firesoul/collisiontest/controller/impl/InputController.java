@@ -1,8 +1,5 @@
 package com.firesoul.collisiontest.controller.impl;
 
-import com.firesoul.collisiontest.controller.api.EventManager;
-import com.firesoul.collisiontest.model.api.Event;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -10,7 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class InputController implements EventManager {
+public class InputController {
 
     private static class Key {
         private final int keyCode;
@@ -32,7 +29,7 @@ public class InputController implements EventManager {
     
     private final Map<Integer, Key> keys = new HashMap<>();
     private final Set<Key> keysPressed = new HashSet<>();
-    private final Map<String, Event> events = new HashMap<>();
+
     private final KeyListener keyListener = new KeyListener() {
         public void keyTyped(final KeyEvent e) {}
         public void keyPressed(final KeyEvent e) {
@@ -50,18 +47,6 @@ public class InputController implements EventManager {
         for (int i = KeyEvent.VK_SPACE; i < 127; i++) {
             this.keys.put(i, new Key(i));
         }
-    }
-
-    public void addEvent(final String name, final Event e) {
-        this.events.put(name, e);
-    }
-
-    public boolean getEvent(final String name) {
-        return this.events.get(name).check();
-    }
-
-    public void resetEvents() {
-        this.events.keySet().forEach(k -> this.events.put(k, () -> false));
     }
 
     public boolean isKeyPressed(final int keyCode) {

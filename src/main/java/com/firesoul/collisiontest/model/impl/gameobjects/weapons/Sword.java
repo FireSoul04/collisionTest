@@ -8,7 +8,7 @@ import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 
 import java.util.Map;
 import java.util.Optional;

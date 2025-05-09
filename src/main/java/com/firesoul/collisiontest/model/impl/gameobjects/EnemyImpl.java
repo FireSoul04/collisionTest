@@ -11,7 +11,7 @@ import com.firesoul.collisiontest.model.impl.gameobjects.bars.AttachedBar;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 
 public class EnemyImpl extends EntityImpl implements Enemy {
 

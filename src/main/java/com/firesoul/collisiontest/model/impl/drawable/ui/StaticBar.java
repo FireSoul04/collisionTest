@@ -1,6 +1,6 @@
-package com.firesoul.collisiontest.model.impl;
+package com.firesoul.collisiontest.model.impl.drawable.ui;
 
-import com.firesoul.collisiontest.model.api.Bar;
+import com.firesoul.collisiontest.model.api.drawable.ui.Bar;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 public class StaticBar extends UIBase implements Bar {

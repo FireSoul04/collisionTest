@@ -1,12 +1,14 @@
 package com.firesoul.collisiontest.controller.impl;
 
-import com.firesoul.collisiontest.controller.api.DrawableLoader;
+import com.firesoul.collisiontest.controller.api.EventManager;
+import com.firesoul.collisiontest.controller.api.loader.DrawableLoader;
 import com.firesoul.collisiontest.controller.api.GameController;
+import com.firesoul.collisiontest.controller.impl.loader.DrawableLoaderImpl;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.impl.CollisionAlgorithms;
-import com.firesoul.collisiontest.model.impl.gameobjects.CameraImpl;
+import com.firesoul.collisiontest.model.impl.CameraImpl;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderer;
@@ -25,6 +27,7 @@ public class GameCore implements Runnable, GameController {
     private static final int HEIGHT = 360;
 
     private final DrawableLoader dl = new DrawableLoaderImpl();
+    private final EventManager eventManager = new EventManagerImpl();
     private final Renderer renderer;
     private final GameLogic logic;
     private final Camera camera;
@@ -66,6 +69,9 @@ public class GameCore implements Runnable, GameController {
     public InputController getInput() {
         return this.renderer.getInput();
     }
+
+    @Override
+    public EventManager getEventManager() { return this.eventManager; }
 
     @Override
     public Camera getCamera() {

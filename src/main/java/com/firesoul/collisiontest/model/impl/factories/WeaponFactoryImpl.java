@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.model.impl.factories;
 
-import com.firesoul.collisiontest.controller.api.DrawableLoader;
+import com.firesoul.collisiontest.controller.api.loader.DrawableLoader;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
@@ -11,7 +11,7 @@ import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Sword;
 import com.firesoul.collisiontest.model.util.Vector2;
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 
 import java.awt.*;
 import java.util.Map;

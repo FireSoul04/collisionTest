@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
+import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.api.GameController;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
@@ -18,7 +19,7 @@ public class PolygonsWorld implements Level {
 
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final GameController controller;
-    private final InputController input;
+    private final EventManager input;
 
     private final double speed = 1.0;
     private final double rotSpeed = 0.1;
@@ -27,7 +28,7 @@ public class PolygonsWorld implements Level {
 
     public PolygonsWorld(final GameController controller) {
         this.controller = controller;
-        this.input = controller.getInput();
+        this.input = controller.getEventManager();
         this.addGameObjects();
     }
 

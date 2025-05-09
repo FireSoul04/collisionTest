@@ -1,8 +1,8 @@
-package com.firesoul.collisiontest.controller.impl.wrappers;
+package com.firesoul.collisiontest.controller.impl.wrapper;
 
-import com.firesoul.collisiontest.controller.api.RenderableWrapper;
+import com.firesoul.collisiontest.controller.api.wrapper.RenderableWrapper;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
-import com.firesoul.collisiontest.model.impl.Sprite;
+import com.firesoul.collisiontest.model.impl.drawable.Sprite;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderable;
 import com.firesoul.collisiontest.view.impl.renderables.SwingSprite;

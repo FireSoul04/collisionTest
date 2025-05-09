@@ -1,7 +1,7 @@
-package com.firesoul.collisiontest.controller.api;
+package com.firesoul.collisiontest.controller.api.loader;
 
-import com.firesoul.collisiontest.model.api.Bar;
-import com.firesoul.collisiontest.model.api.Drawable;
+import com.firesoul.collisiontest.model.api.drawable.ui.Bar;
+import com.firesoul.collisiontest.model.api.drawable.Drawable;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderable;

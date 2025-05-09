@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.impl;
 
+import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
@@ -31,7 +32,7 @@ public class LevelImpl implements Level {
     public LevelImpl(final GameCore controller) {
         this.controller = controller;
         this.gf = new GameObjectFactoryImpl(controller.getDrawableLoader(), this);
-        this.addGameObjects(controller.getInput());
+        this.addGameObjects(controller.getEventManager());
     }
 
     @Override
@@ -125,12 +126,12 @@ public class LevelImpl implements Level {
         }
     }
 
-    private void addGameObjects(final InputController input) {
+    private void addGameObjects(final EventManager input) {
         final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
         this.player = this.gf.player(playerPosition, input);
         Objects.requireNonNull(this.player);
-       this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03);
-       this.gf.groundEnemy(playerPosition.add(Vector2.one().multiply(100)));
+        this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03);
+        this.gf.groundEnemy(playerPosition.add(Vector2.one().multiply(100)));
 
         final WeaponFactory wf = new WeaponFactoryImpl(controller.getDrawableLoader(), this);
         final Weapon sword = wf.sword(this.player);
