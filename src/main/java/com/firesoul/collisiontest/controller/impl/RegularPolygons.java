@@ -5,14 +5,15 @@ import java.awt.event.KeyEvent;
 import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.model.api.Level;
-import com.firesoul.collisiontest.model.impl.LevelImpl;
+import com.firesoul.collisiontest.model.impl.TileBasedLevel;
 
 public class RegularPolygons implements GameLogic {
 
     private final Level world;
+    private State state;
 
     public RegularPolygons(final GameCore controller) {
-        this.world = new LevelImpl(controller);
+        this.world = new TileBasedLevel(controller);
 
         final InputController input = controller.getInput();
         final EventManager events = new EventManagerImpl();
@@ -27,6 +28,26 @@ public class RegularPolygons implements GameLogic {
     @Override
     public void update(final double deltaTime) {
         this.world.update(deltaTime);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.state == State.RUNNING;
+    }
+
+    @Override
+    public boolean isOnMenu() {
+        return this.state == State.MENU;
+    }
+
+    @Override
+    public boolean isOver() {
+        return this.state == State.OVER;
+    }
+
+    @Override
+    public void setState(final State state) {
+        this.state = state;
     }
 
     @Override

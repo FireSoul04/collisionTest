@@ -7,6 +7,7 @@ import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.api.Level;
+import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -61,6 +62,11 @@ public class PolygonsWorld implements Level {
     @Override
     public Camera getCamera() {
         return this.controller.getCamera();
+    }
+
+    @Override
+    public GameObjectFactory getGameObjectFactory() {
+        throw new UnsupportedOperationException("Unimplemented");
     }
 
     @Override

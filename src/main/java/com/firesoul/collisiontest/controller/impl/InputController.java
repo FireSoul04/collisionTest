@@ -44,7 +44,7 @@ public class InputController {
      * Create a controller for key pressed.
      */
     public InputController() {
-        for (int i = KeyEvent.VK_SPACE; i < 127; i++) {
+        for (int i = 0; i < 256; i++) {
             this.keys.put(i, new Key(i));
         }
     }

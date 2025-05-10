@@ -1,26 +1,21 @@
 package com.firesoul.collisiontest.model.impl;
 
-import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.impl.GameCore;
-import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.*;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
-import com.firesoul.collisiontest.model.api.factories.WeaponFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
-import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
-import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
 import java.util.*;
 
-public class LevelImpl implements Level {
+public class TileBasedLevel implements Level {
 
-    private static final int TILE_SIZE = 20;
+    public static final int TILE_SIZE = 20;
 
-    private final int width = 1600;
-    private final int height = 1200;
+    private final int width;
+    private final int height;
 
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final Queue<GameObject> gameObjectsQ = new ArrayDeque<>();
@@ -29,18 +24,24 @@ public class LevelImpl implements Level {
     private final GameObjectFactory gf;
     private Player player;
 
-    public LevelImpl(final GameCore controller) {
+    public TileBasedLevel(final int width, final int height, final GameCore controller) {
+        this.width = width;
+        this.height = height;
         this.controller = controller;
         this.gf = new GameObjectFactoryImpl(controller.getDrawableLoader(), this);
-        this.addGameObjects(controller.getEventManager());
+        controller.getEventManager().addEvent("GameOver", () -> !this.player.isActive());
+    }
+
+    public TileBasedLevel(final GameCore controller) {
+        this(1600, 1200, controller);
     }
 
     @Override
     public void update(final double deltaTime) {
         this.checkCollisions(deltaTime);
-        this.gameObjects.forEach(t -> t.update(deltaTime));
         this.gameObjects.addAll(this.gameObjectsQ);
         this.gameObjectsQ.clear();
+        this.gameObjects.forEach(t -> t.update(deltaTime));
         this.controller.getCamera().setPosition(this.getPlayerPosition().subtract(
             new Vector2(this.controller.getGameWidth(), this.controller.getGameHeight())
                 .divide(2.0)
@@ -49,10 +50,10 @@ public class LevelImpl implements Level {
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();
             final boolean isOutOfBounds =
-                pos.x() < -this.width ||
-                pos.x() > this.height * 2 ||
-                pos.y() < -this.width ||
-                pos.y() > this.height * 2;
+                pos.x() < 0 ||
+                pos.x() > this.width ||
+                pos.y() < 0 ||
+                pos.y() > this.height;
             if (isOutOfBounds) {
                 g.destroy();
             }
@@ -87,7 +88,15 @@ public class LevelImpl implements Level {
     }
 
     @Override
+    public GameObjectFactory getGameObjectFactory() {
+        return this.gf;
+    }
+
+    @Override
     public void instanciate(final GameObject gameObject) {
+        if (gameObject instanceof Player p) {
+            this.player = p;
+        }
         this.gameObjectsQ.add(gameObject);
     }
 
@@ -123,34 +132,6 @@ public class LevelImpl implements Level {
             .toList()
         ) {
             CollisionAlgorithms.resolveSweptAABB(g, collision.getKey(), deltaTime);
-        }
-    }
-
-    private void addGameObjects(final EventManager input) {
-        final Vector2 playerPosition = new Vector2(this.getWidth(), this.getHeight()).divide(4.0);
-        this.player = this.gf.player(playerPosition, input);
-        Objects.requireNonNull(this.player);
-        this.gf.flyingEnemy(playerPosition.add(Vector2.one().multiply(100)), 2.0, 0.03);
-        this.gf.groundEnemy(playerPosition.add(Vector2.one().multiply(100)));
-
-        final WeaponFactory wf = new WeaponFactoryImpl(controller.getDrawableLoader(), this);
-        final Weapon sword = wf.sword(this.player);
-        final Weapon gun = wf.gun(this.player);
-        this.player.equip(sword);
-        this.player.equip(gun);
-
-        this.addBlocks();
-    }
-
-    private void addBlocks() {
-        for (int x = 1; x < 100; x++) {
-            this.gf.block(new Vector2(x * TILE_SIZE, 600));
-        }
-        for (int y = 1; y < 3; y++) {
-            this.gf.block(new Vector2(TILE_SIZE, 600 - y * TILE_SIZE));
-        }
-        for (int y = 1; y < 3; y++) {
-            this.gf.block(new Vector2(99 * TILE_SIZE, 600 - y * TILE_SIZE));
         }
     }
 }

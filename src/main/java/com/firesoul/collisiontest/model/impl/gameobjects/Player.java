@@ -3,7 +3,6 @@ package com.firesoul.collisiontest.model.impl.gameobjects;
 import java.util.*;
 
 import com.firesoul.collisiontest.controller.api.EventManager;
-import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
@@ -22,7 +21,7 @@ import com.firesoul.collisiontest.model.api.drawable.Drawable;
 public class Player extends EntityImpl {
 
     public final RigidBody body = new EnhancedRigidBody(new Vector2(5.0, 0.0));
-    private final EventManager input;
+    private final EventManager events;
     private final Map<String, Drawable> sprites;
 
     private final GameBar lifeBar;
@@ -46,14 +45,14 @@ public class Player extends EntityImpl {
         final Level world,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
-        final EventManager input,
+        final EventManager events,
         final GameBar lifeBar
     ) {
         super(position, true, world, collider, Optional.of(sprites.get("idle")), 250, 12);
 
         this.lifeBar = lifeBar;
         this.sprites = sprites;
-        this.input = input;
+        this.events = events;
     }
 
     @Override
@@ -88,12 +87,6 @@ public class Player extends EntityImpl {
     }
 
     @Override
-    public void destroy() {
-        // DONT DESTROY FOR DEBUG
-        this.onDestroy();
-    }
-
-    @Override
     public void onCollision(final GameObject gameObject, final Vector2 collisionDirection, final double collisionTime) {
         if (gameObject.isStatic() && collisionDirection.equals(Vector2.up())) {
             this.currentJumpHeight = 0;
@@ -109,16 +102,6 @@ public class Player extends EntityImpl {
             this.body.applyForce(collisionDirection.multiply(collisionTime * 3).invert());
             this.facingDirectionX = -distX;
         }
-    }
-
-    @Override
-    public void onDestroy() {
-//        System.out.println("Game over");
-//        this.weapons.forEach(GameObject::destroy);
-//        this.input.resetEvents();
-
-        this.setLife(12);
-        this.setPosition(new Vector2(this.getWorld().getCamera().getWidth(), this.getWorld().getCamera().getHeight()).divide(2.0));
     }
 
     public void equip(final Weapon weapon) {
@@ -146,11 +129,11 @@ public class Player extends EntityImpl {
 
     private void inputMove() {
         Vector2 velocity = Vector2.zero();
-        if (this.input.getEvent("MoveLeft")) {
+        if (this.events.getEvent("MoveLeft")) {
             velocity = velocity.add(Vector2.left());
             this.facingDirectionX = -1.0;
         }
-        if (this.input.getEvent("MoveRight")) {
+        if (this.events.getEvent("MoveRight")) {
             velocity = velocity.add(Vector2.right());
             this.facingDirectionX = 1.0;
         }
@@ -158,27 +141,27 @@ public class Player extends EntityImpl {
     }
 
     private void jump() {
-        if (this.input.getEvent("Jump") && (this.onGround || this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) {
+        if (this.events.getEvent("Jump") && (this.onGround || this.currentJumpHeight > 0 && this.currentJumpHeight < this.maxJumpHeight)) {
             this.currentJumpHeight++;
             this.onGround = false;
             this.body.applyForce(this.jumpAcceleration.multiply(this.maxJumpHeight - this.currentJumpHeight));
         }
-        if (!this.input.getEvent("Jump")) {
+        if (!this.events.getEvent("Jump")) {
             this.currentJumpHeight = 0;
         }
     }
 
     private void useWeapon(final Weapon equippedWeapon) {
-        if (this.input.getEvent("UseWeapon")) {
+        if (this.events.getEvent("UseWeapon")) {
             equippedWeapon.attack();
         }
-        if (this.input.getEvent("Reload") && equippedWeapon instanceof Gun gun) {
+        if (this.events.getEvent("Reload") && equippedWeapon instanceof Gun gun) {
             gun.reload();
         }
     }
 
     private void changeWeapon(final Weapon equippedWeapon) {
-        if (this.input.getEvent("ChangeWeapon") && !this.weaponCooldown.isRunning()) {
+        if (this.events.getEvent("ChangeWeapon") && !this.weaponCooldown.isRunning()) {
             this.weaponCooldown.start();
             this.nextWeapon = (this.nextWeapon + 1) % this.weapons.size();
             this.equippedWeapon = Optional.of(this.weapons.get(this.nextWeapon));

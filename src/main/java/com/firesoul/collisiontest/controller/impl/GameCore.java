@@ -18,11 +18,11 @@ import com.firesoul.collisiontest.view.impl.renderables.SwingSprite;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GameCore implements Runnable, GameController {
 
     private static final double INITIAL_SCREEN_RATIO = 2.0 / 3.0;
-
     private static final int WIDTH = 640;
     private static final int HEIGHT = 360;
 
@@ -87,10 +87,8 @@ public class GameCore implements Runnable, GameController {
     public void run() {
         final double period = 1000.0 / 60.0;
         double deltaTime;
-        double frames = 0.0;
         long lastTime = System.currentTimeMillis();
-        long frameRateStartTime = lastTime;
-        while (true) {//piroddi dice spaghetti code
+        while (true) {
             final long now = System.currentTimeMillis();
             deltaTime = (now - lastTime)/period;
             this.logic.update(deltaTime);
@@ -104,12 +102,6 @@ public class GameCore implements Runnable, GameController {
                 }
             }
             lastTime = now;
-            frames++;
-            if (System.currentTimeMillis() - frameRateStartTime >= 1000.0) {
-                System.out.println(frames + " fps");
-                frames = 0;
-                frameRateStartTime = System.currentTimeMillis();
-            }
         }
     }
 
@@ -118,9 +110,13 @@ public class GameCore implements Runnable, GameController {
 
         this.dl.update();
         this.renderer.reset();
-        gameObjects.stream().filter(this::isInBounds).forEach(t -> {
-            t.getSprite().ifPresent(d -> this.renderer.add(this.dl.getFromDrawable(d, this.camera)));
-        });
+        gameObjects.stream()
+            .filter(this::isInBounds)
+            .map(GameObject::getSprite)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(d -> this.dl.getFromDrawable(d, this.camera))
+            .forEach(renderer::add);
         this.renderer.update();
 
 

@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class DrawableLoaderImpl implements DrawableLoader {
 
-	private static final String RESOURCES_PATH = "src/main/resources/";
+	private static final String RESOURCES_PATH = "src/main/resources/sprites/";
 
 	private final Map<Drawable, RenderableWrapper> wrapper = new HashMap<>();
 	private final Map<Drawable, RenderableWrapper> wrapperQ = new HashMap<>();

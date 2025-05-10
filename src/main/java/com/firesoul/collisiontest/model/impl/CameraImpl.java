@@ -20,8 +20,8 @@ public class CameraImpl extends GameObjectImpl implements Camera {
         this.rotate(orientation);
         this.width = width;
         this.height = height;
-        this.boundsX = world.getWidth();
-        this.boundsY = world.getHeight();
+        this.boundsX = world.getWidth() - width;
+        this.boundsY = world.getHeight() - height;
     }
 
     @Override
