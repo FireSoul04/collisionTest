@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.controller.impl;
 
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class InputController {
+public class InputListener {
 
     private static class Key {
         private final int keyCode;
@@ -26,12 +27,8 @@ public class InputController {
             return this.keyCode;
         }
     }
-    
-    private final Map<Integer, Key> keys = new HashMap<>();
-    private final Set<Key> keysPressed = new HashSet<>();
 
-    private final KeyListener keyListener = new KeyListener() {
-        public void keyTyped(final KeyEvent e) {}
+    private final KeyListener keyListener = new KeyAdapter() {
         public void keyPressed(final KeyEvent e) {
             keysPressed.add(keys.get(e.getKeyCode()));
         }
@@ -39,11 +36,14 @@ public class InputController {
             keysPressed.remove(keys.get(e.getKeyCode()));
         }
     };
+    
+    private final Map<Integer, Key> keys = new HashMap<>();
+    private final Set<Key> keysPressed = new HashSet<>();
 
     /**
      * Create a controller for key pressed.
      */
-    public InputController() {
+    public InputListener() {
         for (int i = 0; i < 256; i++) {
             this.keys.put(i, new Key(i));
         }

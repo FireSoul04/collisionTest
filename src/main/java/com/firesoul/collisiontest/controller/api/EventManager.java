@@ -7,6 +7,4 @@ public interface EventManager {
     void addEvent(String name, Event e);
 
     boolean getEvent(String name);
-
-    void resetEvents();
 }

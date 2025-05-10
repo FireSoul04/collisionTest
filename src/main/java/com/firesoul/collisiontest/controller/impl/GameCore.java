@@ -40,7 +40,7 @@ public class GameCore implements Runnable, GameController {
             (int) (screenSize.getWidth() - WIDTH * scale.x()) / 2,
             (int) (screenSize.getHeight() - HEIGHT * scale.y()) / 2
         );
-        this.renderer = new SwingRenderer(startPosition, WIDTH, HEIGHT, scale.x(), scale.y());
+        this.renderer = new SwingRenderer(startPosition, WIDTH, HEIGHT, scale.x(), scale.y(), this);
         this.logic = new Platformer(this);
         this.camera = new CameraImpl(Vector2.zero(), 0.0, WIDTH, HEIGHT, this.logic.getLevel());
     }
@@ -66,7 +66,7 @@ public class GameCore implements Runnable, GameController {
     }
 
     @Override
-    public InputController getInput() {
+    public InputListener getInput() {
         return this.renderer.getInput();
     }
 
@@ -91,6 +91,7 @@ public class GameCore implements Runnable, GameController {
         while (true) {
             final long now = System.currentTimeMillis();
             deltaTime = (now - lastTime)/period;
+            this.changeState();
             this.logic.update(deltaTime);
             this.render();
             long waitTime = System.currentTimeMillis() - now;
@@ -102,6 +103,12 @@ public class GameCore implements Runnable, GameController {
                 }
             }
             lastTime = now;
+        }
+    }
+
+    public void changeState() {
+        if (this.eventManager.getEvent("Start")) {
+            this.logic.setState(GameLogic.State.RUNNING);
         }
     }
 

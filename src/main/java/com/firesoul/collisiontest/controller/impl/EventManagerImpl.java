@@ -19,9 +19,4 @@ public class EventManagerImpl implements EventManager {
 	public boolean getEvent(final String name) {
 		return this.events.get(name).check();
 	}
-
-	@Override
-	public void resetEvents() {
-		this.events.keySet().forEach(k -> this.events.put(k, () -> false));
-	}
 }

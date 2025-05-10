@@ -3,7 +3,6 @@ package com.firesoul.collisiontest.model.impl;
 import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.api.GameController;
 import com.firesoul.collisiontest.controller.impl.GameCore;
-import com.firesoul.collisiontest.controller.impl.InputController;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.GameObjectBuilder;
 import com.firesoul.collisiontest.model.api.Level;

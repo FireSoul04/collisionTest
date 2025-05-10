@@ -1,23 +1,28 @@
 package com.firesoul.collisiontest.view.impl;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
-import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.controller.api.EventManager;
+import com.firesoul.collisiontest.controller.api.GameController;
+import com.firesoul.collisiontest.controller.impl.ButtonListener;
+import com.firesoul.collisiontest.controller.impl.InputListener;
 import com.firesoul.collisiontest.view.api.Renderable;
 import com.firesoul.collisiontest.view.api.Renderer;
-import com.firesoul.collisiontest.view.impl.renderables.SwingRenderable;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-public class SwingRenderer extends JPanel implements Renderer {
+public class SwingRenderer implements Renderer {
 
-    private final InputController input = new InputController();
-    private final List<SwingRenderable> drawables = new CopyOnWriteArrayList<>();
+    private final InputListener input = new InputListener();
+    private final ButtonListener listener = new ButtonListener();
+
+    private final SwingMainMenu menu = new SwingMainMenu(this.listener);
+    private final SwingGameCanvas game = new SwingGameCanvas(this);
+
+    private final EventManager eventManager;
+    private final JPanel canvas;
 
     private final int width;
     private final int height;
@@ -25,49 +30,65 @@ public class SwingRenderer extends JPanel implements Renderer {
     private double scaleX;
     private double scaleY;
 
-    public SwingRenderer(final Point startPosition, final int width, final int height, final double scaleX, final double scaleY) {
+    public SwingRenderer(final Point startPosition, final int width, final int height,
+                         final double scaleX, final double scaleY, final GameController controller) {
         this.width = width;
         this.height = height;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+        this.canvas = new JPanel(new CardLayout());
+        this.canvas.add(this.menu, "Menu");
+        this.canvas.add(this.game, "Game");
+        this.canvas.addKeyListener(this.input.getKeyListener());
+        this.eventManager = controller.getEventManager();
+        this.eventManager.addEvent("Start", () -> this.listener.isButtonClicked("Start"));
+        this.eventManager.addEvent("Exit", () -> this.listener.isButtonClicked("Exit"));
 
         final JFrame window = new JFrame("Collision test");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.addKeyListener(this.input.getKeyListener());
-
-        window.getContentPane().add(this);
+        window.getContentPane().add(this.canvas);
         window.getContentPane().setPreferredSize(new Dimension((int) (width * scaleX), (int) (height * scaleY)));
-
         window.setLocation(startPosition);
         window.setVisible(true);
         window.pack();
         window.setMinimumSize(window.getSize());
         window.addComponentListener(new ComponentAdapter() {
             public void componentResized(final ComponentEvent e) {
-            final Dimension d = ((JFrame) e.getComponent()).getContentPane().getSize();
-            SwingRenderer.this.scaleX = d.getWidth() / (double) width;
-            SwingRenderer.this.scaleY = d.getHeight() / (double) height;
+                final Dimension d = ((JFrame) e.getComponent()).getContentPane().getSize();
+                SwingRenderer.this.scaleX = d.getWidth() / (double) width;
+                SwingRenderer.this.scaleY = d.getHeight() / (double) height;
             }
         });
     }
 
     @Override
     public void add(final Renderable renderable) {
-        if (renderable instanceof SwingRenderable swingRenderable) {
-            this.drawables.add(swingRenderable);
-        } else {
-            throw new IllegalArgumentException("Invalid type of renderable for Swing view");
-        }
+        this.game.add(renderable);
     }
 
     @Override
     public void reset() {
-        this.drawables.clear();
+        this.game.reset();
     }
 
     @Override
     public void update() {
-        this.repaint();
+        final CardLayout cl = (CardLayout) this.canvas.getLayout();
+        if (this.eventManager.getEvent("Start")) {
+            cl.show(this.canvas, "Game");
+            this.canvas.requestFocus();
+        }
+        this.canvas.repaint();
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
     }
 
     @Override
@@ -81,20 +102,17 @@ public class SwingRenderer extends JPanel implements Renderer {
     }
 
     @Override
-    public InputController getInput() {
-        return this.input;
+    public double getScaleX() {
+        return this.scaleX;
     }
 
     @Override
-    protected void paintComponent(final Graphics g) {
-        super.paintComponent(g);
+    public double getScaleY() {
+        return this.scaleY;
+    }
 
-        final Graphics2D g2 = (Graphics2D) g;
-        g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-        g2.scale(this.scaleX, this.scaleY);
-
-        this.drawables.forEach(t -> t.drawComponent(g2));
-
-        g2.dispose();
+    @Override
+    public InputListener getInput() {
+        return this.input;
     }
 }

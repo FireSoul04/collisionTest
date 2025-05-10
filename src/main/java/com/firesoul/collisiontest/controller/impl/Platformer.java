@@ -19,26 +19,25 @@ public class Platformer implements GameLogic {
         this.ld = new TileBasedLevelLoader(controller);
         this.level = this.ld.readLevel();
 
-        final InputController input = controller.getInput();
-        events = controller.getEventManager();
-        events.addEvent("Jump", () -> input.isKeyPressed(KeyEvent.VK_SPACE));
-        events.addEvent("MoveLeft", () -> input.isKeyPressed(KeyEvent.VK_A));
-        events.addEvent("MoveRight", () -> input.isKeyPressed(KeyEvent.VK_D));
-        events.addEvent("UseWeapon", () -> input.isKeyPressedOnce(KeyEvent.VK_E));
-        events.addEvent("Reload", () -> input.isKeyPressedOnce(KeyEvent.VK_R));
-        events.addEvent("ChangeWeapon", () -> input.isKeyPressedOnce(KeyEvent.VK_Q));
-        events.addEvent("Start", () -> input.isKeyPressedOnce(KeyEvent.VK_ENTER));
+        final InputListener input = controller.getInput();
+        this.events = controller.getEventManager();
+        this.events.addEvent("Jump", () -> input.isKeyPressed(KeyEvent.VK_SPACE));
+        this.events.addEvent("MoveLeft", () -> input.isKeyPressed(KeyEvent.VK_A));
+        this.events.addEvent("MoveRight", () -> input.isKeyPressed(KeyEvent.VK_D));
+        this.events.addEvent("UseWeapon", () -> input.isKeyPressedOnce(KeyEvent.VK_E));
+        this.events.addEvent("Reload", () -> input.isKeyPressedOnce(KeyEvent.VK_R));
+        this.events.addEvent("ChangeWeapon", () -> input.isKeyPressedOnce(KeyEvent.VK_Q));
     }
 
     @Override
     public void update(final double deltaTime) {
         if (this.isRunning()) {
             this.level.update(deltaTime);
-            if (events.getEvent("GameOver")) {
+            if (this.events.getEvent("GameOver")) {
                 this.state = State.OVER;
             }
         } else if (this.isOnMenu()) {
-            if (events.getEvent("Start")) {
+            if (this.events.getEvent("Start")) {
                 this.state = State.RUNNING;
             }
         } else if (this.isOver()) {

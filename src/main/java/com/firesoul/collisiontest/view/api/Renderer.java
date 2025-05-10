@@ -1,6 +1,6 @@
 package com.firesoul.collisiontest.view.api;
 
-import com.firesoul.collisiontest.controller.impl.InputController;
+import com.firesoul.collisiontest.controller.impl.InputListener;
 
 public interface Renderer {
 
@@ -18,5 +18,9 @@ public interface Renderer {
 
     int getGameHeight();
 
-    InputController getInput();
+    double getScaleX();
+
+    double getScaleY();
+
+    InputListener getInput();
 }
