@@ -55,13 +55,14 @@ public class InputListener {
 
     public boolean isKeyPressedOnce(final int keyCode) {
         final Key key = this.keys.get(keyCode);
+        boolean keyPressed = false;
         if (!key.isAlreadyPressed() && this.isKeyPressed(keyCode)) {
             key.setAlreadyPressed(true);
-            return true;
+            keyPressed = true;
         } else if (!this.isKeyPressed(keyCode)) {
             key.setAlreadyPressed(false);
         }
-        return false;
+        return keyPressed;
     }
 
     public KeyListener getKeyListener() {
