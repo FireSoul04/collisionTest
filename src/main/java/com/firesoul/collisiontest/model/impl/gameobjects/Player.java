@@ -21,7 +21,7 @@ import com.firesoul.collisiontest.model.api.drawable.Drawable;
 public class Player extends EntityImpl {
 
     public final RigidBody body = new EnhancedRigidBody(new Vector2(5.0, 0.0));
-    private final EventManager events;
+    private final EventManager<String> events;
     private final Map<String, Drawable> sprites;
 
     private final GameBar lifeBar;
@@ -45,7 +45,7 @@ public class Player extends EntityImpl {
         final Level world,
         final Optional<Collider> collider,
         final Map<String, Drawable> sprites,
-        final EventManager events,
+        final EventManager<String> events,
         final GameBar lifeBar
     ) {
         super(position, true, world, collider, Optional.of(sprites.get("idle")), 250, 12);
@@ -53,6 +53,15 @@ public class Player extends EntityImpl {
         this.lifeBar = lifeBar;
         this.sprites = sprites;
         this.events = events;
+
+        this.events.addEvent("Invincible", this::isInvincible);
+        this.events.addEvent("Vulnerable", () -> !this.isInvincible());
+
+        this.events.attachActionOnEvent("Invincible", this::whileInvincible);
+        this.events.attachActionOnEvent("Vulnerable", this::whileVulnerable);
+        this.events.attachActionOnEvent("ChangeWeapon", this::changeWeapon);
+        this.events.attachActionOnEvent("UseWeapon", this::useWeapon);
+        this.events.attachActionOnEvent("Reload", this::reload);
     }
 
     @Override
@@ -70,20 +79,11 @@ public class Player extends EntityImpl {
         this.move(this.getVelocity().multiply(deltaTime));
         this.body.update();
 
-        this.sprites.forEach((k, v) -> {
-            v.translate(this.getPosition());
-            v.mirrorX(this.facingDirectionX);
+        this.sprites.values().forEach(d -> {
+            d.translate(this.getPosition());
+            d.mirrorX(this.facingDirectionX);
         });
-        this.lifeBar.setCurrentValue(this.getLife());
         this.weapons.forEach(t -> t.setDirectionX(this.facingDirectionX));
-
-        if (this.isInvincible()) {
-            this.setSprite(this.sprites.get("damage"));
-            this.equippedWeapon.flatMap(GameObject::getSprite).ifPresent(s -> s.setVisible(false));
-        } else {
-            this.setSprite(this.sprites.get("idle"));
-            this.equippedWeapon.flatMap(GameObject::getSprite).ifPresent(s -> s.setVisible(true));
-        }
     }
 
     @Override
@@ -104,6 +104,18 @@ public class Player extends EntityImpl {
         }
     }
 
+    @Override
+    public void takeDamage(final int amount) {
+        super.takeDamage(amount);
+        this.lifeBar.setCurrentValue(this.getLife());
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        this.weapons.forEach(GameObject::destroy);
+    }
+
     public void equip(final Weapon weapon) {
         this.weapons.add(weapon);
         if (this.equippedWeapon.isEmpty()) {
@@ -118,10 +130,6 @@ public class Player extends EntityImpl {
 
     public void readInput() {
         if (!this.isInvincible()) {
-            this.equippedWeapon.ifPresent(t -> {
-                this.useWeapon(t);
-                this.changeWeapon(t);
-            });
             this.inputMove();
             this.jump();
         }
@@ -151,22 +159,35 @@ public class Player extends EntityImpl {
         }
     }
 
-    private void useWeapon(final Weapon equippedWeapon) {
-        if (this.events.getEvent("UseWeapon")) {
-            equippedWeapon.attack();
-        }
-        if (this.events.getEvent("Reload") && equippedWeapon instanceof Gun gun) {
-            gun.reload();
+    private void whileInvincible() {
+        this.setSprite(this.sprites.get("damage"));
+        this.equippedWeapon.flatMap(GameObject::getSprite).ifPresent(s -> s.setVisible(false));
+    }
+
+    private void whileVulnerable() {
+        this.setSprite(this.sprites.get("idle"));
+        this.equippedWeapon.flatMap(GameObject::getSprite).ifPresent(s -> s.setVisible(true));
+    }
+
+    private void changeWeapon() {
+        if (!this.weaponCooldown.isRunning() && this.equippedWeapon.isPresent()) {
+            this.weaponCooldown.start();
+            this.nextWeapon = (this.nextWeapon + 1) % this.weapons.size();
+            this.equippedWeapon.get().getSprite().ifPresent(s -> s.setVisible(false));
+            this.equippedWeapon = Optional.of(this.weapons.get(this.nextWeapon));
+            this.equippedWeapon.get().getSprite().ifPresent(s -> s.setVisible(true));
         }
     }
 
-    private void changeWeapon(final Weapon equippedWeapon) {
-        if (this.events.getEvent("ChangeWeapon") && !this.weaponCooldown.isRunning()) {
-            this.weaponCooldown.start();
-            this.nextWeapon = (this.nextWeapon + 1) % this.weapons.size();
-            this.equippedWeapon = Optional.of(this.weapons.get(this.nextWeapon));
-            equippedWeapon.getSprite().ifPresent(s -> s.setVisible(false));
-            this.weapons.get(this.nextWeapon).getSprite().ifPresent(s -> s.setVisible(true));
+    private void useWeapon() {
+        if (!this.isInvincible()) {
+            this.equippedWeapon.ifPresent(Weapon::attack);
+        }
+    }
+
+    private void reload() {
+        if (!this.isInvincible() && equippedWeapon.isPresent() && equippedWeapon.get() instanceof Gun gun) {
+            gun.reload();
         }
     }
 }

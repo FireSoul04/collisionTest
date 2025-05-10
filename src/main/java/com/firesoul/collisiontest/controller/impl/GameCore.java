@@ -27,7 +27,7 @@ public class GameCore implements Runnable, GameController {
     private static final int HEIGHT = 360;
 
     private final DrawableLoader dl = new DrawableLoaderImpl();
-    private final EventManager eventManager = new EventManagerImpl();
+    private final EventManager<String> eventManager = new EventManagerImpl<>();
     private final Renderer renderer;
     private final GameLogic logic;
     private final Camera camera;
@@ -66,12 +66,17 @@ public class GameCore implements Runnable, GameController {
     }
 
     @Override
-    public InputListener getInput() {
-        return this.renderer.getInput();
+    public InputListener getInputListener() {
+        return this.renderer.getInputListener();
     }
 
     @Override
-    public EventManager getEventManager() { return this.eventManager; }
+    public ButtonListener getButtonListener() {
+        return this.renderer.getButtonListener();
+    }
+
+    @Override
+    public EventManager<String> getEventManager() { return this.eventManager; }
 
     @Override
     public Camera getCamera() {
@@ -91,7 +96,7 @@ public class GameCore implements Runnable, GameController {
         while (true) {
             final long now = System.currentTimeMillis();
             deltaTime = (now - lastTime)/period;
-            this.changeState();
+            this.eventManager.update();
             this.logic.update(deltaTime);
             this.render();
             long waitTime = System.currentTimeMillis() - now;
@@ -103,12 +108,6 @@ public class GameCore implements Runnable, GameController {
                 }
             }
             lastTime = now;
-        }
-    }
-
-    public void changeState() {
-        if (this.eventManager.getEvent("Start")) {
-            this.logic.setState(GameLogic.State.RUNNING);
         }
     }
 

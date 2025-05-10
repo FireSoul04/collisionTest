@@ -4,7 +4,10 @@ import com.firesoul.collisiontest.controller.api.loader.LevelLoader;
 import com.firesoul.collisiontest.controller.impl.GameCore;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
+import com.firesoul.collisiontest.model.api.factories.WeaponFactory;
 import com.firesoul.collisiontest.model.impl.TileBasedLevel;
+import com.firesoul.collisiontest.model.impl.factories.WeaponFactoryImpl;
+import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.nio.file.Files;
@@ -51,15 +54,19 @@ public class TileBasedLevelLoader implements LevelLoader {
 	private Level levelFromText(final int width, final int height, final Map<Coordinates, Character> gameObjects) {
 		final Level level = new TileBasedLevel(width, height, this.controller);
 		final GameObjectFactory gf = level.getGameObjectFactory();
-		for (final var entry : gameObjects.entrySet()) {
-			final Vector2 position = new Vector2(entry.getKey().x(), entry.getKey().y());
-			switch (entry.getValue()) {
-				case 'P' -> gf.player(position, controller.getEventManager());
+		final WeaponFactory wf = new WeaponFactoryImpl(this.controller.getDrawableLoader(), level);
+		gameObjects.forEach((pos, ch) -> {
+			final Vector2 position = new Vector2(pos.x(), pos.y());
+			Optional<Player> player = Optional.empty();
+			switch (ch) {
+				case 'P' -> player = Optional.of(gf.player(position, controller.getEventManager()));
 				case '#' -> gf.block(position);
 				case 'g' -> gf.groundEnemy(position);
 				case 'f' -> gf.flyingEnemy(position, 10.0, 0.03);
 			}
-		}
+			player.ifPresent(t -> t.equip(wf.gun(t)));
+			player.ifPresent(t -> t.equip(wf.sword(t)));
+		});
 		return level;
 	}
 }

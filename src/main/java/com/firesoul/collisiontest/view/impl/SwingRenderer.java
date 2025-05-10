@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import com.firesoul.collisiontest.controller.api.EventManager;
 import com.firesoul.collisiontest.controller.api.GameController;
+import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.controller.impl.ButtonListener;
 import com.firesoul.collisiontest.controller.impl.InputListener;
 import com.firesoul.collisiontest.view.api.Renderable;
@@ -15,13 +16,13 @@ import java.awt.event.ComponentEvent;
 
 public class SwingRenderer implements Renderer {
 
-    private final InputListener input = new InputListener();
-    private final ButtonListener listener = new ButtonListener();
+    private final InputListener inputListener = new InputListener();
+    private final ButtonListener buttonListener = new ButtonListener();
 
-    private final SwingMainMenu menu = new SwingMainMenu(this.listener);
+    private final SwingMainMenu menu = new SwingMainMenu(this.buttonListener);
     private final SwingGameCanvas game = new SwingGameCanvas(this);
 
-    private final EventManager eventManager;
+    private final EventManager<String> eventManager;
     private final JPanel canvas;
 
     private final int width;
@@ -36,13 +37,11 @@ public class SwingRenderer implements Renderer {
         this.height = height;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
-        this.canvas = new JPanel(new CardLayout());
-        this.canvas.add(this.menu, "Menu");
-        this.canvas.add(this.game, "Game");
-        this.canvas.addKeyListener(this.input.getKeyListener());
         this.eventManager = controller.getEventManager();
-        this.eventManager.addEvent("Start", () -> this.listener.isButtonClicked("Start"));
-        this.eventManager.addEvent("Exit", () -> this.listener.isButtonClicked("Exit"));
+        this.canvas = new JPanel(new CardLayout());
+        this.canvas.add(this.menu, GameLogic.State.MENU.name());
+        this.canvas.add(this.game, GameLogic.State.RUNNING.name());
+        this.canvas.addKeyListener(this.inputListener.getKeyListener());
 
         final JFrame window = new JFrame("Collision test");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,8 +74,10 @@ public class SwingRenderer implements Renderer {
     public void update() {
         final CardLayout cl = (CardLayout) this.canvas.getLayout();
         if (this.eventManager.getEvent("Start")) {
-            cl.show(this.canvas, "Game");
+            cl.show(this.canvas, GameLogic.State.RUNNING.name());
             this.canvas.requestFocus();
+        } else if (this.eventManager.getEvent("Menu")) {
+            cl.show(this.canvas, GameLogic.State.MENU.name());
         }
         this.canvas.repaint();
     }
@@ -112,7 +113,12 @@ public class SwingRenderer implements Renderer {
     }
 
     @Override
-    public InputListener getInput() {
-        return this.input;
+    public InputListener getInputListener() {
+        return this.inputListener;
+    }
+
+    @Override
+    public ButtonListener getButtonListener() {
+        return this.buttonListener;
     }
 }

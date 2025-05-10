@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.model.api;
+package com.firesoul.collisiontest.controller.api;
 
 @FunctionalInterface
 public interface Event {

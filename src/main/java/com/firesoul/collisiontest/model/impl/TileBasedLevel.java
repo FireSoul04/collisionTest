@@ -38,28 +38,31 @@ public class TileBasedLevel implements Level {
 
     @Override
     public void update(final double deltaTime) {
+        this.player.readInput();
         this.checkCollisions(deltaTime);
         this.gameObjects.addAll(this.gameObjectsQ);
         this.gameObjectsQ.clear();
-        this.gameObjects.forEach(t -> t.update(deltaTime));
+        this.gameObjects.forEach(g -> g.update(deltaTime));
         this.controller.getCamera().setPosition(this.getPlayerPosition().subtract(
             new Vector2(this.controller.getGameWidth(), this.controller.getGameHeight())
                 .divide(2.0)
         ));
+        this.destroyOutOfBoundsObjects();
+    }
 
+    private void destroyOutOfBoundsObjects() {
         for (final GameObject g : this.gameObjects) {
             final Vector2 pos = g.getPosition();
             final boolean isOutOfBounds =
                 pos.x() < 0 ||
-                pos.x() > this.width ||
-                pos.y() < 0 ||
-                pos.y() > this.height;
+                    pos.x() > this.width ||
+                    pos.y() < 0 ||
+                    pos.y() > this.height;
             if (isOutOfBounds) {
                 g.destroy();
             }
         }
         this.gameObjects.removeIf(g -> !g.isActive());
-        this.player.readInput();
     }
 
     @Override

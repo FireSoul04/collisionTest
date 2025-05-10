@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.view.api;
 
+import com.firesoul.collisiontest.controller.impl.ButtonListener;
 import com.firesoul.collisiontest.controller.impl.InputListener;
 
 public interface Renderer {
@@ -22,5 +23,7 @@ public interface Renderer {
 
     double getScaleY();
 
-    InputListener getInput();
+    InputListener getInputListener();
+
+    ButtonListener getButtonListener();
 }

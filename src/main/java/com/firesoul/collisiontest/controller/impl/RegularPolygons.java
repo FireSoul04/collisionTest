@@ -15,7 +15,7 @@ public class RegularPolygons implements GameLogic {
     public RegularPolygons(final GameCore controller) {
         this.world = new TileBasedLevel(controller);
 
-        final InputListener input = controller.getInput();
+        final InputListener input = controller.getInputListener();
         final EventManager events = new EventManagerImpl();
         events.addEvent("MoveUp", () -> input.isKeyPressed(KeyEvent.VK_W));
         events.addEvent("MoveDown", () -> input.isKeyPressed(KeyEvent.VK_S));

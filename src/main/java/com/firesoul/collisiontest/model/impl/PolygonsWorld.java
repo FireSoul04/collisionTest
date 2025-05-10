@@ -19,7 +19,7 @@ public class PolygonsWorld implements Level {
 
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final GameController controller;
-    private final EventManager input;
+    private final EventManager<String> input;
 
     private final double speed = 1.0;
     private final double rotSpeed = 0.1;

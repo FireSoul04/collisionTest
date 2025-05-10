@@ -1,10 +1,12 @@
 package com.firesoul.collisiontest.controller.api;
 
-import com.firesoul.collisiontest.model.api.Event;
+public interface EventManager<T> {
 
-public interface EventManager {
+    void addEvent(T key, Event event);
 
-    void addEvent(String name, Event e);
+    boolean getEvent(T key);
 
-    boolean getEvent(String name);
+    void attachActionOnEvent(T key, Action action);
+
+    void update();
 }

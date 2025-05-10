@@ -1,7 +1,7 @@
 package com.firesoul.collisiontest.controller.impl;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
+import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +11,11 @@ public class ButtonListener {
 	private static class Button {
 		private boolean clicked = false;
 		public Button(final JButton button) {
-			button.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(final MouseEvent e) {
+			button.addMouseListener(new MouseInputAdapter() {
+				public void mousePressed(MouseEvent e) {
 					clicked = true;
 				}
-				public void mouseReleased(final MouseEvent e) {
+				public void mouseReleased(MouseEvent e) {
 					clicked = false;
 				}
 			});
