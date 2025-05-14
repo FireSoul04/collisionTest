@@ -171,6 +171,10 @@ public class Player extends EntityImpl {
 
     private void changeWeapon() {
         if (!this.weaponCooldown.isRunning() && this.equippedWeapon.isPresent()) {
+            if (equippedWeapon.get() instanceof Gun gun) {
+                gun.resetCooldown();
+            }
+
             this.weaponCooldown.start();
             this.nextWeapon = (this.nextWeapon + 1) % this.weapons.size();
             this.equippedWeapon.get().getSprite().ifPresent(s -> s.setVisible(false));

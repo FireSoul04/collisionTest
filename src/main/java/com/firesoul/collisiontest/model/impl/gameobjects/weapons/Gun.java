@@ -3,6 +3,7 @@ package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
+import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -51,6 +52,17 @@ public class Gun extends WeaponImpl {
     }
 
     @Override
+    public void update(double deltaTime) {
+        super.update(deltaTime);
+
+        if (this.getHolder() instanceof Player pl && pl.getEquippedWeapon().isPresent() && pl.getEquippedWeapon().get() == this) {
+            if (this.projectiles == 0) {
+                this.reload();
+            }
+        }
+    }
+
+    @Override
     public void attack() {
         if (!this.shootCooldown.isRunning() && !this.reloadTimer.isRunning()) {
             this.shootCooldown.start();
@@ -63,16 +75,20 @@ public class Gun extends WeaponImpl {
                 this.projectileVelocity.x() * this.getDirectionX()
             );
         }
-
-        if (this.projectiles == 0) {
-            this.reload();
-        }
     }
 
     public void reload() {
         if (this.projectiles < this.maxProjectiles && !this.reloadTimer.isRunning()) {
             this.reloadTimer.start();
             this.reloadBar.getSprite().ifPresent(s -> s.setVisible(true));
+        }
+    }
+
+    public void resetCooldown() {
+        if (this.reloadTimer.isRunning()) {
+            this.reloadTimer.stop();
+            this.reloadBar.setCurrentPercentage(1.0);
+            this.reloadBar.getSprite().ifPresent(s -> s.setVisible(false));
         }
     }
 }
