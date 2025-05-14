@@ -6,6 +6,7 @@ public interface GameLogic {
 
     enum State {
         MENU,
+        PAUSE,
         RUNNING,
         OVER
     }
@@ -13,6 +14,8 @@ public interface GameLogic {
     void update(double deltaTime);
 
     boolean isRunning();
+
+    boolean isPaused();
 
     boolean isOnMenu();
 

@@ -9,6 +9,7 @@ import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
+import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 
 import java.util.ArrayList;
@@ -36,6 +37,16 @@ public class PolygonsWorld implements Level {
     public void update(final double deltaTime) {
         this.readInput();
         this.player.move(this.player.getVelocity().multiply(deltaTime));
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void unPause() {
+
     }
 
     @Override
@@ -71,6 +82,11 @@ public class PolygonsWorld implements Level {
     @Override
     public void instanciate(final GameObject gameObject) {
         this.gameObjects.add(gameObject);
+    }
+
+    @Override
+    public void addTimer(GameTimer timer) {
+
     }
 
     public void readInput() {

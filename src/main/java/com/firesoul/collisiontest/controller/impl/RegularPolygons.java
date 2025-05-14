@@ -36,6 +36,11 @@ public class RegularPolygons implements GameLogic {
     }
 
     @Override
+    public boolean isPaused() {
+        return this.state == State.PAUSE;
+    }
+
+    @Override
     public boolean isOnMenu() {
         return this.state == State.MENU;
     }

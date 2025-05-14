@@ -30,7 +30,7 @@ public class Player extends EntityImpl {
     private final List<Weapon> weapons = new ArrayList<>();
     private int nextWeapon = 0;
     private Optional<Weapon> equippedWeapon = Optional.empty();
-    private final GameTimer weaponCooldown = new GameTimer(1000);
+    private final GameTimer weaponCooldown = new GameTimer(1000, this.getWorld());
     // Movement logic
     private final double speed = 0.2;
     private double facingDirectionX = 1.0;

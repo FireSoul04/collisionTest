@@ -7,6 +7,7 @@ import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.impl.factories.GameObjectFactoryImpl;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
+import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import java.util.*;
 
@@ -17,6 +18,7 @@ public class TileBasedLevel implements Level {
     private final int width;
     private final int height;
 
+    private final Set<GameTimer> timers = new HashSet<>();
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final Queue<GameObject> gameObjectsQ = new ArrayDeque<>();
 
@@ -48,6 +50,16 @@ public class TileBasedLevel implements Level {
                 .divide(2.0)
         ));
         this.destroyOutOfBoundsObjects();
+    }
+
+    @Override
+    public void pause() {
+        this.timers.forEach(GameTimer::pause);
+    }
+
+    @Override
+    public void unPause() {
+        this.timers.forEach(GameTimer::unPause);
     }
 
     private void destroyOutOfBoundsObjects() {
@@ -101,6 +113,11 @@ public class TileBasedLevel implements Level {
             this.player = p;
         }
         this.gameObjectsQ.add(gameObject);
+    }
+
+    @Override
+    public void addTimer(final GameTimer timer) {
+        this.timers.add(timer);
     }
 
     private void checkCollisions(final double deltaTime) {

@@ -35,7 +35,7 @@ public class Gun extends WeaponImpl {
         super(holder, offset, offset, world, Optional.empty(), sprite);
         this.gf = gf;
         this.reloadBar = reloadBar;
-        this.shootCooldown = new GameTimer(400);
+        this.shootCooldown = new GameTimer(400, this.getWorld());
         this.projectileOffset = projectileOffset;
         this.maxProjectiles = maxProjectiles;
         this.reloadTimer = new GameTimer (
@@ -44,7 +44,7 @@ public class Gun extends WeaponImpl {
                 reloadBar.getSprite().ifPresent(s -> s.setVisible(false));
             },
             (r, d) -> reloadBar.setCurrentPercentage(r / (double) d),
-            1500
+            1500, this.getWorld()
         );
         this.projectiles = this.maxProjectiles;
         this.projectileVelocity = Vector2.right().multiply(10.0);

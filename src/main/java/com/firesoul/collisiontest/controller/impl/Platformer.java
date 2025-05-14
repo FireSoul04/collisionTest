@@ -7,6 +7,7 @@ import com.firesoul.collisiontest.controller.api.GameLogic;
 import com.firesoul.collisiontest.controller.api.loader.LevelLoader;
 import com.firesoul.collisiontest.controller.impl.loader.TileBasedLevelLoader;
 import com.firesoul.collisiontest.model.api.*;
+import com.firesoul.collisiontest.model.util.GameTimer;
 
 public class Platformer implements GameLogic {
 
@@ -22,12 +23,14 @@ public class Platformer implements GameLogic {
         final InputListener inputListener = controller.getInputListener();
         final ButtonListener buttonListener = controller.getButtonListener();
 	    eventManager = controller.getEventManager();
-        eventManager.addEvent("Jump", () -> inputListener.isKeyPressed(KeyEvent.VK_SPACE));
-        eventManager.addEvent("MoveLeft", () -> inputListener.isKeyPressed(KeyEvent.VK_A));
-        eventManager.addEvent("MoveRight", () -> inputListener.isKeyPressed(KeyEvent.VK_D));
-        eventManager.addEvent("UseWeapon", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_E));
-        eventManager.addEvent("Reload", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_R));
-        eventManager.addEvent("ChangeWeapon", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_Q));
+        eventManager.addEvent("Jump", () -> inputListener.isKeyPressed(KeyEvent.VK_SPACE) && this.isRunning());
+        eventManager.addEvent("MoveLeft", () -> inputListener.isKeyPressed(KeyEvent.VK_A) && this.isRunning());
+        eventManager.addEvent("MoveRight", () -> inputListener.isKeyPressed(KeyEvent.VK_D) && this.isRunning());
+        eventManager.addEvent("UseWeapon", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_E) && this.isRunning());
+        eventManager.addEvent("Reload", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_R) && this.isRunning());
+        eventManager.addEvent("ChangeWeapon", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_Q) && this.isRunning());
+        eventManager.addEvent("Pause", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_P) && this.isRunning());
+        eventManager.addEvent("Unpause", () -> inputListener.isKeyPressedOnce(KeyEvent.VK_K) && this.isPaused());
         eventManager.addEvent("Start", () -> buttonListener.isButtonClicked("Start"));
         eventManager.addEvent("Menu", this::isOnMenu);
         eventManager.addEvent("Exit", () -> buttonListener.isButtonClicked("Exit"));
@@ -36,6 +39,14 @@ public class Platformer implements GameLogic {
         eventManager.attachActionOnEvent("Menu", () -> this.state = State.MENU);
         eventManager.attachActionOnEvent("GameOver", () -> this.state = State.OVER);
         eventManager.attachActionOnEvent("Exit", () -> System.exit(0));
+        eventManager.attachActionOnEvent("Pause", () -> {
+            this.state = State.PAUSE;
+            this.getLevel().pause();
+        });
+        eventManager.attachActionOnEvent("Unpause", () -> {
+            this.state = State.RUNNING;
+            this.getLevel().unPause();
+        });
     }
 
     @Override
@@ -51,6 +62,11 @@ public class Platformer implements GameLogic {
     @Override
     public boolean isRunning() {
         return this.state == State.RUNNING;
+    }
+
+    @Override
+    public boolean isPaused() {
+        return this.state == State.PAUSE;
     }
 
     @Override

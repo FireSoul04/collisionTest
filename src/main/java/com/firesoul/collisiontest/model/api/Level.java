@@ -1,5 +1,6 @@
 package com.firesoul.collisiontest.model.api;
 
+import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -9,6 +10,10 @@ import java.util.List;
 public interface Level {
 
     void update(double deltaTime);
+
+    void pause();
+
+    void unPause();
 
     List<GameObject> getGameObjects();
 
@@ -23,4 +28,6 @@ public interface Level {
     GameObjectFactory getGameObjectFactory();
 
     void instanciate(GameObject gameObject);
+
+    void addTimer(GameTimer timer);
 }

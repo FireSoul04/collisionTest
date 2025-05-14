@@ -1,5 +1,7 @@
 package com.firesoul.collisiontest.model.util;
 
+import com.firesoul.collisiontest.model.api.Level;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,7 +29,7 @@ public class GameTimer {
     private boolean running;
     private boolean pause;
 
-    public GameTimer(final TimerEndAction onStop, final TimerTickAction onTick, final int delay, final int duration) {
+    public GameTimer(final TimerEndAction onStop, final TimerTickAction onTick, final int delay, final int duration, final Level world) {
         this.onStop = onStop;
         this.onTick = onTick;
         this.delay = delay;
@@ -35,18 +37,19 @@ public class GameTimer {
         this.remainingTime = duration;
         this.running = false;
         this.pause = false;
+        world.addTimer(this);
     }
 
-    public GameTimer(final TimerEndAction onStop, final TimerTickAction onTick, final int duration) {
-        this(onStop, onTick, 0, duration);
+    public GameTimer(final TimerEndAction onStop, final TimerTickAction onTick, final int duration, final Level world) {
+        this(onStop, onTick, 0, duration, world);
     }
 
-    public GameTimer(final TimerEndAction onStop, final int duration) {
-        this(onStop, (r, d) -> {}, 0, duration);
+    public GameTimer(final TimerEndAction onStop, final int duration, final Level world) {
+        this(onStop, (r, d) -> {}, 0, duration, world);
     }
 
-    public GameTimer(final int duration) {
-        this(() -> {}, duration);
+    public GameTimer(final int duration, final Level world) {
+        this(() -> {}, duration, world);
     }
 
     public void start() {
@@ -54,16 +57,16 @@ public class GameTimer {
             this.timer = new Timer();
             this.timer.schedule(
                 new TimerTask() {
-                    public void run() {
-                        if (!pause) {
-                            onTick.tick(remainingTime, duration);
-                            remainingTime--;
-                        }
-                        if (remainingTime <= 0) {
-                            onTick.tick(remainingTime, duration);
-                            onStop.get();
-                            stop();
-                        }
+                public void run() {
+                    if (!pause) {
+                        onTick.tick(remainingTime, duration);
+                        remainingTime--;
+                    }
+                    if (remainingTime <= 0) {
+                        onTick.tick(remainingTime, duration);
+                        onStop.get();
+                        stop();
+                    }
                     }
                 },
                 this.delay,
