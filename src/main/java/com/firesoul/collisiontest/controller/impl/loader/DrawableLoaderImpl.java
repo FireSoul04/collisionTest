@@ -16,7 +16,7 @@ import com.firesoul.collisiontest.view.api.Renderable;
 
 import javax.imageio.ImageIO;
 
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -54,9 +54,9 @@ public class DrawableLoaderImpl implements DrawableLoader {
 	}
 
 	@Override
-	public Drawable loadLabel(final Vector2 position, final String string) {
+	public Drawable loadLabel(final Vector2 position, final String string, final int rgba) {
 		final Label label = new Label(position, string);
-		this.wrapperQ.put(label, new LabelWrapper(label));
+		this.wrapperQ.put(label, new LabelWrapper(label, rgba));
 		return label;
 	}
 

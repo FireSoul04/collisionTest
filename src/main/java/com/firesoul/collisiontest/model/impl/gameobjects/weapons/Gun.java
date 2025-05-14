@@ -3,8 +3,10 @@ package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.factories.GameObjectFactory;
+import com.firesoul.collisiontest.model.impl.drawable.ui.Label;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
+import com.firesoul.collisiontest.model.impl.gameobjects.text.Text;
 import com.firesoul.collisiontest.model.util.GameTimer;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.model.api.drawable.Drawable;
@@ -15,6 +17,7 @@ public class Gun extends WeaponImpl {
 
     private final GameObjectFactory gf;
     private final GameBar reloadBar;
+    private final Text projectilesLabel;
     private final GameTimer shootCooldown;
     private final Vector2 projectileOffset;
     private final Vector2 projectileVelocity;
@@ -26,6 +29,7 @@ public class Gun extends WeaponImpl {
     public Gun(
         final GameObject holder,
         final GameBar reloadBar,
+        final Text projectilesLabel,
         final Vector2 offset,
         final Vector2 projectileOffset,
         final Optional<Drawable> sprite,
@@ -36,6 +40,7 @@ public class Gun extends WeaponImpl {
         super(holder, offset, offset, world, Optional.empty(), sprite);
         this.gf = gf;
         this.reloadBar = reloadBar;
+        this.projectilesLabel = projectilesLabel;
         this.shootCooldown = new GameTimer(400, this.getWorld());
         this.projectileOffset = projectileOffset;
         this.maxProjectiles = maxProjectiles;
@@ -54,6 +59,8 @@ public class Gun extends WeaponImpl {
     @Override
     public void update(double deltaTime) {
         super.update(deltaTime);
+
+        this.projectilesLabel.setText(this.projectiles + " / " + this.maxProjectiles);
 
         if (this.getHolder() instanceof Player pl &&
             pl.getEquippedWeapon().isPresent() &&

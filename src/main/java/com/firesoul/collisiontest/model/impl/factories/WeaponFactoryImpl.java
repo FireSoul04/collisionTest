@@ -5,7 +5,9 @@ import com.firesoul.collisiontest.model.api.physics.Collider;
 import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Weapon;
 import com.firesoul.collisiontest.model.api.factories.WeaponFactory;
+import com.firesoul.collisiontest.model.impl.drawable.ui.Label;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.AttachedBar;
+import com.firesoul.collisiontest.model.impl.gameobjects.text.Text;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Gun;
 import com.firesoul.collisiontest.model.impl.gameobjects.Player;
@@ -51,10 +53,15 @@ public class WeaponFactoryImpl implements WeaponFactory {
             this.dl.loadDynamicBar(20, 5, Color.WHITE.getRGB()), 1, true
         );
         reloadBar.attachedGameObject(holder);
+        final int maxProjectiles = 6;
+        final Text projectileLabel = new Text(
+            Vector2.zero(), this.world,
+            this.dl.loadLabel(new Vector2(0.0, 30.0), maxProjectiles + " / " + maxProjectiles, Color.WHITE.getRGB())
+        );
         final Drawable sprite = this.dl.loadSpriteFromSystem("gun");
-        final Vector2 offset = new Vector2(12.0, 0.0);
+        final Vector2 offset = new Vector2(12.0, 2.0);
         final Vector2 projectileOffset = new Vector2(sprite.getWidth() * 1.2, -2.5);
-        return new Gun(holder, reloadBar, offset, projectileOffset, Optional.of(sprite),
-            this.world, new GameObjectFactoryImpl(this.dl, this.world), 6);
+        return new Gun(holder, reloadBar, projectileLabel, offset, projectileOffset, Optional.of(sprite),
+            this.world, new GameObjectFactoryImpl(this.dl, this.world), maxProjectiles);
     }
 }

@@ -14,7 +14,7 @@ public interface DrawableLoader {
 
 	Drawable loadSpriteFromSystem(String path);
 
-	Drawable loadLabel(Vector2 position, String string);
+	Drawable loadLabel(Vector2 position, String string, int rgba);
 
 	Drawable loadRectangle(Vector2 position, int width, int height, int rgba);
 
