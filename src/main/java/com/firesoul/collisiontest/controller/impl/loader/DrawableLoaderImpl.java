@@ -2,11 +2,7 @@ package com.firesoul.collisiontest.controller.impl.loader;
 
 import com.firesoul.collisiontest.controller.api.loader.DrawableLoader;
 import com.firesoul.collisiontest.controller.api.wrapper.RenderableWrapper;
-import com.firesoul.collisiontest.controller.impl.wrapper.DynamicBarWrapper;
-import com.firesoul.collisiontest.controller.impl.wrapper.RectangleBorderWrapper;
-import com.firesoul.collisiontest.controller.impl.wrapper.RectangleWrapper;
-import com.firesoul.collisiontest.controller.impl.wrapper.SpriteWrapper;
-import com.firesoul.collisiontest.controller.impl.wrapper.StaticBarWrapper;
+import com.firesoul.collisiontest.controller.impl.wrapper.*;
 import com.firesoul.collisiontest.model.api.drawable.ui.Bar;
 import com.firesoul.collisiontest.model.api.drawable.Drawable;
 import com.firesoul.collisiontest.model.api.gameobjects.Camera;
@@ -14,6 +10,7 @@ import com.firesoul.collisiontest.model.impl.drawable.ui.DynamicBar;
 import com.firesoul.collisiontest.model.impl.drawable.primitives.Rectangle;
 import com.firesoul.collisiontest.model.impl.drawable.Sprite;
 import com.firesoul.collisiontest.model.impl.drawable.ui.StaticBar;
+import com.firesoul.collisiontest.model.impl.drawable.ui.Label;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.view.api.Renderable;
 
@@ -54,6 +51,13 @@ public class DrawableLoaderImpl implements DrawableLoader {
 		final Sprite sprite = new Sprite(image.getWidth(null), image.getHeight(null));
 		this.wrapperQ.put(sprite, new SpriteWrapper(sprite, image));
 		return sprite;
+	}
+
+	@Override
+	public Drawable loadLabel(final Vector2 position, final String string) {
+		final Label label = new Label(position, string);
+		this.wrapperQ.put(label, new LabelWrapper(label));
+		return label;
 	}
 
 	@Override
