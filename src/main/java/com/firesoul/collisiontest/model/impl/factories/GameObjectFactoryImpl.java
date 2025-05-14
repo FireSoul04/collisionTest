@@ -16,6 +16,7 @@ import com.firesoul.collisiontest.model.impl.gameobjects.*;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.AttachedBar;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.GameBar;
 import com.firesoul.collisiontest.model.impl.gameobjects.bars.StaticGameBar;
+import com.firesoul.collisiontest.model.impl.gameobjects.weapons.Projectile;
 import com.firesoul.collisiontest.model.impl.physics.colliders.BoxCollider;
 import com.firesoul.collisiontest.model.impl.physics.colliders.MeshCollider;
 import com.firesoul.collisiontest.model.util.Vector2;
@@ -31,7 +32,7 @@ public class GameObjectFactoryImpl implements GameObjectFactory {
     }
 
     @Override
-    public Player player(final Vector2 position, final EventManager input) {
+    public Player player(final Vector2 position, final EventManager<String> input) {
         final Vector2 size = new Vector2(20.0, 50.0);
         final Collider collider = new BoxCollider(position.subtract(size.divide(2.0)), size.x(), size.y());
         final Map<String, Drawable> sprites = Map.of(

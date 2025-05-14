@@ -7,7 +7,7 @@ import com.firesoul.collisiontest.model.util.Vector2;
 
 public interface GameObjectFactory {
 
-    Player player(Vector2 position, EventManager input);
+    Player player(Vector2 position, EventManager<String> input);
 
     GameObject projectile(Vector2 position, double speed);
 

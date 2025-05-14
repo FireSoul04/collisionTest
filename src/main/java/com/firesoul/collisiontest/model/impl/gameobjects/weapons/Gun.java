@@ -55,10 +55,12 @@ public class Gun extends WeaponImpl {
     public void update(double deltaTime) {
         super.update(deltaTime);
 
-        if (this.getHolder() instanceof Player pl && pl.getEquippedWeapon().isPresent() && pl.getEquippedWeapon().get() == this) {
-            if (this.projectiles == 0) {
-                this.reload();
-            }
+        if (this.getHolder() instanceof Player pl &&
+            pl.getEquippedWeapon().isPresent() &&
+            pl.getEquippedWeapon().get() == this &&
+            this.projectiles == 0
+        ) {
+            this.reload();
         }
     }
 

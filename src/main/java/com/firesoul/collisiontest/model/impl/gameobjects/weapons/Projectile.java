@@ -1,4 +1,4 @@
-package com.firesoul.collisiontest.model.impl.gameobjects;
+package com.firesoul.collisiontest.model.impl.gameobjects.weapons;
 
 import java.util.Optional;
 
@@ -7,6 +7,7 @@ import com.firesoul.collisiontest.model.api.Level;
 import com.firesoul.collisiontest.model.api.gameobjects.Enemy;
 import com.firesoul.collisiontest.model.api.GameObject;
 import com.firesoul.collisiontest.model.api.physics.RigidBody;
+import com.firesoul.collisiontest.model.impl.gameobjects.GameObjectImpl;
 import com.firesoul.collisiontest.model.impl.physics.EnhancedRigidBody;
 import com.firesoul.collisiontest.model.util.Vector2;
 import com.firesoul.collisiontest.model.api.drawable.Drawable;
@@ -19,7 +20,7 @@ public class Projectile extends GameObjectImpl {
                       final Optional<Drawable> sprite, final double speed
     ) {
         super(position, true, world, collider, sprite);
-        this.body = new EnhancedRigidBody(Vector2.zero(), Vector2.zero(), Vector2.zero());
+        this.body = new EnhancedRigidBody(Vector2.zero(), new Vector2(0.0, 0.0025), Vector2.zero());
         this.setVelocity(new Vector2(speed, 0.0));
     }
 
